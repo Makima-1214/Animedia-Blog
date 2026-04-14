@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import { getTagBySlug, getArticlesByTag, getAllTags } from '../../lib/turso-helpers.js';
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/');
+
+const tag: any = await getTagBySlug(slug);
+if (!tag) return Astro.redirect('/');
+
+const articles: any[] = await getArticlesByTag(slug);
+const allTags: any[] = await getAllTags();
+---
+
+<BaseLayout title={`#${tag.name} - Animedia`} description={`Artikel dengan tag ${tag.name}`}>
+  <Header />
+  <main class="max-w-7xl mx-auto px-6 py-12">
+    <div class="mb-10">
+      <div class="flex items-center gap-2 text-xs font-bold tracking-widest text-on-surface-variant mb-4 uppercase">
+        <a href="/" class="hover:text-primary">Beranda</a>
+        <span class="material-symbols-outlined text-xs">chevron_right</span>
+        <span class="text-primary">#{tag.name}</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+        #{tag.name}
+      </h1>
+      <p class="text-on-surface-variant">{articles.length} artikel ditemukan</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div class="lg:col-span-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {articles.map((article: any) => (
+            <article class="bg-white rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow group">
+              <div class="h-48 overflow-hidden bg-surface-container">
+                <img
+                  alt={article.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  src={article.cover_image || 'https://via.placeholder.com/800x400'}
+                />
+              </div>
+              <div class="p-6">
+                <h2 class="text-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                  <a href={`/artikel/${article.slug}`}>{article.title}</a>
+                </h2>
+                <p class="text-on-surface-variant text-sm line-clamp-2 mb-3">{article.excerpt}</p>
+                <div class="flex items-center justify-between text-xs text-on-surface-variant">
+                  <span>{article.read_time} min baca</span>
+                  <span>{article.views} views</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <aside class="lg:col-span-4">
+        <div class="bg-surface-container/30 p-6 rounded-2xl border border-outline-variant/50 sticky top-24">
+          <h4 class="text-[11px] font-black uppercase tracking-[0.2em] text-on-surface-variant mb-4 border-l-4 border-secondary pl-4">
+            Semua Tag
+          </h4>
+          <div class="flex flex-wrap gap-2">
+            {allTags.map((t: any) => (
+              <a
+                href={`/tag/${t.slug}`}
+                class={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${
+                  t.slug === slug
+                    ? 'bg-primary text-on-primary'
+                    : 'bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary'
+                }`}
+              >
+                #{t.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

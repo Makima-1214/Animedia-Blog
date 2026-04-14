@@ -1,0 +1,399 @@
+---
+import DashboardLayout from '../../../layouts/DashboardLayout.astro';
+import { getAllCategories } from '../../../lib/turso-helpers.js';
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+const categories = await getAllCategories() as Category[];
+---
+
+<DashboardLayout title="Buat Artikel Baru" activePage="artikel">
+  <div class="p-4 md:p-8 lg:p-12">
+    <header class="mb-8 md:mb-12">
+      <nav class="flex items-center gap-2 text-xs font-medium text-on-surface-variant uppercase tracking-widest mb-4">
+        <a href="/dashboard" class="hover:text-primary">Admin</a>
+        <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+        <a href="/dashboard/artikel" class="hover:text-primary">Artikel</a>
+        <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+        <span class="text-on-surface">Buat Baru</span>
+      </nav>
+      <h2 class="text-2xl md:text-4xl lg:text-5xl font-headline font-extrabold tracking-tighter text-on-surface mb-2">Buat Artikel Baru</h2>
+      <p class="text-sm md:text-base text-on-surface-variant font-body">Tulis dan publikasikan artikel baru untuk blog Anda</p>
+    </header>
+
+    <form id="createArticleForm" class="max-w-4xl">
+      <div class="bg-surface-container-lowest p-4 md:p-8 rounded-xl editorial-shadow space-y-6 md:space-y-8">
+
+        <!-- Title -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Judul Artikel *</label>
+          <input type="text" name="title" id="title" required
+            class="w-full border-b-2 border-outline-variant bg-transparent py-3 text-xl md:text-2xl font-bold focus:border-primary focus:ring-0 transition-colors"
+            placeholder="Masukkan judul artikel..." />
+        </div>
+
+        <!-- Slug -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Slug (URL) *</label>
+          <input type="text" name="slug" id="slug" required
+            class="w-full border-b border-outline-variant bg-transparent py-2 focus:border-primary focus:ring-0 transition-colors font-mono text-sm"
+            placeholder="judul-artikel-anda" />
+          <p class="text-[10px] text-on-surface-variant/60">URL artikel: /artikel/slug-anda</p>
+        </div>
+
+        <!-- Excerpt -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Ringkasan *</label>
+          <textarea name="excerpt" required rows="3"
+            class="w-full border border-outline-variant bg-transparent rounded-lg p-4 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+            placeholder="Tulis ringkasan singkat artikel..."></textarea>
+        </div>
+
+        <!-- Content Editor -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Konten Artikel *</label>
+          <div class="border border-outline-variant rounded-xl overflow-hidden">
+            <!-- Toolbar -->
+            <div id="editor-toolbar" class="bg-gray-50 border-b border-outline-variant px-2 py-1.5 flex flex-wrap items-center gap-0.5">
+              <!-- History -->
+              <button type="button" data-cmd="undo" title="Undo (Ctrl+Z)" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+              </button>
+              <button type="button" data-cmd="redo" title="Redo (Ctrl+Y)" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3L21 13"/></svg>
+              </button>
+              <div class="tbtn-sep"></div>
+              <!-- Format -->
+              <select id="formatBlock" title="Format" class="tbtn-select">
+                <option value="p">Paragraf</option>
+                <option value="h1">Heading 1</option>
+                <option value="h2">Heading 2</option>
+                <option value="h3">Heading 3</option>
+                <option value="h4">Heading 4</option>
+                <option value="pre">Code Block</option>
+              </select>
+              <div class="tbtn-sep"></div>
+              <!-- Text style -->
+              <button type="button" data-cmd="bold" title="Bold (Ctrl+B)" class="tbtn font-bold">B</button>
+              <button type="button" data-cmd="italic" title="Italic (Ctrl+I)" class="tbtn italic">I</button>
+              <button type="button" data-cmd="underline" title="Underline (Ctrl+U)" class="tbtn underline">U</button>
+              <button type="button" data-cmd="strikeThrough" title="Strikethrough" class="tbtn line-through">S</button>
+              <div class="tbtn-sep"></div>
+              <!-- Color -->
+              <label title="Text Color" class="tbtn cursor-pointer relative">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11 3L5.5 17h2.25l1.12-3h6.25l1.12 3H18.5L13 3h-2zm-1.38 9L12 5.67 14.38 12H9.62z"/></svg>
+                <input type="color" id="textColor" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" value="#000000" />
+              </label>
+              <label title="Highlight Color" class="tbtn cursor-pointer relative">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="color" id="bgColor" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" value="#ffff00" />
+              </label>
+              <div class="tbtn-sep"></div>
+              <!-- Alignment -->
+              <button type="button" data-cmd="justifyLeft" title="Align Left" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v2H3zm0 4h12v2H3zm0 4h18v2H3zm0 4h12v2H3zm0 4h18v2H3z"/></svg>
+              </button>
+              <button type="button" data-cmd="justifyCenter" title="Align Center" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v2H3zm3 4h12v2H6zm-3 4h18v2H3zm3 4h12v2H6zm-3 4h18v2H3z"/></svg>
+              </button>
+              <button type="button" data-cmd="justifyRight" title="Align Right" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v2H3zm6 4h12v2H9zm-6 4h18v2H3zm6 4h12v2H9zm-6 4h18v2H3z"/></svg>
+              </button>
+              <div class="tbtn-sep"></div>
+              <!-- Lists -->
+              <button type="button" data-cmd="insertUnorderedList" title="Bullet List" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h2v2H4zm0 5h2v2H4zm0 5h2v2H4zM8 6h13v2H8zm0 5h13v2H8zm0 5h13v2H8z"/></svg>
+              </button>
+              <button type="button" data-cmd="insertOrderedList" title="Numbered List" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-8v2h14V3H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z"/></svg>
+              </button>
+              <button type="button" data-cmd="outdent" title="Outdent" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11 17h10v-2H11v2zm-8-5l4 4V8l-4 4zm0 9h18v-2H3v2zM3 3v2h18V3H3zm8 6h10V7H11v2zm0 4h10v-2H11v2z"/></svg>
+              </button>
+              <button type="button" data-cmd="indent" title="Indent" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18v-2H3v2zM3 8v8l4-4-4-4zm8 9h10v-2H11v2zM3 3v2h18V3H3zm8 6h10V7H11v2zm0 4h10v-2H11v2z"/></svg>
+              </button>
+              <div class="tbtn-sep"></div>
+              <!-- Insert -->
+              <button type="button" id="btnLink" title="Insert Link" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+              </button>
+              <button type="button" id="btnImage" title="Insert Image URL" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </button>
+              <button type="button" id="btnTable" title="Insert Table" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+              </button>
+              <button type="button" data-cmd="insertHorizontalRule" title="Horizontal Rule" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 11H5v2h14v-2z"/></svg>
+              </button>
+              <div class="tbtn-sep"></div>
+              <!-- Blockquote -->
+              <button type="button" id="btnQuote" title="Blockquote" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>
+              </button>
+              <button type="button" data-cmd="removeFormat" title="Clear Formatting" class="tbtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <!-- Editable area -->
+            <div id="content-editor" contenteditable="true"
+              class="min-h-[500px] p-5 text-base leading-relaxed bg-white focus:outline-none prose max-w-none"
+              spellcheck="true"></div>
+          </div>
+          <textarea name="content" id="content" required class="hidden"></textarea>
+          <p class="text-[10px] text-on-surface-variant/60">Tip: Ctrl+B bold · Ctrl+I italic · Ctrl+U underline · Ctrl+Z undo</p>
+        </div>
+
+        <!-- Cover Image -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Gambar Cover</label>
+          <div class="flex items-center gap-4">
+            <input type="hidden" name="coverImage" id="coverImage" />
+            <div id="cover-preview" class="w-32 h-20 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant flex-shrink-0">
+              <span class="material-symbols-outlined text-outline-variant">image</span>
+            </div>
+            <div class="flex flex-col gap-2 flex-1">
+              <label class="cursor-pointer bg-surface-container-high px-4 py-2 rounded-lg text-sm font-bold hover:bg-surface-container-highest transition-colors flex items-center gap-2 w-fit">
+                <span class="material-symbols-outlined text-sm">upload</span>
+                Upload Gambar
+                <input type="file" id="coverImageFile" accept="image/*" class="hidden" />
+              </label>
+              <p class="text-[10px] text-on-surface-variant">Atau masukkan URL:</p>
+              <input type="url" id="coverImageUrl"
+                class="border border-outline-variant bg-transparent rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                placeholder="https://example.com/image.jpg" />
+            </div>
+          </div>
+          <p id="upload-status" class="text-xs text-on-surface-variant"></p>
+        </div>
+
+        <!-- Tags -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Tags</label>
+          <input type="text" name="tags" id="tags"
+            class="w-full border border-outline-variant bg-transparent rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary"
+            placeholder="RPG, Open World, Action (pisahkan dengan koma)" />
+          <p class="text-[10px] text-on-surface-variant/60">Pisahkan setiap tag dengan koma</p>
+        </div>
+
+        <!-- Category & Status -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Kategori *</label>
+            <select name="categoryId" required
+              class="w-full border border-outline-variant bg-transparent rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary">
+              <option value="">Pilih Kategori</option>
+              {categories.map(cat => (
+                <option value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Status *</label>
+            <select name="status" required
+              class="w-full border border-outline-variant bg-transparent rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Affiliate -->
+        <div class="space-y-4 pt-6 border-t border-outline-variant/30">
+          <div class="flex items-center justify-between">
+            <div>
+              <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Produk Afiliasi</label>
+              <p class="text-[10px] text-on-surface-variant/60 mt-1">Tampilkan produk rekomendasi di halaman baca artikel</p>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <span class="text-xs text-on-surface-variant">Aktifkan</span>
+              <div class="relative">
+                <input type="checkbox" id="affiliateToggle" class="sr-only peer" />
+                <div class="w-10 h-6 bg-outline-variant rounded-full peer peer-checked:bg-primary transition-colors"></div>
+                <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
+              </div>
+            </label>
+          </div>
+          <div id="affiliateSection" class="hidden space-y-4">
+            <p class="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">⚠️ Simpan artikel dulu sebelum menambah produk afiliasi. Produk bisa ditambah di halaman Edit Artikel.</p>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-outline-variant/30">
+          <button type="submit"
+            class="w-full sm:w-auto bg-on-surface text-surface px-6 md:px-8 py-3 md:py-4 rounded-lg font-bold hover:bg-primary transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">save</span>
+            Simpan Artikel
+          </button>
+          <a href="/dashboard/artikel"
+            class="w-full sm:w-auto bg-surface-container text-on-surface px-6 md:px-8 py-3 md:py-4 rounded-lg font-bold hover:bg-surface-container-high transition-all text-center">
+            Batal
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <style>
+    .tbtn { @apply flex items-center justify-center w-7 h-7 rounded text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors text-sm; }
+    .tbtn-sep { @apply w-px h-5 bg-gray-300 mx-1; }
+    .tbtn-select { @apply text-xs border border-gray-300 rounded px-1.5 py-1 bg-white text-gray-700 focus:outline-none focus:border-primary h-7; }
+    #content-editor { caret-color: #111; }
+    #content-editor:empty:before { content: 'Tulis konten artikel di sini...'; color: #9ca3af; pointer-events: none; display: block; }
+    #content-editor h1 { font-size: 2rem; font-weight: 800; margin: 1.25rem 0 0.5rem; line-height: 1.2; }
+    #content-editor h2 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0 0.5rem; line-height: 1.3; }
+    #content-editor h3 { font-size: 1.25rem; font-weight: 700; margin: 0.75rem 0 0.5rem; }
+    #content-editor h4 { font-size: 1.1rem; font-weight: 600; margin: 0.75rem 0 0.5rem; }
+    #content-editor p { margin: 0.5rem 0; }
+    #content-editor ul { list-style: disc; padding-left: 1.75rem; margin: 0.5rem 0; }
+    #content-editor ol { list-style: decimal; padding-left: 1.75rem; margin: 0.5rem 0; }
+    #content-editor li { margin: 0.25rem 0; }
+    #content-editor blockquote { border-left: 4px solid #6366f1; padding: 0.5rem 1rem; background: #f5f3ff; border-radius: 0 0.5rem 0.5rem 0; margin: 0.75rem 0; color: #4b5563; font-style: italic; }
+    #content-editor pre { background: #1e1e2e; color: #cdd6f4; padding: 1rem; border-radius: 0.5rem; font-family: monospace; font-size: 0.875rem; overflow-x: auto; margin: 0.75rem 0; white-space: pre-wrap; }
+    #content-editor a { color: #6366f1; text-decoration: underline; }
+    #content-editor img { max-width: 100%; border-radius: 0.5rem; margin: 0.5rem 0; }
+    #content-editor table { border-collapse: collapse; width: 100%; margin: 0.75rem 0; }
+    #content-editor table td, #content-editor table th { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; }
+    #content-editor table th { background: #f8fafc; font-weight: 600; }
+    #content-editor hr { border: none; border-top: 2px solid #e2e8f0; margin: 1.5rem 0; }
+  </style>
+
+  <script is:inline>
+    var ed = document.getElementById('content-editor');
+
+    // Toolbar handler
+    document.getElementById('editor-toolbar').addEventListener('mousedown', function(e) {
+      var btn = e.target.closest('[data-cmd]');
+      if (!btn) return;
+      e.preventDefault();
+      document.execCommand(btn.getAttribute('data-cmd'), false, null);
+      ed.focus();
+    });
+
+    // Format block select
+    document.getElementById('formatBlock').addEventListener('change', function() {
+      document.execCommand('formatBlock', false, this.value);
+      ed.focus();
+      this.value = 'p';
+    });
+
+    // Text color
+    document.getElementById('textColor').addEventListener('input', function() {
+      document.execCommand('foreColor', false, this.value);
+      ed.focus();
+    });
+
+    // Highlight color
+    document.getElementById('bgColor').addEventListener('input', function() {
+      document.execCommand('hiliteColor', false, this.value);
+      ed.focus();
+    });
+
+    // Link
+    document.getElementById('btnLink').addEventListener('click', function() {
+      var sel = window.getSelection();
+      var selectedText = sel ? sel.toString() : '';
+      var url = prompt('URL link:', 'https://');
+      if (url) {
+        if (selectedText) {
+          document.execCommand('createLink', false, url);
+        } else {
+          var text = prompt('Teks link:', url);
+          document.execCommand('insertHTML', false, '<a href="' + url + '" target="_blank">' + (text || url) + '</a>');
+        }
+      }
+      ed.focus();
+    });
+
+    // Image
+    document.getElementById('btnImage').addEventListener('click', function() {
+      var url = prompt('URL gambar:');
+      if (url) {
+        document.execCommand('insertHTML', false, '<img src="' + url + '" alt="image" style="max-width:100%;border-radius:0.5rem;margin:0.5rem 0;" />');
+      }
+      ed.focus();
+    });
+
+    // Table
+    document.getElementById('btnTable').addEventListener('click', function() {
+      var rows = parseInt(prompt('Jumlah baris:', '3')) || 3;
+      var cols = parseInt(prompt('Jumlah kolom:', '3')) || 3;
+      var html = '<table><thead><tr>';
+      for (var c = 0; c < cols; c++) html += '<th>Header ' + (c+1) + '</th>';
+      html += '</tr></thead><tbody>';
+      for (var r = 0; r < rows; r++) {
+        html += '<tr>';
+        for (var c = 0; c < cols; c++) html += '<td>Cell</td>';
+        html += '</tr>';
+      }
+      html += '</tbody></table><p></p>';
+      document.execCommand('insertHTML', false, html);
+      ed.focus();
+    });
+
+    // Blockquote
+    document.getElementById('btnQuote').addEventListener('click', function() {
+      document.execCommand('formatBlock', false, 'blockquote');
+      ed.focus();
+    });
+
+    // Cover image upload
+    document.getElementById('coverImageFile').addEventListener('change', async function() {
+      var file = this.files[0];
+      if (!file) return;
+      var status = document.getElementById('upload-status');
+      status.textContent = 'Mengupload...';
+      var fd = new FormData();
+      fd.append('file', file);
+      try {
+        var res = await fetch('/api/upload/image', { method: 'POST', body: fd });
+        var result = await res.json();
+        if (result.success) {
+          document.getElementById('coverImage').value = result.url;
+          document.getElementById('coverImageUrl').value = result.url;
+          document.getElementById('cover-preview').innerHTML = '<img src="' + result.url + '" class="w-full h-full object-cover" />';
+          status.textContent = '✅ Upload berhasil!';
+        } else { status.textContent = '❌ ' + result.message; }
+      } catch(e) { status.textContent = '❌ Gagal upload'; }
+    });
+
+    document.getElementById('coverImageUrl').addEventListener('input', function() {
+      document.getElementById('coverImage').value = this.value;
+      if (this.value) document.getElementById('cover-preview').innerHTML = '<img src="' + this.value + '" class="w-full h-full object-cover" />';
+    });
+
+    document.getElementById('affiliateToggle').addEventListener('change', function() {
+      document.getElementById('affiliateSection').classList.toggle('hidden', !this.checked);
+    });
+
+    document.getElementById('title').addEventListener('input', function() {
+      document.getElementById('slug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    });
+
+    document.getElementById('createArticleForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var html = ed.innerHTML.trim();
+      if (!html || html === '') { alert('⚠️ Konten artikel tidak boleh kosong'); return; }
+      document.getElementById('content').value = html;
+      var formData = new FormData(this);
+      try {
+        var response = await fetch('/api/articles/create', { method: 'POST', body: formData });
+        var result = await response.json();
+        if (result.success) {
+          alert('✅ Artikel berhasil dibuat!');
+          window.location.href = '/dashboard/artikel';
+        } else {
+          alert('❌ Error: ' + result.message);
+        }
+      } catch (error) {
+        alert('❌ Terjadi kesalahan: ' + error);
+      }
+    });
+  </script>
+</DashboardLayout>

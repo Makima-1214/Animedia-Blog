@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import { getAllCategories } from '../lib/turso-helpers.js';
+
+const categories = await getAllCategories();
+---
+
+<BaseLayout title="Halaman Tidak Ditemukan" noindex={true}>
+  <Header />
+  <main class="min-h-[70vh] flex items-center justify-center px-4 bg-white dark:bg-gray-950">
+    <div class="text-center max-w-lg">
+      <p class="text-8xl font-black text-violet-600 dark:text-violet-400 mb-4 leading-none">404</p>
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">Halaman tidak ditemukan</h1>
+      <p class="text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
+        Halaman yang kamu cari mungkin sudah dipindahkan, dihapus, atau URL-nya salah.
+      </p>
+      <div class="flex flex-wrap gap-3 justify-center mb-10">
+        <a href="/" class="bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">home</span>
+          Ke Beranda
+        </a>
+        <a href="/artikel" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">article</span>
+          Semua Artikel
+        </a>
+      </div>
+      {categories.length > 0 && (
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Atau jelajahi kategori</p>
+          <div class="flex flex-wrap gap-2 justify-center">
+            {categories.map((cat: any) => (
+              <a href={`/kategori/${cat.slug}`}
+                class="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 text-gray-600 dark:text-gray-400 rounded-full text-xs font-medium transition-colors">
+                {cat.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,196 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { getAllArticles, getDetailedStats, getDailyViews, getRecentActivities } from '../../lib/turso-helpers.js';
+
+const articles = await getAllArticles();
+const stats = await getDetailedStats();
+const dailyViews = await getDailyViews();
+const activities = await getRecentActivities();
+---
+
+<DashboardLayout title="Dashboard - Admin Panel" activePage="dashboard">
+  <div class="p-8 lg:p-12">
+    <!-- Header Section -->
+    <header class="mb-12">
+      <h2 class="text-4xl font-headline font-extrabold tracking-tighter text-gray-900 dark:text-white mb-2">Ikhtisar Dashboard</h2>
+      <p class="text-gray-600 dark:text-gray-400 font-body">Selamat datang kembali. Berikut adalah performa editorial Anda hari ini.</p>
+    </header>
+
+    <!-- Quick Stats Bento Grid -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+      <!-- Total Postingan -->
+      <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl editorial-shadow border border-gray-200 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-gray-400 dark:text-gray-500">article</span>
+          <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+            stats.articlesGrowth > 0 ? 'text-green-600 bg-green-50' : 
+            stats.articlesGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
+          }`}>
+            {stats.articlesGrowth > 0 ? `+${stats.articlesGrowth}%` : 
+             stats.articlesGrowth < 0 ? `${stats.articlesGrowth}%` : 'Tetap'}
+          </span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total Postingan</p>
+        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalArticles}</p>
+      </div>
+
+      <!-- Total Pembaca -->
+      <div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-stone-400">visibility</span>
+          <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+            stats.viewsGrowth > 0 ? 'text-green-600 bg-green-50' : 
+            stats.viewsGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
+          }`}>
+            {stats.viewsGrowth > 0 ? `+${stats.viewsGrowth}%` : 
+             stats.viewsGrowth < 0 ? `${stats.viewsGrowth}%` : 'Tetap'}
+          </span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total Pembaca</p>
+        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalViews?.toLocaleString() || '0'}</p>
+      </div>
+
+      <!-- Total Pengguna -->
+      <div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-stone-400">group</span>
+          <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+            stats.usersGrowth > 0 ? 'text-green-600 bg-green-50' : 
+            stats.usersGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
+          }`}>
+            {stats.usersGrowth > 0 ? `+${stats.usersGrowth}%` : 
+             stats.usersGrowth < 0 ? `${stats.usersGrowth}%` : 'Tetap'}
+          </span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total Pengguna</p>
+        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalUsers}</p>
+      </div>
+
+      <!-- Komentar Baru -->
+      <div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-stone-400">forum</span>
+          <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+            stats.commentsGrowth > 0 ? 'text-green-600 bg-green-50' : 
+            stats.commentsGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
+          }`}>
+            {stats.commentsGrowth > 0 ? `+${stats.commentsGrowth}%` : 
+             stats.commentsGrowth < 0 ? `${stats.commentsGrowth}%` : 'Tetap'}
+          </span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Komentar Baru</p>
+        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalComments}</p>
+      </div>
+
+      <!-- Subscriber -->
+      <div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-stone-400">mark_email_unread</span>
+          <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+            stats.subscribersGrowth > 0 ? 'text-green-600 bg-green-50' : 
+            stats.subscribersGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
+          }`}>
+            {stats.subscribersGrowth > 0 ? `+${stats.subscribersGrowth}%` : 
+             stats.subscribersGrowth < 0 ? `${stats.subscribersGrowth}%` : 'Tetap'}
+          </span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total Subscriber</p>
+        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalSubscribers?.toLocaleString() || '0'}</p>
+      </div>
+    </section>
+
+    <!-- Main Insights Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Visitor Trend Graph Placeholder -->
+      <section class="lg:col-span-2 bg-surface-container-lowest p-8 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-8">
+          <h3 class="text-xl font-headline font-bold">Tren Pengunjung</h3>
+          <div class="flex space-x-2">
+            <button class="text-xs font-bold px-3 py-1 bg-stone-100 rounded-md">7 Hari</button>
+            <button class="text-xs font-bold px-3 py-1 text-stone-400">30 Hari</button>
+          </div>
+        </div>
+        <!-- Simple Vector Graph Mockup -->
+        <div class="relative h-64 w-full flex items-end justify-between px-2 overflow-hidden">
+          <!-- Grid Lines -->
+          <div class="absolute inset-0 flex flex-col justify-between py-2 border-b border-stone-100">
+            <div class="w-full border-t border-stone-50"></div>
+            <div class="w-full border-t border-stone-50"></div>
+            <div class="w-full border-t border-stone-50"></div>
+            <div class="w-full border-t border-stone-50"></div>
+          </div>
+          <!-- Bars - Dynamic from database -->
+          {dailyViews.map((day: any, index: number) => (
+            <div 
+              class={`z-10 w-8 rounded-t-sm transition-all hover:opacity-80 cursor-pointer ${
+                index === dailyViews.length - 1 ? 'bg-stone-900' : 'bg-stone-100 hover:bg-stone-900'
+              }`}
+              style={`height: ${day.percentage}%`}
+              title={`${day.day}: ${day.views.toLocaleString()} views`}
+            ></div>
+          ))}
+        </div>
+        <div class="flex justify-between mt-4 px-2">
+          {dailyViews.map((day: any, index: number) => (
+            <span class={`text-[10px] font-bold ${
+              index === dailyViews.length - 1 ? 'text-stone-900' : 'text-stone-400'
+            }`}>{day.day}</span>
+          ))}
+        </div>
+      </section>
+
+      <!-- Activity Feed -->
+      <section class="bg-surface-container-lowest p-8 rounded-xl editorial-shadow">
+        <h3 class="text-xl font-headline font-bold mb-8">Aktivitas Terbaru</h3>
+        <div class="space-y-6">
+          {activities.slice(0, 4).map((activity: any) => (
+            <div class="flex space-x-4">
+              <div class={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                activity.priority === 'high' ? 'bg-stone-900' : 'bg-stone-300'
+              }`}></div>
+              <div>
+                <p class="text-sm font-bold leading-tight">{activity.title}</p>
+                <p class="text-[11px] text-on-surface-variant mt-1">{activity.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button class="w-full mt-10 text-xs font-bold text-stone-400 border-t border-stone-50 pt-4 hover:text-stone-900 transition-colors">
+          Lihat Semua Aktivitas
+        </button>
+      </section>
+    </div>
+
+    <!-- Secondary Section: Popular Content -->
+    <section class="mt-12">
+      <div class="flex items-center justify-between mb-8">
+        <h3 class="text-2xl font-headline font-bold">Postingan Populer Minggu Ini</h3>
+        <a class="text-sm font-bold underline underline-offset-4 decoration-stone-200" href="/dashboard/artikel">Semua Postingan</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {articles.slice(0, 3).map((article: any) => (
+          <a href={`/artikel/${article.slug}`} class="group block">
+            <div class="aspect-[16/10] bg-surface-container overflow-hidden rounded-lg mb-4">
+              <img 
+                alt={article.title}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                src={article.cover_image || 'https://via.placeholder.com/800x400'}
+              />
+            </div>
+            <h4 class="text-lg font-bold leading-tight mb-2 group-hover:text-stone-600 transition-colors">{article.title}</h4>
+            <div class="flex items-center space-x-4 text-[11px] font-bold text-on-surface-variant">
+              <span class="flex items-center space-x-1">
+                <span class="material-symbols-outlined text-[14px]">visibility</span>
+                <span>{article.views?.toLocaleString()}</span>
+              </span>
+              <span class="flex items-center space-x-1">
+                <span class="material-symbols-outlined text-[14px]">schedule</span>
+                <span>{article.read_time} min</span>
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+</DashboardLayout>

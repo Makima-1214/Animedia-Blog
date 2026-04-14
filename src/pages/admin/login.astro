@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Check if already logged in
+const adminSession = Astro.cookies.get('admin_session');
+if (adminSession) {
+  return Astro.redirect('/dashboard');
+}
+---
+
+<BaseLayout title="Admin Login">
+  <style>
+    .admin-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+  </style>
+
+  <main class="min-h-screen admin-bg flex items-center justify-center px-6 py-12">
+    <div class="w-full max-w-md">
+      <!-- Admin Badge -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-bold mb-4">
+          <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
+          ADMIN ACCESS
+        </div>
+        <h1 class="text-4xl font-black text-white tracking-tight">
+          Animedia
+        </h1>
+        <p class="text-white/80 mt-2">Dashboard Administrator</p>
+      </div>
+
+      <!-- Login Card -->
+      <div class="bg-white rounded-2xl shadow-2xl p-8">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">Login Admin</h2>
+
+        {/* Error message shown via JS */}
+        <div id="errorMsg" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm flex-shrink-0">error</span>
+          <span id="errorText"></span>
+        </div>
+
+        <form id="loginForm" class="space-y-6">
+          <!-- Username -->
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-700" for="username">
+              Username
+            </label>
+            <input
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              id="username"
+              name="username"
+              type="text"
+              placeholder="admin"
+              required
+              autocomplete="username"
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-700" for="password">
+              Password
+            </label>
+            <input
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              id="password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            id="submitBtn"
+            class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            type="submit"
+          >
+            <span id="btnText">Login ke Dashboard</span>
+            <span id="btnLoading" class="hidden">Loading...</span>
+          </button>
+        </form>
+
+        <!-- Security Notice -->
+        <div class="mt-6 pt-6 border-t border-slate-200">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            <span>Halaman ini hanya untuk administrator</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back to Site -->
+      <div class="text-center mt-6">
+        <a href="/" class="text-white/80 hover:text-white text-sm font-medium transition-colors">
+          ← Kembali ke Website
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+
+<script>
+  const loginForm = document.getElementById('loginForm') as HTMLFormElement;
+  const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+  const btnText = document.getElementById('btnText') as HTMLSpanElement;
+  const btnLoading = document.getElementById('btnLoading') as HTMLSpanElement;
+  const errorMsg = document.getElementById('errorMsg') as HTMLDivElement;
+  const errorText = document.getElementById('errorText') as HTMLSpanElement;
+
+  function showError(msg: string) {
+    errorText.textContent = msg;
+    errorMsg.classList.remove('hidden');
+  }
+
+  loginForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.classList.add('hidden');
+    
+    submitBtn.disabled = true;
+    btnText.classList.add('hidden');
+    btnLoading.classList.remove('hidden');
+    
+    const formData = new FormData(loginForm);
+    
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        window.location.href = '/dashboard';
+      } else {
+        showError(result.message || 'Login gagal');
+        submitBtn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnLoading.classList.add('hidden');
+      }
+    } catch (error) {
+      showError('Terjadi kesalahan koneksi. Coba lagi.');
+      submitBtn.disabled = false;
+      btnText.classList.remove('hidden');
+      btnLoading.classList.add('hidden');
+    }
+  });
+</script>

@@ -1,0 +1,218 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import DashboardSidebar from '../components/DashboardSidebar.astro';
+
+interface Props {
+  title: string;
+  activePage: 'dashboard' | 'artikel' | 'kategori' | 'komentar' | 'pengaturan' | 'afiliasi' | 'pengguna';
+}
+
+const { title, activePage } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <style>
+    /* Dashboard: skip body fade-in, langsung tampil */
+    body { animation: none !important; opacity: 1 !important; }
+    .editorial-shadow {
+      box-shadow: 0 40px 40px -40px rgba(45, 52, 53, 0.04);
+    }
+    
+    /* Mobile menu overlay */
+    .mobile-menu-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 40;
+    }
+    
+    .mobile-menu-overlay.active {
+      display: block;
+    }
+  </style>
+
+  <div class="relative">
+    <!-- Mobile Header -->
+    <header class="lg:hidden fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-30 px-4 py-3 flex items-center justify-between">
+      <h1 class="text-lg font-black font-headline text-gray-900 dark:text-white">Animedia Admin</h1>
+      <button id="mobile-menu-btn" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-white">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;">menu</span>
+      </button>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
+    <!-- Sidebar -->
+    <DashboardSidebar activePage={activePage} />
+    
+    <!-- Main Content -->
+    <main class="lg:ml-64 min-h-screen bg-white dark:bg-gray-950 pt-16 lg:pt-0">
+      <slot />
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center p-4">
+    <div id="confirm-backdrop" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <div class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-4" style="animation: toast-in 0.2s cubic-bezier(0.34,1.56,0.64,1) forwards;">
+      <div class="flex items-start gap-4">
+        <div id="confirm-icon-wrap" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-red-100">
+          <span id="confirm-icon" class="material-symbols-outlined text-red-500">delete</span>
+        </div>
+        <div>
+          <p id="confirm-title" class="font-bold text-on-surface text-base leading-tight"></p>
+          <p id="confirm-message" class="text-sm text-on-surface-variant mt-1 leading-snug"></p>
+        </div>
+      </div>
+      <div class="flex gap-3 justify-end pt-2">
+        <button id="confirm-cancel" class="px-4 py-2 rounded-lg text-sm font-bold bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">Batal</button>
+        <button id="confirm-ok" class="px-4 py-2 rounded-lg text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition-all flex items-center gap-1.5">
+          <span id="confirm-ok-icon" class="material-symbols-outlined text-[16px]">delete</span>
+          <span id="confirm-ok-text">Hapus</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(16px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toast-out {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to   { opacity: 0; transform: translateY(8px) scale(0.95); }
+    }
+    .toast-enter { animation: toast-in 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    .toast-leave { animation: toast-out 0.2s ease-in forwards; }
+  </style>
+
+  <script is:inline>
+    // ── Toast System ──────────────────────────────────────────────
+    window.showToast = function(message, type = 'info', duration = 4000) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const icons = {
+        success: 'check_circle',
+        error:   'error',
+        warning: 'warning',
+        info:    'info'
+      };
+      const colors = {
+        success: 'bg-green-50 border-green-200 text-green-800',
+        error:   'bg-red-50 border-red-200 text-red-800',
+        warning: 'bg-amber-50 border-amber-200 text-amber-800',
+        info:    'bg-blue-50 border-blue-200 text-blue-800'
+      };
+      const iconColors = {
+        success: 'text-green-500',
+        error:   'text-red-500',
+        warning: 'text-amber-500',
+        info:    'text-blue-500'
+      };
+
+      const toast = document.createElement('div');
+      toast.className = [
+        'pointer-events-auto flex items-start gap-3 px-4 py-3.5 rounded-xl border shadow-lg',
+        'max-w-sm w-full backdrop-blur-sm toast-enter',
+        colors[type] || colors.info
+      ].join(' ');
+
+      // Strip leading emoji/icon prefix like ✅ ❌ ⚠️ from message
+      const cleanMsg = message.replace(/^[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}✅❌⚠️ℹ️]+\s*/u, '');
+
+      toast.innerHTML = `
+        <span class="material-symbols-outlined text-[20px] mt-0.5 flex-shrink-0 ${iconColors[type] || iconColors.info}">${icons[type] || icons.info}</span>
+        <p class="text-sm font-medium leading-snug flex-1">${cleanMsg}</p>
+        <button class="flex-shrink-0 opacity-50 hover:opacity-100 transition-opacity ml-1" onclick="this.closest('[class*=toast]').remove()">
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('toast-enter');
+        toast.classList.add('toast-leave');
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
+      }, duration);
+    };
+
+    // Override native alert with toast
+    window._nativeAlert = window.alert;
+    window.alert = function(message) {
+      if (typeof message !== 'string' && typeof message !== 'number') { window._nativeAlert(message); return; }
+      const msg = String(message);
+      let type = 'info';
+      if (/✅|berhasil|sukses/i.test(msg)) type = 'success';
+      else if (/❌|error|gagal|kesalahan/i.test(msg)) type = 'error';
+      else if (/⚠️|warning|peringatan/i.test(msg)) type = 'warning';
+      window.showToast(msg, type);
+    };
+
+    // ── Confirm Modal ─────────────────────────────────────────────
+    window.showConfirm = function({ title, message, okText = 'Hapus', okIcon = 'delete', okClass = 'bg-red-500 hover:bg-red-600', iconBg = 'bg-red-100', iconColor = 'text-red-500', icon = 'delete' } = {}, callback) {
+      const modal = document.getElementById('confirm-modal');
+      document.getElementById('confirm-title').textContent = title || 'Konfirmasi';
+      document.getElementById('confirm-message').textContent = message || '';
+      document.getElementById('confirm-ok-text').textContent = okText;
+      document.getElementById('confirm-ok-icon').textContent = okIcon;
+      document.getElementById('confirm-icon').textContent = icon;
+      document.getElementById('confirm-icon-wrap').className = `w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}`;
+      document.getElementById('confirm-icon').className = `material-symbols-outlined ${iconColor}`;
+      const okBtn = document.getElementById('confirm-ok');
+      okBtn.className = `px-4 py-2 rounded-lg text-sm font-bold text-white transition-all flex items-center gap-1.5 ${okClass}`;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      function close(result) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        okBtn.replaceWith(okBtn.cloneNode(true)); // remove old listeners
+        document.getElementById('confirm-cancel').replaceWith(document.getElementById('confirm-cancel').cloneNode(true));
+        document.getElementById('confirm-backdrop').replaceWith(document.getElementById('confirm-backdrop').cloneNode(true));
+        if (callback) callback(result);
+      }
+
+      // Re-query after cloneNode
+      document.getElementById('confirm-ok').addEventListener('click', () => close(true), { once: true });
+      document.getElementById('confirm-cancel').addEventListener('click', () => close(false), { once: true });
+      document.getElementById('confirm-backdrop').addEventListener('click', () => close(false), { once: true });
+    };
+
+    // Override native confirm with modal (returns Promise)
+    window._nativeConfirm = window.confirm;
+    window.confirm = function(message) {
+      // Sync confirm can't be replaced with async modal — use showConfirm() for async
+      // For legacy sync calls, fall back to native
+      return window._nativeConfirm(message);
+    };
+
+    // ── Mobile menu toggle ────────────────────────────────────────
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const sidebar = document.querySelector('aside');
+
+    function toggleMenu() {
+      sidebar?.classList.toggle('active');
+      overlay?.classList.toggle('active');
+      document.body.style.overflow = sidebar?.classList.contains('active') ? 'hidden' : '';
+    }
+
+    menuBtn?.addEventListener('click', toggleMenu);
+    overlay?.addEventListener('click', toggleMenu);
+
+    document.addEventListener('astro:page-load', () => {
+      sidebar?.classList.remove('active');
+      overlay?.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,136 @@
+---
+import db from '../lib/turso.js';
+
+interface Props {
+  activePage: 'dashboard' | 'artikel' | 'kategori' | 'komentar' | 'pengaturan' | 'afiliasi' | 'pengguna';
+}
+
+const { activePage } = Astro.props;
+
+const adminToken = Astro.cookies.get('admin_session')?.value;
+const sessionRow = adminToken ? await db.execute({
+  sql: `SELECT a.name, a.avatar FROM admin_sessions s JOIN admins a ON s.admin_id = a.id WHERE s.token = ? AND s.expires_at > ?`,
+  args: [adminToken, new Date().toISOString()]
+}) : null;
+const adminRow = sessionRow?.rows[0] as any;
+const adminName = adminRow?.name || 'Administrator';
+const adminAvatar = adminRow?.avatar || null;
+---
+
+<aside class="h-screen w-64 fixed left-0 top-0 bg-gray-50 dark:bg-gray-900 flex flex-col py-6 px-4 border-r border-gray-200 dark:border-gray-800 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+  <style>
+    aside.active {
+      transform: translateX(0);
+    }
+  </style>
+  
+  <div class="mb-10 px-2">
+    <h1 class="text-lg font-black font-headline text-gray-900 dark:text-white leading-tight">Admin Panel</h1>
+    <p class="text-[10px] uppercase tracking-widest text-gray-500 dark:text-gray-400 font-bold mt-1">Kontrol Editorial</p>
+  </div>
+  <div class="flex items-center space-x-3 mb-8 px-2">
+    <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
+      {adminAvatar 
+        ? <img src={adminAvatar} alt={adminName} class="w-full h-full object-cover" />
+        : <span class="material-symbols-outlined text-2xl text-gray-600 dark:text-gray-400 flex items-center justify-center h-full">person</span>
+      }
+    </div>
+    <div class="min-w-0">
+      <p class="text-sm font-bold text-gray-900 dark:text-white truncate">{adminName}</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Administrator</p>
+    </div>
+  </div>
+  <nav class="flex-grow space-y-1">
+    <a 
+      class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${
+        activePage === 'dashboard' 
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-r-lg translate-x-1' 
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
+      }`}
+      href="/dashboard"
+    >
+      <span class="material-symbols-outlined text-[20px]">dashboard</span>
+      <span class="font-body text-sm">Ringkasan</span>
+    </a>
+    <a 
+      class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${
+        activePage === 'artikel' 
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-r-lg translate-x-1' 
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
+      }`}
+      href="/dashboard/artikel"
+    >
+      <span class="material-symbols-outlined text-[20px]">article</span>
+      <span class="font-body text-sm">Artikel</span>
+    </a>
+    <a 
+      class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${
+        activePage === 'kategori' 
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-r-lg translate-x-1' 
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
+      }`}
+      href="/dashboard/kategori"
+    >
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span class="font-body text-sm">Kategori</span>
+    </a>
+    <a 
+      class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${
+        activePage === 'komentar' 
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-r-lg translate-x-1' 
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
+      }`}
+      href="/dashboard/komentar"
+    >
+      <span class="material-symbols-outlined text-[20px]">forum</span>
+      <span class="font-body text-sm">Komentar</span>
+    </a>
+    <a 
+      class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${
+        activePage === 'afiliasi' 
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-r-lg translate-x-1' 
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
+      }`}
+      href="/dashboard/afiliasi"
+    >
+      <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+      <span class="font-body text-sm">Afiliasi</span>
+    </a>
+    <a 
+      class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${
+        activePage === 'pengguna' 
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-r-lg translate-x-1' 
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
+      }`}
+      href="/dashboard/pengguna"
+    >
+      <span class="material-symbols-outlined text-[20px]">group</span>
+      <span class="font-body text-sm">Pengguna</span>
+    </a>
+    <a 
+      class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${
+        activePage === 'pengaturan' 
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-r-lg translate-x-1' 
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
+      }`}
+      href="/dashboard/pengaturan"
+    >
+      <span class="material-symbols-outlined text-[20px]">settings</span>
+      <span class="font-body text-sm">Pengaturan</span>
+    </a>
+  </nav>
+  <div class="mt-auto space-y-1">
+    <a href="/dashboard/artikel/buat" class="w-full mb-6 flex items-center justify-center space-x-2 bg-gray-900 dark:bg-violet-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-gray-800 dark:hover:bg-violet-700 transition-colors">
+      <span class="material-symbols-outlined text-[18px]">add</span>
+      <span>Artikel Baru</span>
+    </a>
+    <a class="flex items-center space-x-3 px-3 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" href="/dashboard/pengaturan">
+      <span class="material-symbols-outlined text-[20px]">help</span>
+      <span class="font-body text-sm">Bantuan</span>
+    </a>
+    <a class="flex items-center space-x-3 px-3 py-2.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" href="/api/admin/logout">
+      <span class="material-symbols-outlined text-[20px]">logout</span>
+      <span class="font-body text-sm">Keluar</span>
+    </a>
+  </div>
+</aside>

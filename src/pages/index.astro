@@ -1,0 +1,219 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import { getAllArticles, getAllCategories } from '../lib/turso-helpers.js';
+import { getSetting } from '../lib/settings.js';
+
+const articles = await getAllArticles();
+const categories = await getAllCategories();
+const breakingNews = await getSetting('breaking_news') || '';
+const featuredArticle = articles[0];
+const trendingArticles = articles.slice(0, 5);
+---
+
+<BaseLayout title="Berita Teknologi, Game, Anime & Gadget Terkini" description="Portal berita teknologi, game, anime, film, dan gadget terkini. Temukan artikel terbaru dan terpercaya di Animedia.">
+  <Header />
+  
+  <main class="bg-gray-50 dark:bg-gray-950">
+    <!-- Breaking News Ticker -->
+    {breakingNews && (
+    <div class="bg-red-600 dark:bg-red-700 text-white py-2 px-4">
+      <div class="max-w-7xl mx-auto flex items-center gap-3">
+        <span class="bg-white text-red-600 dark:text-red-700 text-xs font-black px-2 py-1 rounded uppercase whitespace-nowrap">
+          Breaking
+        </span>
+        <div class="text-xs md:text-sm font-medium overflow-hidden">
+          <div class="animate-marquee whitespace-nowrap">
+            {breakingNews}
+          </div>
+        </div>
+      </div>
+    </div>
+    )}
+
+    <div class="max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <!-- Main Content (2 columns) -->
+        <div class="lg:col-span-2 space-y-4 md:space-y-6">
+          <!-- Hero Article -->
+          {featuredArticle && (
+            <article class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <a href={`/artikel/${featuredArticle.slug}`} class="block">
+                <div class="relative h-48 md:h-80 overflow-hidden">
+                  <img
+                    src={String(featuredArticle.cover_image || 'https://via.placeholder.com/800x400')}
+                    alt={String(featuredArticle.title)}
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                  <div class="absolute top-3 left-3 md:top-4 md:left-4">
+                    <span class="bg-violet-600 text-white text-xs font-bold px-2 md:px-3 py-1 rounded">
+                      HEADLINE
+                    </span>
+                  </div>
+                </div>
+                <div class="p-4 md:p-5">
+                  <h1 class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white mb-2 hover:text-violet-600 dark:hover:text-violet-400 transition-colors leading-tight">
+                    {featuredArticle.title}
+                  </h1>
+                  <p class="text-gray-600 dark:text-gray-400 text-sm mb-2 md:mb-3 line-clamp-2">
+                    {featuredArticle.excerpt}
+                  </p>
+                  <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500">
+                    <span class="hidden md:inline">{featuredArticle.published_at ? new Date(String(featuredArticle.published_at)).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</span>
+                    <span class="md:hidden">{featuredArticle.published_at ? new Date(String(featuredArticle.published_at)).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : ''}</span>
+                    <span>•</span>
+                    <span>{featuredArticle.read_time} menit</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          )}
+
+          <!-- Article Grid -->
+          <div class="grid grid-cols-1 gap-3 md:gap-4">
+            {articles.slice(1, 9).map((article: any) => (
+              <article class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <a href={`/artikel/${article.slug}`} class="flex gap-3 p-3 md:p-4">
+                  <div class="w-20 h-16 md:w-28 md:h-20 flex-shrink-0 rounded overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <img
+                      src={article.cover_image || 'https://via.placeholder.com/200x150'}
+                      alt={article.title}
+                      class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-1 line-clamp-2 hover:text-violet-600 dark:hover:text-violet-400 transition-colors leading-snug">
+                      {article.title}
+                    </h3>
+                    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500">
+                      <span class="text-violet-600 dark:text-violet-400 font-semibold">{categories.find((c: any) => c.id === article.category_id)?.name || 'Artikel'}</span>
+                      <span>•</span>
+                      <span>{article.read_time} menit</span>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+
+          <!-- More Articles List -->
+          <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-4 md:p-5">
+            <h2 class="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-3 md:mb-4 pb-2 border-b-2 border-violet-600 dark:border-violet-500">
+              Berita Terbaru
+            </h2>
+            <div class="space-y-3 md:space-y-4">
+              {(articles.length > 9 ? articles.slice(9, 15) : articles.slice(0, 6)).map((article: any) => (
+                <article class="flex gap-3 pb-3 md:pb-4 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                  <a href={`/artikel/${article.slug}`} class="flex gap-3 w-full group">
+                    <div class="w-20 h-14 md:w-24 md:h-16 flex-shrink-0 rounded overflow-hidden bg-gray-100 dark:bg-gray-800">
+                      <img
+                        src={article.cover_image || 'https://via.placeholder.com/200x150'}
+                        alt={article.title}
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                        {article.title}
+                      </h3>
+                      <span class="text-xs text-gray-500 dark:text-gray-500">
+                        {article.published_at ? new Date(article.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : ''}
+                      </span>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar (1 column) -->
+        <aside class="space-y-4 md:space-y-6">
+          <!-- Trending -->
+          <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-4 md:p-5">
+            <h3 class="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-3 md:mb-4 pb-2 border-b-2 border-red-500">
+              🔥 Trending
+            </h3>
+            <div class="space-y-3 md:space-y-4">
+              {trendingArticles.map((article: any, index: number) => (
+                <article class="flex gap-3">
+                  <a href={`/artikel/${article.slug}`} class="flex gap-3 w-full group">
+                    <span class="text-xl md:text-2xl font-black text-gray-200 dark:text-gray-700 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors w-6 md:w-8 flex-shrink-0">
+                      {(index + 1).toString().padStart(2, '0')}
+                    </span>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 md:line-clamp-3 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors leading-snug">
+                        {article.title}
+                      </h4>
+                      <div class="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-500">
+                        <span class="material-symbols-outlined text-sm">visibility</span>
+                        <span>{article.views || 0} views</span>
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-4 md:p-5">
+            <h3 class="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-3 md:mb-4 pb-2 border-b-2 border-blue-500">
+              📂 Kategori
+            </h3>
+            <div class="space-y-1 md:space-y-2">
+              {categories.map((category: any) => (
+                <a
+                  href={`/kategori/${category.slug}`}
+                  class="flex items-center justify-between py-2 px-3 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                >
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-violet-600 dark:group-hover:text-violet-400">
+                    {category.name}
+                  </span>
+                  <span class="text-xs font-semibold text-gray-400 dark:text-gray-600">
+                    {articles.filter((a: any) => a.category_id === category.id).length}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <!-- Newsletter -->
+          <div class="bg-gradient-to-br from-violet-600 to-blue-600 rounded-lg shadow-sm p-5 md:p-6 text-white">
+            <div class="text-center">
+              <span class="material-symbols-outlined text-3xl md:text-4xl mb-2 md:mb-3 block">mail</span>
+              <h3 class="text-base md:text-lg font-bold mb-2">Newsletter</h3>
+              <p class="text-sm opacity-90 mb-3 md:mb-4">
+                Dapatkan berita terbaru langsung di inbox Anda
+              </p>
+              <a
+                href="/berlangganan"
+                class="block w-full bg-white text-violet-600 font-bold py-2.5 md:py-3 rounded-lg text-sm hover:bg-gray-100 transition-colors"
+              >
+                Berlangganan Gratis
+              </a>
+            </div>
+          </div>
+
+          <!-- Newsletter di bawah kategori -->
+          <div class="hidden md:block bg-gradient-to-br from-violet-600 to-blue-600 rounded-lg shadow-sm p-5 text-white text-center">
+            <span class="material-symbols-outlined text-3xl mb-2 block">auto_stories</span>
+            <p class="text-sm font-bold mb-1">Baca lebih banyak</p>
+            <a href="/artikel" class="text-xs underline opacity-80 hover:opacity-100">Lihat semua artikel</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <style>
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: inline-block;
+      animation: marquee 20s linear infinite;
+    }
+  </style>
+</BaseLayout>

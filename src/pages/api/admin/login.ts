@@ -1,0 +1,99 @@
+import type { APIRoute } from 'astro';
+import { getAdminByUsername } from '../../../lib/turso-helpers.js';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import db from '../../../lib/turso.js';
+
+// Simple in-memory rate limiter
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const record = loginAttempts.get(ip);
+  if (!record || now > record.resetAt) {
+    loginAttempts.set(ip, { count: 1, resetAt: now + 15 * 60 * 1000 });
+    return false;
+  }
+  if (record.count >= 5) return true;
+  record.count++;
+  return false;
+}
+
+export const POST: APIRoute = async ({ request, cookies }) => {
+  try {
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    if (isRateLimited(ip)) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Terlalu banyak percobaan login. Coba lagi dalam 15 menit.'
+      }), { status: 429, headers: { 'Content-Type': 'application/json' } });
+    }
+    const formData = await request.formData();
+    const username = formData.get('username')?.toString();
+    const password = formData.get('password')?.toString();
+
+    if (!username || !password) {
+      return new Response(JSON.stringify({ 
+        success: false, 
+        message: 'Username dan password harus diisi' 
+      }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    const admin = await getAdminByUsername(username);
+    if (!admin) {
+      return new Response(JSON.stringify({ success: false, message: 'Username atau password salah' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    const storedPassword = (admin as any).password;
+    let passwordValid = false;
+
+    if (storedPassword.startsWith('$2')) {
+      passwordValid = await bcrypt.compare(password, storedPassword);
+    } else {
+      passwordValid = password === storedPassword;
+      if (passwordValid) {
+        const hash = await bcrypt.hash(password, 10);
+        await db.execute({ sql: 'UPDATE admins SET password = ? WHERE id = ?', args: [hash, (admin as any).id] });
+      }
+    }
+
+    if (!passwordValid) {
+      return new Response(JSON.stringify({ 
+        success: false, 
+        message: 'Username atau password salah' 
+      }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    // Generate secure random token
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    // Store token in DB
+    await db.execute({
+      sql: `INSERT INTO admin_sessions (token, admin_id, expires_at) VALUES (?, ?, ?)`,
+      args: [token, (admin as any).id, expiresAt]
+    });
+
+    // Set session cookie with secure token
+    cookies.set('admin_session', token, {
+      path: '/',
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7
+    });
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: 'Login berhasil',
+      redirect: '/dashboard'
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    return new Response(JSON.stringify({ 
+      success: false, 
+      message: 'Terjadi kesalahan server' 
+    }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
+};

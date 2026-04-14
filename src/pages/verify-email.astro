@@ -1,0 +1,230 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const email = Astro.url.searchParams.get('email') || '';
+---
+
+<BaseLayout title="Verifikasi Email">
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-[400px] transition-transform duration-300">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 flex items-center gap-3 min-w-[320px] border-l-4">
+      <span id="toastIcon" class="material-symbols-outlined text-2xl"></span>
+      <p id="toastMessage" class="text-sm font-medium flex-1 dark:text-white"></p>
+    </div>
+  </div>
+
+  <main class="min-h-screen flex items-center justify-center px-6 py-12 md:py-24 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+    <div class="w-full max-w-[480px] animate-fade-in">
+      <div class="mb-12 text-center">
+        <div class="w-24 h-24 bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl animate-bounce-slow">
+          <span class="material-symbols-outlined text-6xl text-white">mail</span>
+        </div>
+        <h1 class="font-headline text-3xl md:text-4xl font-extrabold tracking-tighter text-gray-900 dark:text-white mb-3">
+          Verifikasi Email
+        </h1>
+        <p class="font-body text-gray-600 dark:text-gray-400 text-sm max-w-md mx-auto">
+          Kami telah mengirim kode verifikasi 6 digit ke email Anda. Silakan cek inbox atau folder spam.
+        </p>
+      </div>
+
+      <div class="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800">
+        <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border-2 border-blue-100 dark:border-blue-800">
+          <p class="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">email</span>
+            <strong class="font-semibold">{email}</strong>
+          </p>
+        </div>
+
+        <form id="verifyForm" class="space-y-6">
+          <input type="hidden" name="email" value={email} />
+          
+          <div class="space-y-3">
+            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 block text-center">Masukkan Kode Verifikasi</label>
+            <input
+              type="text"
+              name="code"
+              id="codeInput"
+              required
+              maxlength="6"
+              pattern="[0-9]{6}"
+              class="w-full px-6 py-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all text-center text-3xl font-bold tracking-[0.5em] outline-none"
+              placeholder="000000"
+              autocomplete="off"
+            />
+            <div class="flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <span class="material-symbols-outlined text-sm">schedule</span>
+              <span>Kode berlaku selama 15 menit</span>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+          >
+            <span id="btnText">Verifikasi Email</span>
+            <span id="btnLoader" class="hidden">
+              <span class="inline-block animate-spin">⏳</span> Memverifikasi...
+            </span>
+          </button>
+        </form>
+
+        <div class="mt-6 text-center space-y-3">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Tidak menerima kode?
+          </p>
+          <button
+            id="resendBtn"
+            class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm hover:underline transition-all"
+          >
+            <span class="material-symbols-outlined text-base">refresh</span>
+            <span>Kirim Ulang Kode</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center">
+        <a href="/login" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+          ← Kembali ke Login
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <style>
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.5s ease-out;
+    }
+    @keyframes bounce-slow {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+    .animate-bounce-slow {
+      animation: bounce-slow 2s ease-in-out infinite;
+    }
+  </style>
+
+  <script is:inline>
+    // Toast notification function
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastIcon = document.getElementById('toastIcon');
+      const toastMessage = document.getElementById('toastMessage');
+      const toastContainer = toast.querySelector('div');
+      
+      if (type === 'success') {
+        toastIcon.textContent = 'check_circle';
+        toastIcon.className = 'material-symbols-outlined text-2xl text-green-500';
+        toastContainer.style.borderLeftColor = '#10b981';
+      } else {
+        toastIcon.textContent = 'error';
+        toastIcon.className = 'material-symbols-outlined text-2xl text-red-500';
+        toastContainer.style.borderLeftColor = '#ef4444';
+      }
+      
+      toastMessage.textContent = message;
+      toast.style.transform = 'translateX(0)';
+      
+      setTimeout(() => {
+        toast.style.transform = 'translateX(400px)';
+      }, 4000);
+    }
+
+    const verifyForm = document.getElementById('verifyForm');
+    const resendBtn = document.getElementById('resendBtn');
+    const codeInput = document.getElementById('codeInput');
+
+    // Auto-format code input (only numbers)
+    codeInput?.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+
+    // Auto-focus on code input
+    codeInput?.focus();
+
+    // Handle verification
+    verifyForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(verifyForm);
+      const submitBtn = verifyForm.querySelector('button[type="submit"]');
+      const btnText = document.getElementById('btnText');
+      const btnLoader = document.getElementById('btnLoader');
+      
+      btnText.classList.add('hidden');
+      btnLoader.classList.remove('hidden');
+      submitBtn.disabled = true;
+      
+      try {
+        const response = await fetch('/api/auth/verify-email', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast(result.message, 'success');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1500);
+        } else {
+          showToast(result.message, 'error');
+          btnText.classList.remove('hidden');
+          btnLoader.classList.add('hidden');
+          submitBtn.disabled = false;
+          codeInput.value = '';
+          codeInput.focus();
+        }
+      } catch (error) {
+        showToast('Terjadi kesalahan: ' + error.message, 'error');
+        btnText.classList.remove('hidden');
+        btnLoader.classList.add('hidden');
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Handle resend code
+    resendBtn?.addEventListener('click', async () => {
+      const email = verifyForm.querySelector('input[name="email"]').value;
+      const originalHTML = resendBtn.innerHTML;
+      
+      resendBtn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">refresh</span><span>Mengirim...</span>';
+      resendBtn.disabled = true;
+      
+      try {
+        const response = await fetch('/api/auth/resend-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast('Kode verifikasi baru telah dikirim ke email Anda', 'success');
+        } else {
+          showToast(result.message, 'error');
+        }
+      } catch (error) {
+        showToast('Terjadi kesalahan: ' + error.message, 'error');
+      } finally {
+        resendBtn.innerHTML = originalHTML;
+        resendBtn.disabled = false;
+      }
+    });
+  </script>
+</BaseLayout>

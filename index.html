@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register - ANIMEDIA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fef7ff",
+                        "on-background": "#382b54",
+                        "on-error": "#fff7f7",
+                        "secondary": "#006979",
+                        "on-secondary-fixed-variant": "#006575",
+                        "error-dim": "#770326",
+                        "on-surface-variant": "#655884",
+                        "primary": "#6d46c1",
+                        "on-tertiary-fixed-variant": "#820038",
+                        "on-error-container": "#68001f",
+                        "inverse-on-surface": "#a298b4",
+                        "secondary-dim": "#005c6b",
+                        "tertiary-fixed-dim": "#ff85a4",
+                        "primary-dim": "#6138b4",
+                        "tertiary": "#bd0055",
+                        "background": "#fef7ff",
+                        "primary-fixed": "#ccb5ff",
+                        "surface-variant": "#eaddff",
+                        "on-primary-fixed": "#32007a",
+                        "on-tertiary": "#fff7f7",
+                        "on-secondary": "#eefbff",
+                        "on-tertiary-container": "#720030",
+                        "inverse-primary": "#a67ffd",
+                        "on-secondary-container": "#005a69",
+                        "secondary-container": "#a8edff",
+                        "surface-container-low": "#f9f1ff",
+                        "error-container": "#f76a80",
+                        "surface-container-highest": "#eaddff",
+                        "surface-container-high": "#efe3ff",
+                        "primary-fixed-dim": "#c0a4ff",
+                        "surface-container": "#f4eaff",
+                        "primary-container": "#ccb5ff",
+                        "on-primary-container": "#491a9c",
+                        "secondary-fixed-dim": "#6ce4ff",
+                        "on-surface": "#382b54",
+                        "outline": "#8273a1",
+                        "surface-dim": "#e2d3ff",
+                        "on-primary": "#fdf7ff",
+                        "tertiary-dim": "#a6004a",
+                        "tertiary-container": "#ff9cb2",
+                        "inverse-surface": "#110a1f",
+                        "secondary-fixed": "#a8edff",
+                        "tertiary-fixed": "#ff9cb2",
+                        "error": "#ac3149",
+                        "on-tertiary-fixed": "#48001c",
+                        "on-primary-fixed-variant": "#5227a5",
+                        "on-secondary-fixed": "#004652",
+                        "surface": "#fef7ff",
+                        "outline-variant": "#baaadb",
+                        "surface-tint": "#6d46c1",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .kinetic-bg {
+            background: linear-gradient(135deg, #fef7ff 0%, #f4eaff 100%);
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface kinetic-bg min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-black tracking-tighter text-violet-700 dark:text-violet-400 font-headline">ANIMEDIA</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-600 dark:text-slate-400 hover:text-violet-500 transition-colors font-medium" href="#">Discover</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-violet-500 transition-colors font-medium" href="#">Reviews</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-violet-500 transition-colors font-medium" href="#">Community</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-semibold scale-95 duration-200 hover:bg-primary-dim transition-all">Sign In</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex items-center justify-center pt-24 pb-12 px-4 relative overflow-hidden">
+<!-- Background Decorative Element (Character Overlay Pattern) -->
+<div class="absolute -right-20 top-1/4 opacity-10 pointer-events-none hidden lg:block">
+<img alt="abstract anime character silhouette" class="w-[600px] grayscale brightness-50" data-alt="stylized silhouette of a modern anime character with sharp geometric lines and vibrant purple highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX5jUylfDWQFLwxW0i2VIPANFXLLTZbArCtsb0kab5baJTwN74Q52_rmRd6_mtcqgsZM9u1Fw9mHi0ybsOjKcM9PGpKBxjX0nyto0zRE-6SxoWSGoSmVjNIPhWzW44s6iHGIsaXi3FTnAf1Agn1jKxxY0R3ylw0EW7tqDlDT6EXNTcRcICHh8bI09FxtxRdes7WAcMT4T_g2SeI3zEmm3fK1mFWqQAqGc5x9A5prXzz2YxNKZ4YVIo4kUxyhmRWQeoOX-_uJ7Q9dV-"/>
+</div>
+<div class="w-full max-w-5xl flex flex-col md:flex-row glass-panel rounded-xl shadow-2xl overflow-hidden border border-white/20">
+<!-- Left Side: Editorial Brand Content -->
+<div class="w-full md:w-5/12 bg-primary p-12 text-on-primary flex flex-col justify-between relative">
+<div class="relative z-10">
+<span class="label-md text-primary-fixed tracking-[0.2em] font-bold mb-4 block">JOIN THE CLUB</span>
+<h1 class="text-display-lg font-headline font-extrabold leading-none mb-6 tracking-tighter">CREATE YOUR LEGACY.</h1>
+<p class="body-lg opacity-80 leading-relaxed max-w-xs">Access exclusive editorial reviews, track your watchlists, and connect with the global anime elite.</p>
+</div>
+<div class="mt-12 relative z-10">
+<div class="flex -space-x-4 mb-4">
+<img class="w-10 h-10 rounded-full border-2 border-primary" data-alt="professional male portrait avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR5p1uvhlNty9rPtgkyvtytsaV9jBtyLPX1usB95lGmS9wi8npyc7X-eZG2UKFzwMwKpaXl-_mNVJ9Nt0vqsJalMi0nmzW74WRQr2GCWhX0kEnQPvLMThztRSNq_1vbV9SfSWreuUpZJLyEF-CuCI8v6wAhKvp8tUFGEMJlYpltbU3vT6RL0ltnfhKXGyMtU82xvNdIG82PtADiyoCUAiBrSAhs0jbo7EOHXlL9ypt__z0hLfE_NMKoeT-x1_TzD_YO0m9-UfF54N4"/>
+<img class="w-10 h-10 rounded-full border-2 border-primary" data-alt="professional female portrait avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwhQsM4iFSv0yvAQYC0-YK2y3rMrcwcuyNucJYhODVqSsjb_Fcgw5McAPbHLepWx4EmJS0LLjES7OpqfvbfZueRxX73BhwUlyUqhxUIyZOZFUkQEFdwrTAeUJhNORZUj4z_RYOJq-mQIUA4vY5-Hg2DrjVV2_i1XxfdEa6r2uIWzjjt5x9pRnqvZ1nAM_xGP7xn7MdXsTt_W1U1vRXevYiU2CD0qHGuZu0-Nf_epr_Vm1M0KGsTSRyM8tYTpsrfWMLfRvQ9K9IIzNq"/>
+<img class="w-10 h-10 rounded-full border-2 border-primary" data-alt="professional male portrait avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM7LvjfB3vV-KyF6GkKgBhm73NH5vv2BEMZ7HQMSsINRpFOJrhEF5jHsVURlhJ8oNTHCK0R087JZD8qbD5qqCJlhejiUBmKzn8psNvTl3mO5UJ2ByIWRouVHeLg04KJptq9pyp_Kh8uJp5flMTBjYDVKZbshafnXtnxhpEpwA4wdWn22Yo58PyM-66_CSQaCKwu2vmszjj2cVOygkBYic9KgIS0yicJjlpl_0Mr41-vzMyNmcujQbumqRnoqL9kNnyVUEmJNBfQK8Y"/>
+<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold border-2 border-primary">+12K</div>
+</div>
+<p class="text-sm font-medium italic opacity-70">"The highest quality anime curation I've ever experienced."</p>
+</div>
+<!-- Abstract Layering Decoration -->
+<div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+</div>
+<!-- Right Side: Registration Form -->
+<div class="w-full md:w-7/12 p-8 md:p-16 bg-white/40">
+<div class="mb-10">
+<h2 class="text-headline-md font-headline font-bold text-on-surface mb-2">Register</h2>
+<p class="text-on-surface-variant">Welcome to the future of anime editorial.</p>
+</div>
+<form class="space-y-5">
+<!-- Name Field -->
+<div class="space-y-1.5">
+<label class="text-xs font-bold tracking-widest text-on-surface-variant uppercase ml-1">Full Name</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+<input class="w-full bg-surface-container-low border-none rounded-sm py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-highest transition-all text-on-surface placeholder:text-outline/50" placeholder="Spike Spiegel" type="text"/>
+</div>
+</div>
+<!-- Email Field -->
+<div class="space-y-1.5">
+<label class="text-xs font-bold tracking-widest text-on-surface-variant uppercase ml-1">Email Address</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">alternate_email</span>
+<input class="w-full bg-surface-container-low border-none rounded-sm py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-highest transition-all text-on-surface placeholder:text-outline/50" placeholder="spike@bebop.space" type="email"/>
+</div>
+</div>
+<!-- Password Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<div class="space-y-1.5">
+<label class="text-xs font-bold tracking-widest text-on-surface-variant uppercase ml-1">Password</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full bg-surface-container-low border-none rounded-sm py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-highest transition-all text-on-surface placeholder:text-outline/50" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold tracking-widest text-on-surface-variant uppercase ml-1">Confirm</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">verified_user</span>
+<input class="w-full bg-surface-container-low border-none rounded-sm py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-highest transition-all text-on-surface placeholder:text-outline/50" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<!-- Terms checkbox -->
+<div class="flex items-start gap-3 py-2">
+<input class="mt-1 rounded-sm text-primary focus:ring-primary bg-surface-container-low border-none w-5 h-5" id="terms" type="checkbox"/>
+<label class="text-sm text-on-surface-variant leading-relaxed" for="terms">
+                            I agree to the <a class="text-primary font-bold hover:underline" href="#">Terms of Service</a> and <a class="text-primary font-bold hover:underline" href="#">Privacy Policy</a>.
+                        </label>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-primary text-on-primary py-5 rounded-full font-bold text-lg hover:bg-primary-dim transition-all shadow-lg shadow-primary/20 transform active:scale-95 duration-200" type="submit">
+                        Create Account
+                    </button>
+</form>
+<!-- Social Divider -->
+<div class="relative my-8 text-center">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant/30"></div>
+</div>
+<span class="relative px-4 bg-white/0 text-xs font-bold text-outline uppercase tracking-widest">Or connect with</span>
+</div>
+<!-- Social Grid -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 py-3 px-4 border border-outline-variant/30 rounded-full hover:bg-surface-container transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">google</span>
+<span class="text-sm font-bold text-on-surface">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 py-3 px-4 border border-outline-variant/30 rounded-full hover:bg-surface-container transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">chat</span>
+<span class="text-sm font-bold text-on-surface">Discord</span>
+</button>
+</div>
+<div class="mt-8 text-center">
+<p class="text-sm text-on-surface-variant">
+                        Already have an account? <a class="text-primary font-bold hover:underline" href="#">Sign In</a>
+</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full py-12 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-6">
+<div class="font-['Manrope'] text-sm tracking-wide text-slate-500 dark:text-slate-400">
+                © 2024 ANIMEDIA. KINETIC MINIMALIST EDITORIAL.
+            </div>
+<div class="flex items-center gap-8">
+<a class="text-slate-500 dark:text-slate-400 hover:text-violet-500 transition-colors font-['Manrope'] text-sm tracking-wide" href="#">Privacy</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-violet-500 transition-colors font-['Manrope'] text-sm tracking-wide" href="#">Terms</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-violet-500 transition-colors font-['Manrope'] text-sm tracking-wide" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

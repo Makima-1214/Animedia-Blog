@@ -1,0 +1,286 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { getAllAffiliates, getAllArticles } from '../../lib/turso-helpers.js';
+
+const affiliates = await getAllAffiliates() as any[];
+const articles = await getAllArticles() as any[];
+---
+
+<DashboardLayout title="Manajemen Afiliasi" activePage="afiliasi">
+  <div class="p-4 md:p-8 lg:p-12">
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12">
+      <div>
+        <nav class="flex items-center gap-2 text-xs font-medium text-on-surface-variant uppercase tracking-widest mb-2">
+          <span>Admin</span>
+          <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+          <span class="text-on-surface">Afiliasi</span>
+        </nav>
+        <h2 class="text-2xl md:text-4xl font-extrabold tracking-tighter text-on-surface">Produk Afiliasi</h2>
+        <p class="text-sm text-on-surface-variant mt-1">Kelola semua produk afiliasi dan hubungkan ke artikel.</p>
+      </div>
+      <button
+        id="openAddModal"
+        class="bg-on-surface text-surface px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-primary transition-all text-sm"
+      >
+        <span class="material-symbols-outlined text-[18px]">add</span>
+        Tambah Produk
+      </button>
+    </header>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-surface-container-lowest p-4 rounded-xl">
+        <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Total Produk</p>
+        <p class="text-2xl font-black text-on-surface">{affiliates.length}</p>
+      </div>
+      <div class="bg-surface-container-lowest p-4 rounded-xl">
+        <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Aktif</p>
+        <p class="text-2xl font-black text-green-600">{affiliates.filter((a: any) => a.is_active).length}</p>
+      </div>
+      <div class="bg-surface-container-lowest p-4 rounded-xl">
+        <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Nonaktif</p>
+        <p class="text-2xl font-black text-gray-400">{affiliates.filter((a: any) => !a.is_active).length}</p>
+      </div>
+      <div class="bg-surface-container-lowest p-4 rounded-xl">
+        <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Platform</p>
+        <p class="text-2xl font-black text-on-surface">{[...new Set(affiliates.map((a: any) => a.platform).filter(Boolean))].length}</p>
+      </div>
+    </div>
+
+    <!-- Product Table -->
+    <div class="bg-surface-container-lowest rounded-xl overflow-hidden">
+      {affiliates.length === 0 ? (
+        <div class="text-center py-20">
+          <span class="material-symbols-outlined text-5xl text-outline-variant mb-3 block">shopping_bag</span>
+          <p class="text-on-surface-variant font-medium">Belum ada produk afiliasi</p>
+          <p class="text-xs text-outline-variant mt-1">Klik "Tambah Produk" untuk mulai</p>
+        </div>
+      ) : (
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-surface-container-low/50 border-b border-surface-container-low">
+                <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Produk</th>
+                <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Harga</th>
+                <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Platform</th>
+                <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Artikel</th>
+                <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Status</th>
+                <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container-low">
+              {affiliates.map((p: any) => (
+                <tr class="hover:bg-surface-container-low/30 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      {p.image ? (
+                        <img src={p.image} alt={p.name} class="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                      ) : (
+                        <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0">
+                          <span class="material-symbols-outlined text-outline-variant text-sm">inventory_2</span>
+                        </div>
+                      )}
+                      <div>
+                        <p class="font-bold text-sm text-on-surface line-clamp-1">{p.name}</p>
+                        <a href={p.affiliate_url} target="_blank" class="text-[10px] text-primary hover:underline truncate block max-w-[200px]">{p.affiliate_url}</a>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm font-bold text-on-surface">{p.price ? `Rp ${p.price}` : '-'}</td>
+                  <td class="px-6 py-4">
+                    {p.platform ? (
+                      <span class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded-full text-[10px] font-bold uppercase">{p.platform}</span>
+                    ) : <span class="text-outline-variant text-xs">-</span>}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-on-surface-variant">
+                    {p.article_title ? (
+                      <a href={`/artikel/${p.article_slug}`} target="_blank" class="hover:text-primary transition-colors line-clamp-1 max-w-[150px] block">{p.article_title}</a>
+                    ) : <span class="text-outline-variant">-</span>}
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class={`flex items-center gap-1.5 text-xs font-bold ${p.is_active ? 'text-green-600' : 'text-gray-400'}`}>
+                      <span class={`w-1.5 h-1.5 rounded-full ${p.is_active ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+                      {p.is_active ? 'Aktif' : 'Nonaktif'}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex justify-end gap-1">
+                      <button
+                        onclick={`openEdit(${JSON.stringify(p)})`}
+                        class="p-2 hover:bg-primary-container/20 rounded-lg transition-colors text-on-surface-variant hover:text-primary"
+                      >
+                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                      </button>
+                      <button
+                        onclick={`deleteProduct('${p.id}', '${p.name.replace(/'/g, "\\'")}')`}
+                        class="p-2 hover:bg-error-container/20 rounded-lg transition-colors text-on-surface-variant hover:text-error"
+                      >
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div id="productModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-lg shadow-2xl">
+      <div class="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
+        <h3 id="modalTitle" class="font-bold text-lg text-on-surface">Tambah Produk</h3>
+        <button onclick="closeModal()" class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+        <input type="hidden" id="modal_id" />
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Nama Produk *</label>
+          <input id="modal_name" type="text" class="w-full border border-outline-variant bg-transparent rounded-lg px-3 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Nama produk" />
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">URL Afiliasi *</label>
+          <input id="modal_url" type="url" class="w-full border border-outline-variant bg-transparent rounded-lg px-3 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="https://..." />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Harga</label>
+            <input id="modal_price" type="text" class="w-full border border-outline-variant bg-transparent rounded-lg px-3 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="299.000" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Platform</label>
+            <select id="modal_platform" class="w-full border border-outline-variant bg-transparent rounded-lg px-3 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary">
+              <option value="">Pilih Platform</option>
+              <option value="Tokopedia">Tokopedia</option>
+              <option value="Shopee">Shopee</option>
+              <option value="Lazada">Lazada</option>
+              <option value="Amazon">Amazon</option>
+              <option value="Blibli">Blibli</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">URL Gambar</label>
+          <input id="modal_image" type="url" class="w-full border border-outline-variant bg-transparent rounded-lg px-3 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="https://..." />
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Deskripsi</label>
+          <textarea id="modal_desc" rows="2" class="w-full border border-outline-variant bg-transparent rounded-lg px-3 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Deskripsi singkat produk"></textarea>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Hubungkan ke Artikel</label>
+          <select id="modal_article" class="w-full border border-outline-variant bg-transparent rounded-lg px-3 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary">
+            <option value="">Pilih Artikel (opsional)</option>
+            {articles.map((a: any) => (
+              <option value={a.id}>{a.title}</option>
+            ))}
+          </select>
+        </div>
+        <label class="flex items-center gap-2 text-sm text-on-surface cursor-pointer">
+          <input type="checkbox" id="modal_active" checked class="rounded" />
+          Aktifkan produk ini
+        </label>
+      </div>
+      <div class="p-6 border-t border-gray-100 dark:border-gray-800 flex gap-3 justify-end">
+        <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-surface-container text-on-surface hover:bg-surface-container-high transition-all">Batal</button>
+        <button id="saveProductBtn" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-on-surface text-surface hover:bg-primary transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-[16px]">save</span>
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</DashboardLayout>
+
+<script is:inline>
+  function openModal() {
+    document.getElementById('productModal').classList.remove('hidden');
+    document.getElementById('productModal').classList.add('flex');
+  }
+  function closeModal() {
+    document.getElementById('productModal').classList.add('hidden');
+    document.getElementById('productModal').classList.remove('flex');
+    // Reset
+    ['modal_id','modal_name','modal_url','modal_price','modal_image','modal_desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('modal_platform').value = '';
+    document.getElementById('modal_article').value = '';
+    document.getElementById('modal_active').checked = true;
+    document.getElementById('modalTitle').textContent = 'Tambah Produk';
+  }
+  window.closeModal = closeModal;
+
+  document.getElementById('openAddModal').addEventListener('click', () => {
+    document.getElementById('modal_id').value = '';
+    document.getElementById('modalTitle').textContent = 'Tambah Produk';
+    openModal();
+  });
+
+  window.openEdit = function(p) {
+    document.getElementById('modal_id').value = p.id;
+    document.getElementById('modal_name').value = p.name || '';
+    document.getElementById('modal_url').value = p.affiliate_url || '';
+    document.getElementById('modal_price').value = p.price || '';
+    document.getElementById('modal_platform').value = p.platform || '';
+    document.getElementById('modal_image').value = p.image || '';
+    document.getElementById('modal_desc').value = p.description || '';
+    document.getElementById('modal_article').value = p.article_id || '';
+    document.getElementById('modal_active').checked = !!p.is_active;
+    document.getElementById('modalTitle').textContent = 'Edit Produk';
+    openModal();
+  };
+
+  document.getElementById('saveProductBtn').addEventListener('click', async () => {
+    const id = document.getElementById('modal_id').value;
+    const name = document.getElementById('modal_name').value.trim();
+    const url = document.getElementById('modal_url').value.trim();
+    if (!name || !url) { alert('Nama dan URL wajib diisi'); return; }
+
+    const fd = new FormData();
+    if (id) fd.append('id', id);
+    fd.append('article_id', document.getElementById('modal_article').value || '1');
+    fd.append('name', name);
+    fd.append('affiliate_url', url);
+    fd.append('price', document.getElementById('modal_price').value);
+    fd.append('platform', document.getElementById('modal_platform').value);
+    fd.append('image', document.getElementById('modal_image').value);
+    fd.append('description', document.getElementById('modal_desc').value);
+    fd.append('is_active', document.getElementById('modal_active').checked ? '1' : '0');
+
+    const endpoint = id ? '/api/affiliate/update' : '/api/affiliate/save';
+    const res = await fetch(endpoint, { method: 'POST', body: fd });
+    const result = await res.json();
+    if (result.success) {
+      closeModal();
+      window.location.reload();
+    } else {
+      alert('Error: ' + result.message);
+    }
+  });
+
+  window.deleteProduct = async function(id, name) {
+    window.showConfirm({
+      title: 'Hapus Produk?',
+      message: `"${name}" akan dihapus dari library afiliasi.`,
+      okText: 'Hapus',
+      okIcon: 'delete',
+      okClass: 'bg-red-500 hover:bg-red-600',
+      iconBg: 'bg-red-100',
+      iconColor: 'text-red-500',
+      icon: 'delete'
+    }, async (confirmed) => {
+      if (!confirmed) return;
+      const fd = new FormData();
+      fd.append('id', id);
+      const res = await fetch('/api/affiliate/delete', { method: 'POST', body: fd });
+      const result = await res.json();
+      if (result.success) window.location.reload();
+      else alert('❌ Error: ' + result.message);
+    });
+  };
+</script>

@@ -1,0 +1,217 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import db from '../../lib/turso.js';
+
+const result = await db.execute(`
+  SELECT u.id, u.name, u.email, u.email_verified, u.created_at,
+    COUNT(c.id) as comment_count
+  FROM users u
+  LEFT JOIN comments c ON c.author_email = u.email
+  GROUP BY u.id
+  ORDER BY u.created_at DESC
+`);
+const users = result.rows;
+---
+
+<DashboardLayout title="Kelola Pengguna - Admin Panel" activePage="pengguna">
+  <div class="p-4 md:p-8 lg:p-12">
+    <header class="mb-8 md:mb-12">
+      <nav class="flex items-center gap-2 text-xs font-medium text-on-surface-variant uppercase tracking-widest mb-2">
+        <span>Admin</span>
+        <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+        <span class="text-on-surface">Pengguna</span>
+      </nav>
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl md:text-4xl font-extrabold tracking-tighter text-on-surface">Pengguna Terdaftar</h2>
+          <p class="text-sm text-on-surface-variant mt-1">{users.length} akun terdaftar</p>
+        </div>
+        <!-- Search -->
+        <div class="relative hidden md:block">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+          <input id="searchInput" type="text" placeholder="Cari nama atau email..."
+            class="pl-9 pr-4 py-2.5 bg-surface-container-low border-none rounded-lg text-sm focus:ring-1 focus:ring-primary w-64" />
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-surface-container-lowest p-4 rounded-xl">
+        <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Total</p>
+        <p class="text-2xl font-black text-on-surface">{users.length}</p>
+      </div>
+      <div class="bg-surface-container-lowest p-4 rounded-xl">
+        <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Terverifikasi</p>
+        <p class="text-2xl font-black text-green-600">{users.filter((u: any) => u.email_verified == 1).length}</p>
+      </div>
+      <div class="bg-surface-container-lowest p-4 rounded-xl">
+        <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Belum Verifikasi</p>
+        <p class="text-2xl font-black text-amber-500">{users.filter((u: any) => u.email_verified != 1).length}</p>
+      </div>
+      <div class="bg-surface-container-lowest p-4 rounded-xl">
+        <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Bulan Ini</p>
+        <p class="text-2xl font-black text-on-surface">{users.filter((u: any) => {
+          const d = new Date(String(u.created_at));
+          const now = new Date();
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        }).length}</p>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-surface-container-lowest rounded-xl overflow-hidden editorial-shadow">
+      {users.length === 0 ? (
+        <div class="text-center py-20">
+          <span class="material-symbols-outlined text-5xl text-outline-variant block mb-3">group</span>
+          <p class="text-on-surface-variant">Belum ada pengguna terdaftar</p>
+        </div>
+      ) : (
+        <>
+          <!-- Desktop Table -->
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="bg-surface-container-low/50 border-b border-surface-container-low">
+                  <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Pengguna</th>
+                  <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Status</th>
+                  <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Komentar</th>
+                  <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Bergabung</th>
+                  <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-on-surface-variant text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container-low" id="userTableBody">
+                {users.map((user: any) => (
+                  <tr class="hover:bg-surface-container-low/30 transition-colors user-row"
+                    data-name={String(user.name).toLowerCase()}
+                    data-email={String(user.email).toLowerCase()}>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
+                          <span class="text-sm font-bold text-violet-600 dark:text-violet-400">
+                            {String(user.name).charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <p class="font-bold text-sm text-on-surface">{user.name}</p>
+                          <p class="text-xs text-on-surface-variant">{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      {user.email_verified == 1 ? (
+                        <span class="flex items-center gap-1.5 text-xs font-bold text-green-600">
+                          <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                          Terverifikasi
+                        </span>
+                      ) : (
+                        <span class="flex items-center gap-1.5 text-xs font-bold text-amber-500">
+                          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                          Belum Verifikasi
+                        </span>
+                      )}
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class="text-sm text-on-surface-variant">{user.comment_count || 0}</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-on-surface-variant">
+                      {new Date(String(user.created_at)).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <button
+                        onclick={`deleteUser('${user.id}', '${String(user.name).replace(/'/g, "\\'")}')`}
+                        class="p-2 hover:bg-error-container/20 rounded-lg transition-colors text-on-surface-variant hover:text-error"
+                        title="Hapus pengguna"
+                      >
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Cards -->
+          <div class="md:hidden divide-y divide-surface-container-low" id="userCardList">
+            {users.map((user: any) => (
+              <div class="p-4 user-row"
+                data-name={String(user.name).toLowerCase()}
+                data-email={String(user.email).toLowerCase()}>
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
+                    <span class="font-bold text-violet-600 dark:text-violet-400">
+                      {String(user.name).charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-sm text-on-surface truncate">{user.name}</p>
+                    <p class="text-xs text-on-surface-variant truncate">{user.email}</p>
+                  </div>
+                  <button
+                    onclick={`deleteUser('${user.id}', '${String(user.name).replace(/'/g, "\\'")}')`}
+                    class="p-2 hover:bg-error-container/20 rounded-lg transition-colors text-on-surface-variant hover:text-error flex-shrink-0"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                  </button>
+                </div>
+                <div class="flex items-center gap-4 text-xs text-on-surface-variant">
+                  {user.email_verified == 1 ? (
+                    <span class="text-green-600 font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">verified</span> Terverifikasi
+                    </span>
+                  ) : (
+                    <span class="text-amber-500 font-semibold">Belum Verifikasi</span>
+                  )}
+                  <span>·</span>
+                  <span>{user.comment_count || 0} komentar</span>
+                  <span>·</span>
+                  <span>{new Date(String(user.created_at)).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+</DashboardLayout>
+
+<script is:inline>
+  // Search
+  document.getElementById('searchInput')?.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.user-row').forEach(row => {
+      const name = row.getAttribute('data-name') || '';
+      const email = row.getAttribute('data-email') || '';
+      row.style.display = (name.includes(q) || email.includes(q)) ? '' : 'none';
+    });
+  });
+
+  // Delete user
+  async function deleteUser(id, name) {
+    window.showConfirm({
+      title: 'Hapus Pengguna?',
+      message: `Akun "${name}" beserta semua komentarnya akan dihapus permanen.`,
+      okText: 'Hapus',
+      okIcon: 'delete',
+      okClass: 'bg-red-500 hover:bg-red-600',
+      iconBg: 'bg-red-100',
+      iconColor: 'text-red-500',
+      icon: 'person_remove'
+    }, async (confirmed) => {
+      if (!confirmed) return;
+      const fd = new FormData();
+      fd.append('id', id);
+      const res = await fetch('/api/admin/delete-user', { method: 'POST', body: fd });
+      const result = await res.json();
+      if (result.success) {
+        alert('✅ Pengguna berhasil dihapus');
+        window.location.reload();
+      } else {
+        alert('❌ ' + result.message);
+      }
+    });
+  }
+  window.deleteUser = deleteUser;
+</script>

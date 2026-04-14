@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import { getActiveAffiliates } from '../lib/turso-helpers.js';
+
+const products = await getActiveAffiliates();
+const platforms = [...new Set(products.map((p: any) => p.platform).filter(Boolean))];
+---
+
+<BaseLayout
+  title="Toko — Animedia"
+  description="Produk pilihan editor Animedia."
+>
+  <Header />
+
+  <main class="bg-white dark:bg-gray-950 min-h-screen">
+
+    <!-- Page Title -->
+    <div class="max-w-6xl mx-auto px-4 md:px-6 pt-10 pb-6 border-b border-gray-100 dark:border-gray-800">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Toko</h1>
+          <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">{products.length} produk pilihan editor</p>
+        </div>
+        <!-- Filter -->
+        {platforms.length > 0 && (
+          <div class="flex flex-wrap gap-2" id="platformFilters">
+            <button class="platform-btn active-filter text-xs font-semibold px-4 py-2 rounded-full border border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900 transition-all" data-platform="">
+              Semua
+            </button>
+            {platforms.map((p: any) => (
+              <button
+                class="platform-btn text-xs font-semibold px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-all"
+                data-platform={p}
+              >{p}</button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-10">
+      {products.length === 0 ? (
+        <div class="flex flex-col items-center justify-center py-32 text-center">
+          <span class="material-symbols-outlined text-7xl text-gray-200 dark:text-gray-800 mb-4">shopping_bag</span>
+          <p class="text-lg font-bold text-gray-400 dark:text-gray-600">Belum ada produk</p>
+          <p class="text-sm text-gray-300 dark:text-gray-700 mt-1">Tambahkan produk afiliasi di halaman edit artikel</p>
+        </div>
+      ) : (
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" id="productsGrid">
+          {products.map((product: any) => (
+            <div class="product-card group flex flex-col" data-platform={product.platform || ''}>
+              <!-- Image -->
+              <a
+                href={product.affiliate_url}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                class="block relative overflow-hidden rounded-2xl bg-gray-50 dark:bg-gray-900 aspect-square mb-3 border border-gray-100 dark:border-gray-800"
+              >
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-5xl text-gray-200 dark:text-gray-700">inventory_2</span>
+                  </div>
+                )}
+                {product.platform && (
+                  <span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full shadow-sm border border-gray-100 dark:border-gray-700">
+                    {product.platform}
+                  </span>
+                )}
+              </a>
+
+              <!-- Info -->
+              <div class="flex flex-col flex-1 px-1">
+                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 truncate">
+                  dari <a href={`/artikel/${product.article_slug}`} class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors underline underline-offset-2">{product.article_title}</a>
+                </p>
+                <h2 class="font-bold text-sm md:text-base text-gray-900 dark:text-white leading-snug line-clamp-2 mb-2">
+                  {product.name}
+                </h2>
+                {product.description && (
+                  <p class="text-xs text-gray-400 dark:text-gray-500 line-clamp-2 mb-3">{product.description}</p>
+                )}
+                <div class="mt-auto flex items-center justify-between gap-2">
+                  {product.price ? (
+                    <p class="font-black text-base text-gray-900 dark:text-white">Rp {product.price}</p>
+                  ) : (
+                    <span />
+                  )}
+                  <a
+                    href={product.affiliate_url}
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    class="flex items-center gap-1 text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors whitespace-nowrap"
+                  >
+                    Beli
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <!-- Disclosure -->
+      {products.length > 0 && (
+        <p class="text-xs text-gray-300 dark:text-gray-700 mt-16 text-center max-w-lg mx-auto leading-relaxed">
+          Link di halaman ini adalah link afiliasi. Kami mendapat komisi kecil dari setiap pembelian — tanpa biaya tambahan buat kamu. ❤️
+        </p>
+      )}
+    </div>
+  </main>
+</BaseLayout>
+
+<script is:inline>
+  document.querySelectorAll('.platform-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.platform-btn').forEach(b => {
+        b.classList.remove('active-filter', 'bg-gray-900', 'dark:bg-white', 'text-white', 'dark:text-gray-900', 'border-gray-900', 'dark:border-white');
+        b.classList.add('border-gray-200', 'dark:border-gray-700', 'text-gray-500', 'dark:text-gray-400');
+      });
+      btn.classList.add('active-filter', 'bg-gray-900', 'text-white', 'border-gray-900');
+      btn.classList.remove('border-gray-200', 'text-gray-500');
+
+      const platform = btn.getAttribute('data-platform');
+      document.querySelectorAll('.product-card').forEach(card => {
+        card.style.display = (!platform || card.getAttribute('data-platform') === platform) ? '' : 'none';
+      });
+    });
+  });
+</script>
