@@ -24,6 +24,9 @@ pnpm-debug.log*
 # astro
 .astro/
 
+# vercel build output
+.vercel/
+
 # database
 *.db
 *.sqlite
