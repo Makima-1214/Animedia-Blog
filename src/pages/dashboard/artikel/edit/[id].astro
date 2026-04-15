@@ -415,11 +415,16 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
     });
 
     // Image modal
+    var savedRange = null;
     document.getElementById('btnImage').addEventListener('click', function() {
+      var sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) savedRange = sel.getRangeAt(0).cloneRange();
       document.getElementById('imgModal').classList.remove('hidden');
       document.getElementById('imgUrlInput').value = '';
       document.getElementById('imgModalStatus').textContent = '';
     });
+    window._savedEditorRange = function() { return savedRange; };
+    window._clearEditorRange = function() { savedRange = null; };
 
     document.getElementById('btnTable').addEventListener('click', function() {
       var rows = parseInt(prompt('Jumlah baris:', '3')) || 3;
@@ -462,9 +467,10 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
         var res = await fetch('https://api.cloudinary.com/v1_1/' + sign.cloud_name + '/image/upload', { method: 'POST', body: fd });
         var result = await res.json();
         if (result.secure_url) {
-          document.getElementById('coverImage').value = result.secure_url;
-          document.getElementById('coverImageUrl').value = result.secure_url;
-          document.getElementById('cover-preview').innerHTML = '<img src="' + result.secure_url + '" class="w-full h-full object-cover" />';
+          var optimized = result.secure_url.replace('/upload/', '/upload/f_auto,q_auto/');
+          document.getElementById('coverImage').value = optimized;
+          document.getElementById('coverImageUrl').value = optimized;
+          document.getElementById('cover-preview').innerHTML = '<img src="' + optimized + '" class="w-full h-full object-cover" />';
           status.textContent = '✅ Upload berhasil!';
         } else { status.textContent = '❌ ' + (result.error?.message || 'Gagal upload'); }
       } catch(e) { status.textContent = '❌ Gagal upload'; }
@@ -655,6 +661,23 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
   <script is:inline>
     (function() {
       var ed = document.getElementById('content-editor');
+      function insertImg(url) {
+        var optimized = url.replace('/upload/', '/upload/f_auto,q_auto/');
+        var range = window._savedEditorRange && window._savedEditorRange();
+        var sel = window.getSelection();
+        ed.focus();
+        if (range) { sel.removeAllRanges(); sel.addRange(range); }
+        else {
+          var r = document.createRange();
+          r.selectNodeContents(ed);
+          r.collapse(false);
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+        document.execCommand('insertHTML', false, '<img src="' + optimized + '" alt="image" style="width:100%;max-width:100%;border-radius:0.5rem;margin:0.75rem 0;display:block;" /><p><br></p>');
+        document.getElementById('imgModal').classList.add('hidden');
+        window._clearEditorRange && window._clearEditorRange();
+      }
       document.getElementById('imgModalClose').addEventListener('click', function() {
         document.getElementById('imgModal').classList.add('hidden');
       });
@@ -664,9 +687,7 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
       document.getElementById('imgInsertUrl').addEventListener('click', function() {
         var url = document.getElementById('imgUrlInput').value.trim();
         if (!url) return;
-        document.execCommand('insertHTML', false, '<img src="' + url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
-        document.getElementById('imgModal').classList.add('hidden');
-        ed.focus();
+        insertImg(url);
       });
       document.getElementById('imgUploadFile').addEventListener('change', async function() {
         var file = this.files[0];
@@ -685,9 +706,7 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
           var res = await fetch('https://api.cloudinary.com/v1_1/' + sign.cloud_name + '/image/upload', { method: 'POST', body: fd });
           var result = await res.json();
           if (result.secure_url) {
-            document.execCommand('insertHTML', false, '<img src="' + result.secure_url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
-            document.getElementById('imgModal').classList.add('hidden');
-            ed.focus();
+            insertImg(result.secure_url);
           } else { status.textContent = '❌ ' + (result.error?.message || 'Gagal upload'); }
         } catch(e) { status.textContent = '❌ Gagal upload'; }
       });
