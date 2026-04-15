@@ -1,20 +1,28 @@
 ---
 import { getAllCategories } from '../lib/turso-helpers.js';
+import { getSiteConfig } from '../lib/settings.js';
 const { pathname } = Astro.url;
 const categories = await getAllCategories();
+const site = await getSiteConfig();
 ---
 
 <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 transition-colors">
-  <div class="max-w-7xl mx-auto px-4 md:px-6">
+  <div class="max-w-7xl mx-auto px-3 md:px-6">
     <!-- Top Row: Logo & Actions -->
-    <div class="flex justify-between items-center py-4">
-      <a href="/" class="text-2xl font-black tracking-tighter text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-3xl">architecture</span>
-        Animedia
+    <div class="flex justify-between items-center py-3 md:py-4">
+      <a href="/" class="text-xl md:text-2xl font-black tracking-tighter text-gray-900 dark:text-white flex items-center gap-1.5">
+        {site.logoUrl ? (
+          <img src={site.logoUrl} alt={site.name} class="h-8 md:h-9 w-auto object-contain" />
+        ) : (
+          <>
+            <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-2xl md:text-3xl">architecture</span>
+            {site.name}
+          </>
+        )}
       </a>
 
-      <div class="flex items-center gap-2">
-        <!-- Search -->
+      <div class="flex items-center gap-1 md:gap-2">
+        <!-- Search Desktop -->
         <div class="hidden sm:flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2 border border-gray-200 dark:border-gray-700 relative">
           <input
             id="search-input"
@@ -26,6 +34,15 @@ const categories = await getAllCategories();
           <span class="material-symbols-outlined text-gray-500 dark:text-gray-400 text-lg cursor-pointer">search</span>
           <div id="search-results" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 hidden max-h-80 overflow-y-auto"></div>
         </div>
+
+        <!-- Search Mobile Button -->
+        <button
+          id="mobile-search-toggle"
+          class="sm:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-center text-gray-700 dark:text-gray-300"
+          aria-label="Cari artikel"
+        >
+          <span class="material-symbols-outlined text-xl">search</span>
+        </button>
         
         <!-- Toko -->
         <a
@@ -52,13 +69,13 @@ const categories = await getAllCategories();
           <a
             id="login-btn"
             href="/login"
-            class="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            class="flex items-center gap-2 px-2 md:px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             <span class="material-symbols-outlined text-gray-700 dark:text-gray-300 text-xl">person</span>
             <span class="hidden md:inline text-sm font-semibold text-gray-700 dark:text-gray-300">Login</span>
           </a>
           <div id="user-menu" class="hidden relative">
-            <button id="user-btn" class="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <button id="user-btn" class="flex items-center gap-2 px-2 md:px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
               <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-xl">person</span>
               <span id="user-name" class="hidden md:inline font-semibold text-sm text-gray-900 dark:text-white max-w-[120px] truncate"></span>
             </button>
@@ -79,50 +96,87 @@ const categories = await getAllCategories();
           class="lg:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-center"
           aria-label="Toggle menu"
         >
-          <span class="material-symbols-outlined text-gray-700 dark:text-gray-300 text-xl" style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;">menu</span>
+          <span id="hamburger-icon" class="material-symbols-outlined text-gray-700 dark:text-gray-300 text-xl" style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;">menu</span>
         </button>
+      </div>
+    </div>
+
+    <!-- Mobile Search Bar (expandable) -->
+    <div id="mobile-search-bar" class="sm:hidden overflow-hidden transition-all duration-300 ease-in-out max-h-0">
+      <div class="pb-3">
+        <div class="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 relative">
+          <span class="material-symbols-outlined text-gray-400 text-lg mr-2">search</span>
+          <input
+            id="search-input-mobile"
+            class="bg-transparent border-none focus:ring-0 text-sm flex-1 text-gray-900 dark:text-white placeholder:text-gray-500 outline-none"
+            placeholder="Cari artikel..."
+            type="text"
+            autocomplete="off"
+          />
+          <button id="mobile-search-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-2">
+            <span class="material-symbols-outlined text-lg">close</span>
+          </button>
+          <div id="search-results-mobile" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 hidden max-h-72 overflow-y-auto"></div>
+        </div>
       </div>
     </div>
     
     <!-- Bottom Row: Categories -->
-    <nav class="flex items-center space-x-6 py-2 overflow-x-auto no-scrollbar border-t border-gray-100 dark:border-gray-800">
-      <a
-        class={`font-bold text-xs uppercase tracking-widest whitespace-nowrap transition-colors ${pathname === '/' ? 'text-violet-600 dark:text-violet-400' : 'text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400'}`}
-        href="/"
-      >
-        Home
-      </a>
-      <a
-        class={`font-bold text-xs uppercase tracking-widest whitespace-nowrap transition-colors ${pathname === '/artikel' ? 'text-violet-600 dark:text-violet-400' : 'text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400'}`}
-        href="/artikel"
-      >
-        Semua Artikel
-      </a>
-      {categories.map((cat: any) => (
+    <div class="relative border-t border-gray-100 dark:border-gray-800">
+      <nav id="category-nav" class="flex items-center space-x-5 py-2 overflow-x-auto no-scrollbar">
         <a
-          class={`font-bold text-xs uppercase tracking-widest whitespace-nowrap transition-colors ${pathname.includes(`/kategori/${cat.slug}`) ? 'text-violet-600 dark:text-violet-400' : 'text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400'}`}
-          href={`/kategori/${cat.slug}`}
+          class={`font-bold text-xs uppercase tracking-widest whitespace-nowrap transition-colors ${pathname === '/' ? 'text-violet-600 dark:text-violet-400' : 'text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400'}`}
+          href="/"
         >
-          {cat.name}
+          Home
         </a>
-      ))}
-    </nav>
+        <a
+          class={`font-bold text-xs uppercase tracking-widest whitespace-nowrap transition-colors ${pathname === '/artikel' ? 'text-violet-600 dark:text-violet-400' : 'text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400'}`}
+          href="/artikel"
+        >
+          Semua Artikel
+        </a>
+        {categories.map((cat: any) => (
+          <a
+            class={`font-bold text-xs uppercase tracking-widest whitespace-nowrap transition-colors ${pathname.includes(`/kategori/${cat.slug}`) ? 'text-violet-600 dark:text-violet-400' : 'text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400'}`}
+            href={`/kategori/${cat.slug}`}
+          >
+            {cat.name}
+          </a>
+        ))}
+      </nav>
+      <!-- Scroll fade hint (right) -->
+      <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-900 to-transparent sm:hidden"></div>
+    </div>
     
     <!-- Mobile Menu (Extra Features) -->
     <div id="mobile-menu" class="overflow-hidden transition-all duration-300 ease-in-out max-h-0 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
       <div class="flex flex-col space-y-1 py-3 opacity-0 transition-opacity duration-300">
-        <a href="/profil" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors">
+        <a href="/profil" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors">
           <span class="material-symbols-outlined text-lg">person</span>
           Profil
         </a>
-        <a href="/berlangganan" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors">
+        <a href="/berlangganan" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors">
           <span class="material-symbols-outlined text-lg">mail</span>
           Newsletter
         </a>
-        <a href="/toko" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors">
+        <a href="/toko" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors">
           <span class="material-symbols-outlined text-lg">shopping_bag</span>
           Toko
         </a>
+        <div class="px-4 pt-2 pb-1">
+          <div class="h-px bg-gray-200 dark:bg-gray-700"></div>
+        </div>
+        <a href="/artikel" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-lg">article</span>
+          Semua Artikel
+        </a>
+        {categories.map((cat: any) => (
+          <a href={`/kategori/${cat.slug}`} class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors">
+            <span class="material-symbols-outlined text-lg">label</span>
+            {cat.name}
+          </a>
+        ))}
       </div>
     </div>
   </div>
@@ -135,7 +189,6 @@ const categories = await getAllCategories();
   const themeToggle = document.getElementById('theme-toggle');
   const html = document.documentElement;
   
-  // Check for saved theme preference or default to light mode
   const currentTheme = localStorage.getItem('theme') || 'light';
   if (currentTheme === 'dark') {
     html.classList.add('dark');
@@ -147,32 +200,67 @@ const categories = await getAllCategories();
     localStorage.setItem('theme', theme);
   });
 
-  // Mobile Menu Toggle
+  // ── Mobile Menu Toggle ────────────────────────────────────
   const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+  const hamburgerIcon = document.getElementById('hamburger-icon');
   const mobileMenu = document.getElementById('mobile-menu');
   const mobileMenuContent = mobileMenu?.querySelector('div');
   
+  function closeMobileMenu() {
+    mobileMenuContent?.classList.remove('opacity-100');
+    mobileMenuContent?.classList.add('opacity-0');
+    setTimeout(() => {
+      if (mobileMenu) mobileMenu.style.maxHeight = '0px';
+    }, 150);
+    if (hamburgerIcon) hamburgerIcon.textContent = 'menu';
+  }
+
   mobileMenuToggle?.addEventListener('click', () => {
     const isOpen = mobileMenu?.style.maxHeight && mobileMenu.style.maxHeight !== '0px';
-    
     if (isOpen) {
-      // Close
-      mobileMenuContent?.classList.remove('opacity-100');
-      mobileMenuContent?.classList.add('opacity-0');
-      setTimeout(() => {
-        if (mobileMenu) mobileMenu.style.maxHeight = '0px';
-      }, 150);
+      closeMobileMenu();
     } else {
-      // Open
-      if (mobileMenu) mobileMenu.style.maxHeight = '400px';
+      if (mobileMenu) mobileMenu.style.maxHeight = '600px';
       setTimeout(() => {
         mobileMenuContent?.classList.remove('opacity-0');
         mobileMenuContent?.classList.add('opacity-100');
       }, 50);
+      if (hamburgerIcon) hamburgerIcon.textContent = 'close';
     }
   });
 
-  // Auth - Check if user is logged in
+  // ── Mobile Search Toggle ──────────────────────────────────
+  const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+  const mobileSearchBar = document.getElementById('mobile-search-bar');
+  const mobileSearchClose = document.getElementById('mobile-search-close');
+  const mobileSearchInput = document.getElementById('search-input-mobile') as HTMLInputElement;
+
+  function openMobileSearch() {
+    if (mobileSearchBar) mobileSearchBar.style.maxHeight = '80px';
+    setTimeout(() => mobileSearchInput?.focus(), 100);
+    // close mobile menu if open
+    closeMobileMenu();
+  }
+
+  function closeMobileSearch() {
+    if (mobileSearchBar) mobileSearchBar.style.maxHeight = '0px';
+    if (mobileSearchInput) mobileSearchInput.value = '';
+    const mobileResults = document.getElementById('search-results-mobile');
+    mobileResults?.classList.add('hidden');
+  }
+
+  mobileSearchToggle?.addEventListener('click', () => {
+    const isOpen = mobileSearchBar?.style.maxHeight && mobileSearchBar.style.maxHeight !== '0px';
+    if (isOpen) {
+      closeMobileSearch();
+    } else {
+      openMobileSearch();
+    }
+  });
+
+  mobileSearchClose?.addEventListener('click', closeMobileSearch);
+
+  // ── Auth ──────────────────────────────────────────────────
   const loginBtn = document.getElementById('login-btn') as HTMLElement;
   const userMenu = document.getElementById('user-menu') as HTMLElement;
   const userName = document.getElementById('user-name') as HTMLElement;
@@ -186,7 +274,6 @@ const categories = await getAllCategories();
     try {
       const response = await fetch('/api/auth/me');
       const result = await response.json();
-      
       if (result.success && result.user) {
         loginBtn.style.display = 'none';
         userMenu.classList.remove('hidden');
@@ -204,35 +291,30 @@ const categories = await getAllCategories();
 
   checkAuth();
 
-  // Toggle user dropdown
   userBtn?.addEventListener('click', () => {
     userDropdown.classList.toggle('hidden');
   });
 
-  // Close dropdown when clicking outside
   document.addEventListener('click', (e) => {
     if (!userBtn?.contains(e.target as Node) && !userDropdown?.contains(e.target as Node)) {
       userDropdown?.classList.add('hidden');
     }
   });
 
-  // Logout
   logoutBtn?.addEventListener('click', async () => {
     try {
       const response = await fetch('/api/auth/logout', { method: 'POST' });
       const result = await response.json();
-      
-      if (result.success) {
-        window.location.reload();
-      }
+      if (result.success) window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);
     }
   });
 
-  // Search
+  // ── Search (shared Fuse instance) ─────────────────────────
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const searchResults = document.getElementById('search-results') as HTMLElement;
+  const searchResultsMobile = document.getElementById('search-results-mobile') as HTMLElement;
   let fuse: any = null;
 
   async function initSearch() {
@@ -246,32 +328,47 @@ const categories = await getAllCategories();
 
   initSearch();
 
+  function buildSearchHTML(results: any[]) {
+    if (results.length === 0) {
+      return '<p class="p-4 text-sm text-gray-500 dark:text-gray-400">Tidak ada hasil</p>';
+    }
+    return results.map(({ item }: any) => `
+      <a href="/artikel/${item.slug}" class="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+        <img src="${item.cover_image || 'https://via.placeholder.com/60'}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+        <div>
+          <p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1">${item.title}</p>
+          <p class="text-[10px] text-violet-600 dark:text-violet-400 font-bold uppercase">${item.category}</p>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  // Desktop search
   searchInput?.addEventListener('input', () => {
     const query = searchInput.value.trim();
-    if (!query || !fuse) {
-      searchResults.classList.add('hidden');
-      return;
-    }
+    if (!query || !fuse) { searchResults.classList.add('hidden'); return; }
     const results = fuse.search(query).slice(0, 5);
-    if (results.length === 0) {
-      searchResults.innerHTML = '<p class="p-4 text-sm text-gray-500 dark:text-gray-400">Tidak ada hasil</p>';
-    } else {
-      searchResults.innerHTML = results.map(({ item }: any) => `
-        <a href="/artikel/${item.slug}" class="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-          <img src="${item.cover_image || 'https://via.placeholder.com/60'}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
-          <div>
-            <p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1">${item.title}</p>
-            <p class="text-[10px] text-violet-600 dark:text-violet-400 font-bold uppercase">${item.category}</p>
-          </div>
-        </a>
-      `).join('');
-    }
+    searchResults.innerHTML = buildSearchHTML(results);
     searchResults.classList.remove('hidden');
+  });
+
+  // Mobile search
+  mobileSearchInput?.addEventListener('input', () => {
+    const query = mobileSearchInput.value.trim();
+    if (!query || !fuse) { searchResultsMobile?.classList.add('hidden'); return; }
+    const results = fuse.search(query).slice(0, 5);
+    if (searchResultsMobile) {
+      searchResultsMobile.innerHTML = buildSearchHTML(results);
+      searchResultsMobile.classList.remove('hidden');
+    }
   });
 
   document.addEventListener('click', (e) => {
     if (!searchInput?.contains(e.target as Node) && !searchResults?.contains(e.target as Node)) {
       searchResults?.classList.add('hidden');
+    }
+    if (!mobileSearchInput?.contains(e.target as Node) && !searchResultsMobile?.contains(e.target as Node)) {
+      searchResultsMobile?.classList.add('hidden');
     }
   });
 </script>

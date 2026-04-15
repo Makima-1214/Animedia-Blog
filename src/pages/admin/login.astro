@@ -1,107 +1,112 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getSiteConfig } from '../../lib/settings.js';
 
 // Check if already logged in
 const adminSession = Astro.cookies.get('admin_session');
 if (adminSession) {
   return Astro.redirect('/dashboard');
 }
+
+const site = await getSiteConfig();
 ---
 
 <BaseLayout title="Admin Login">
-  <style>
-    .admin-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-  </style>
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 py-8 md:py-12">
 
-  <main class="min-h-screen admin-bg flex items-center justify-center px-6 py-12">
-    <div class="w-full max-w-md">
-      <!-- Admin Badge -->
-      <div class="text-center mb-8">
-        <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-bold mb-4">
-          <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
-          ADMIN ACCESS
-        </div>
-        <h1 class="text-4xl font-black text-white tracking-tight">
-          Animedia
-        </h1>
-        <p class="text-white/80 mt-2">Dashboard Administrator</p>
+    <div class="w-full max-w-sm">
+      <!-- Brand -->
+      <div class="mb-6 md:mb-8 text-center">
+        <a href="/" class="inline-flex items-center gap-2 text-gray-900 dark:text-white mb-4 md:mb-6">
+          {site.logoUrl ? (
+            <img src={site.logoUrl} alt={site.name} class="h-7 md:h-8 w-auto object-contain" />
+          ) : (
+            <>
+              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-2xl">architecture</span>
+              <span class="text-xl font-black tracking-tighter">{site.name}</span>
+            </>
+          )}
+        </a>
+        <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">Admin Panel</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Masuk untuk mengelola konten</p>
       </div>
 
-      <!-- Login Card -->
-      <div class="bg-white rounded-2xl shadow-2xl p-8">
-        <h2 class="text-2xl font-bold text-slate-900 mb-6">Login Admin</h2>
+      <!-- Card -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-5 md:p-7">
 
-        {/* Error message shown via JS */}
-        <div id="errorMsg" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm flex items-center gap-2">
+        <!-- Error -->
+        <div id="errorMsg" class="hidden mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
           <span class="material-symbols-outlined text-sm flex-shrink-0">error</span>
           <span id="errorText"></span>
         </div>
 
-        <form id="loginForm" class="space-y-6">
+        <form id="loginForm" class="space-y-4 md:space-y-5">
           <!-- Username -->
-          <div class="space-y-2">
-            <label class="block text-sm font-bold text-slate-700" for="username">
+          <div>
+            <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5" for="username">
               Username
             </label>
-            <input
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-              id="username"
-              name="username"
-              type="text"
-              placeholder="admin"
-              required
-              autocomplete="username"
-            />
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">person</span>
+              <input
+                class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border-2 border-transparent rounded-xl focus:border-violet-400 focus:bg-white dark:focus:bg-gray-900 transition-all outline-none text-gray-900 dark:text-white placeholder:text-gray-400 text-sm"
+                id="username"
+                name="username"
+                type="text"
+                placeholder="admin"
+                required
+                autocomplete="username"
+              />
+            </div>
           </div>
 
           <!-- Password -->
-          <div class="space-y-2">
-            <label class="block text-sm font-bold text-slate-700" for="password">
+          <div>
+            <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5" for="password">
               Password
             </label>
-            <input
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-              id="password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              autocomplete="current-password"
-            />
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">lock</span>
+              <input
+                class="w-full pl-10 pr-12 py-3 bg-gray-50 dark:bg-gray-800 border-2 border-transparent rounded-xl focus:border-violet-400 focus:bg-white dark:focus:bg-gray-900 transition-all outline-none text-gray-900 dark:text-white placeholder:text-gray-400 text-sm"
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                autocomplete="current-password"
+              />
+              <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                <span class="material-symbols-outlined text-lg">visibility</span>
+              </button>
+            </div>
           </div>
 
-          <!-- Submit Button -->
+          <!-- Submit -->
           <button
             id="submitBtn"
-            class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 rounded-xl hover:bg-gray-700 dark:hover:bg-gray-100 transition-all text-sm mt-1 flex items-center justify-center gap-2 active:scale-[0.98]"
             type="submit"
           >
-            <span id="btnText">Login ke Dashboard</span>
-            <span id="btnLoading" class="hidden">Loading...</span>
+            <span id="btnText">Masuk ke Dashboard</span>
+            <span id="btnLoading" class="hidden">Memproses...</span>
           </button>
         </form>
 
-        <!-- Security Notice -->
-        <div class="mt-6 pt-6 border-t border-slate-200">
-          <div class="flex items-center gap-2 text-xs text-slate-500">
-            <span class="material-symbols-outlined text-sm">lock</span>
-            <span>Halaman ini hanya untuk administrator</span>
-          </div>
+        <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+          <span class="material-symbols-outlined text-sm">shield</span>
+          <span>Akses terbatas untuk administrator</span>
         </div>
       </div>
 
-      <!-- Back to Site -->
-      <div class="text-center mt-6">
-        <a href="/" class="text-white/80 hover:text-white text-sm font-medium transition-colors">
+      <div class="text-center mt-4 md:mt-5">
+        <a href="/" class="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
           ← Kembali ke Website
         </a>
       </div>
     </div>
   </main>
 </BaseLayout>
-
 
 <script>
   const loginForm = document.getElementById('loginForm') as HTMLFormElement;
@@ -110,6 +115,19 @@ if (adminSession) {
   const btnLoading = document.getElementById('btnLoading') as HTMLSpanElement;
   const errorMsg = document.getElementById('errorMsg') as HTMLDivElement;
   const errorText = document.getElementById('errorText') as HTMLSpanElement;
+
+  // Toggle password visibility
+  document.getElementById('togglePassword')?.addEventListener('click', () => {
+    const input = document.getElementById('password') as HTMLInputElement;
+    const icon = document.querySelector('#togglePassword .material-symbols-outlined') as HTMLElement;
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  });
 
   function showError(msg: string) {
     errorText.textContent = msg;

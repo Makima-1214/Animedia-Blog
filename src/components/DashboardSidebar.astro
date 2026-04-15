@@ -24,9 +24,19 @@ const adminAvatar = adminRow?.avatar || null;
     }
   </style>
   
-  <div class="mb-10 px-2">
-    <h1 class="text-lg font-black font-headline text-gray-900 dark:text-white leading-tight">Admin Panel</h1>
-    <p class="text-[10px] uppercase tracking-widest text-gray-500 dark:text-gray-400 font-bold mt-1">Kontrol Editorial</p>
+  <div class="mb-10 px-2 flex items-start justify-between">
+    <div>
+      <h1 class="text-lg font-black font-headline text-gray-900 dark:text-white leading-tight">Admin Panel</h1>
+      <p class="text-[10px] uppercase tracking-widest text-gray-500 dark:text-gray-400 font-bold mt-1">Kontrol Editorial</p>
+    </div>
+    <!-- Close button (mobile only) -->
+    <button
+      id="sidebar-close-btn"
+      class="lg:hidden p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400 -mt-1 -mr-1"
+      aria-label="Tutup menu"
+    >
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
   </div>
   <div class="flex items-center space-x-3 mb-8 px-2">
     <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
@@ -134,3 +144,15 @@ const adminAvatar = adminRow?.avatar || null;
     </a>
   </div>
 </aside>
+
+<script>
+  // Sidebar close button (mobile)
+  const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+  sidebarCloseBtn?.addEventListener('click', () => {
+    const sidebar = document.querySelector('aside');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    sidebar?.classList.remove('active');
+    overlay?.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+</script>

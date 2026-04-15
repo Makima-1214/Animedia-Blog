@@ -289,7 +289,7 @@ export async function getDailyViews() {
 
   return Object.entries(viewsByDay).map(([dateStr, views]) => {
     const date = new Date(dateStr);
-    return { day: dayNames[date.getDay()], views, percentage: Math.max(8, Math.round((views / maxVal) * 90)) };
+    return { day: dayNames[date.getDay()], views, percentage: views === 0 ? 6 : Math.max(15, Math.round((views / maxVal) * 90)) };
   });
 }
 

@@ -16,8 +16,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     
     // Extract settings from form
     const settings = {
+      site_name: formData.get('site_name')?.toString() || 'Animedia',
       site_title: formData.get('site_title')?.toString() || 'Animedia',
       site_tagline: formData.get('site_tagline')?.toString() || '',
+      site_logo_url: formData.get('site_logo_url')?.toString() || '',
+      site_favicon_url: formData.get('site_favicon_url')?.toString() || '',
       breaking_news: formData.get('breaking_news')?.toString() || '',
       maintenance_mode: formData.get('maintenance_mode') === 'true' ? 'true' : 'false',
       posts_per_page: formData.get('posts_per_page')?.toString() || '12',
@@ -26,7 +29,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       allow_comments: formData.get('allow_comments') === 'true' ? 'true' : 'false',
       nested_comments: formData.get('nested_comments') === 'true' ? 'true' : 'false',
       manual_approval: formData.get('manual_approval') === 'true' ? 'true' : 'false',
-      breaking_news: formData.get('breaking_news')?.toString() || ''
     };
 
     await updateSettings(settings);

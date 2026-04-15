@@ -9,19 +9,19 @@ const activities = await getRecentActivities();
 ---
 
 <DashboardLayout title="Dashboard - Admin Panel" activePage="dashboard">
-  <div class="p-8 lg:p-12">
+  <div class="p-4 md:p-8 lg:p-12">
     <!-- Header Section -->
-    <header class="mb-12">
-      <h2 class="text-4xl font-headline font-extrabold tracking-tighter text-gray-900 dark:text-white mb-2">Ikhtisar Dashboard</h2>
-      <p class="text-gray-600 dark:text-gray-400 font-body">Selamat datang kembali. Berikut adalah performa editorial Anda hari ini.</p>
+    <header class="mb-8 md:mb-12">
+      <h2 class="text-2xl md:text-4xl font-headline font-extrabold tracking-tighter text-gray-900 dark:text-white mb-2">Ikhtisar Dashboard</h2>
+      <p class="text-sm text-gray-600 dark:text-gray-400 font-body">Selamat datang kembali. Berikut adalah performa editorial Anda hari ini.</p>
     </header>
 
     <!-- Quick Stats Bento Grid -->
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 mb-8 md:mb-12">
       <!-- Total Postingan -->
-      <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl editorial-shadow border border-gray-200 dark:border-gray-800">
-        <div class="flex items-center justify-between mb-4">
-          <span class="material-symbols-outlined text-gray-400 dark:text-gray-500">article</span>
+      <div class="bg-gray-50 dark:bg-gray-900 p-4 md:p-6 rounded-xl editorial-shadow border border-gray-200 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <span class="material-symbols-outlined text-gray-400 dark:text-gray-500 text-xl">article</span>
           <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
             stats.articlesGrowth > 0 ? 'text-green-600 bg-green-50' : 
             stats.articlesGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
@@ -31,13 +31,13 @@ const activities = await getRecentActivities();
           </span>
         </div>
         <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total Postingan</p>
-        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalArticles}</p>
+        <p class="text-2xl md:text-3xl font-headline font-bold text-on-surface">{stats.totalArticles}</p>
       </div>
 
       <!-- Total Pembaca -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow">
-        <div class="flex items-center justify-between mb-4">
-          <span class="material-symbols-outlined text-stone-400">visibility</span>
+      <div class="bg-surface-container-lowest p-4 md:p-6 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <span class="material-symbols-outlined text-stone-400 text-xl">visibility</span>
           <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
             stats.viewsGrowth > 0 ? 'text-green-600 bg-green-50' : 
             stats.viewsGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
@@ -47,13 +47,13 @@ const activities = await getRecentActivities();
           </span>
         </div>
         <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total Pembaca</p>
-        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalViews?.toLocaleString() || '0'}</p>
+        <p class="text-2xl md:text-3xl font-headline font-bold text-on-surface">{stats.totalViews?.toLocaleString() || '0'}</p>
       </div>
 
       <!-- Total Pengguna -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow">
-        <div class="flex items-center justify-between mb-4">
-          <span class="material-symbols-outlined text-stone-400">group</span>
+      <div class="bg-surface-container-lowest p-4 md:p-6 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <span class="material-symbols-outlined text-stone-400 text-xl">group</span>
           <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
             stats.usersGrowth > 0 ? 'text-green-600 bg-green-50' : 
             stats.usersGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
@@ -63,13 +63,13 @@ const activities = await getRecentActivities();
           </span>
         </div>
         <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total Pengguna</p>
-        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalUsers}</p>
+        <p class="text-2xl md:text-3xl font-headline font-bold text-on-surface">{stats.totalUsers}</p>
       </div>
 
       <!-- Komentar Baru -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow">
-        <div class="flex items-center justify-between mb-4">
-          <span class="material-symbols-outlined text-stone-400">forum</span>
+      <div class="bg-surface-container-lowest p-4 md:p-6 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <span class="material-symbols-outlined text-stone-400 text-xl">forum</span>
           <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
             stats.commentsGrowth > 0 ? 'text-green-600 bg-green-50' : 
             stats.commentsGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
@@ -79,13 +79,13 @@ const activities = await getRecentActivities();
           </span>
         </div>
         <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Komentar Baru</p>
-        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalComments}</p>
+        <p class="text-2xl md:text-3xl font-headline font-bold text-on-surface">{stats.totalComments}</p>
       </div>
 
       <!-- Subscriber -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow">
-        <div class="flex items-center justify-between mb-4">
-          <span class="material-symbols-outlined text-stone-400">mark_email_unread</span>
+      <div class="bg-surface-container-lowest p-4 md:p-6 rounded-xl editorial-shadow">
+        <div class="flex items-center justify-between mb-3 md:mb-4">
+          <span class="material-symbols-outlined text-stone-400 text-xl">mark_email_unread</span>
           <span class={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
             stats.subscribersGrowth > 0 ? 'text-green-600 bg-green-50' : 
             stats.subscribersGrowth < 0 ? 'text-red-600 bg-red-50' : 'text-stone-400 bg-stone-50'
@@ -95,53 +95,100 @@ const activities = await getRecentActivities();
           </span>
         </div>
         <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">Total Subscriber</p>
-        <p class="text-3xl font-headline font-bold text-on-surface">{stats.totalSubscribers?.toLocaleString() || '0'}</p>
+        <p class="text-2xl md:text-3xl font-headline font-bold text-on-surface">{stats.totalSubscribers?.toLocaleString() || '0'}</p>
       </div>
     </section>
 
     <!-- Main Insights Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Visitor Trend Graph Placeholder -->
-      <section class="lg:col-span-2 bg-surface-container-lowest p-8 rounded-xl editorial-shadow">
-        <div class="flex items-center justify-between mb-8">
-          <h3 class="text-xl font-headline font-bold">Tren Pengunjung</h3>
-          <div class="flex space-x-2">
-            <button class="text-xs font-bold px-3 py-1 bg-stone-100 rounded-md">7 Hari</button>
-            <button class="text-xs font-bold px-3 py-1 text-stone-400">30 Hari</button>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+      <!-- Visitor Trend Graph -->
+      <section class="lg:col-span-2 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-5 md:p-8 rounded-2xl editorial-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <h3 class="text-base md:text-lg font-headline font-bold text-gray-900 dark:text-white">Tren Pengunjung</h3>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">7 hari terakhir</p>
+          </div>
+          <!-- Total views badge -->
+          <div class="text-right">
+            <p class="text-xl md:text-2xl font-black text-violet-600 dark:text-violet-400">
+              {dailyViews.reduce((s: number, d: any) => s + (d.views || 0), 0).toLocaleString()}
+            </p>
+            <p class="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest">total views</p>
           </div>
         </div>
-        <!-- Simple Vector Graph Mockup -->
-        <div class="relative h-64 w-full flex items-end justify-between px-2 overflow-hidden">
-          <!-- Grid Lines -->
-          <div class="absolute inset-0 flex flex-col justify-between py-2 border-b border-stone-100">
-            <div class="w-full border-t border-stone-50"></div>
-            <div class="w-full border-t border-stone-50"></div>
-            <div class="w-full border-t border-stone-50"></div>
-            <div class="w-full border-t border-stone-50"></div>
+
+        <!-- Chart area -->
+        <div class="mt-6 relative">
+          <!-- Y-axis grid lines + labels -->
+          <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
+            {[100, 75, 50, 25, 0].map((pct) => (
+              <div class="flex items-center gap-2 w-full">
+                <span class="text-[9px] text-gray-300 dark:text-gray-600 w-6 text-right flex-shrink-0">{pct}%</span>
+                <div class="flex-1 border-t border-dashed border-gray-100 dark:border-gray-800"></div>
+              </div>
+            ))}
           </div>
-          <!-- Bars - Dynamic from database -->
-          {dailyViews.map((day: any, index: number) => (
-            <div 
-              class={`z-10 w-8 rounded-t-sm transition-all hover:opacity-80 cursor-pointer ${
-                index === dailyViews.length - 1 ? 'bg-stone-900' : 'bg-stone-100 hover:bg-stone-900'
-              }`}
-              style={`height: ${day.percentage}%`}
-              title={`${day.day}: ${day.views.toLocaleString()} views`}
-            ></div>
-          ))}
+
+          <!-- Bars -->
+          <div class="pl-8 flex items-end justify-between gap-1.5 md:gap-2 h-52 pb-8">
+            {dailyViews.map((day: any, index: number) => {
+              const isToday = index === dailyViews.length - 1;
+              const isMax = day.percentage === Math.max(...dailyViews.map((d: any) => d.percentage));
+              return (
+                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group relative">
+                  <!-- Tooltip -->
+                  <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-gray-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    {day.views.toLocaleString()} views
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                  </div>
+                  <!-- Bar -->
+                  <div
+                    class={`w-full rounded-t-lg transition-all duration-500 ${
+                      isToday
+                        ? 'bg-stone-900 dark:bg-stone-100 shadow-lg'
+                        : day.views === 0
+                        ? 'bg-stone-100 dark:bg-stone-800'
+                        : isMax
+                        ? 'bg-stone-700 dark:bg-stone-300 group-hover:bg-stone-900 dark:group-hover:bg-stone-100'
+                        : 'bg-stone-300 dark:bg-stone-600 group-hover:bg-stone-700 dark:group-hover:bg-stone-300'
+                    }`}
+                    style={`height: ${day.views === 0 ? 6 : Math.max(15, day.percentage)}%`}
+                  ></div>
+                </div>
+              );
+            })}
+          </div>
+
+          <!-- X-axis labels -->
+          <div class="pl-8 flex justify-between gap-1.5 md:gap-2 mt-1">
+            {dailyViews.map((day: any, index: number) => {
+              const isToday = index === dailyViews.length - 1;
+              return (
+                <div class="flex-1 text-center">
+                  <span class={`text-[10px] font-bold ${
+                    isToday ? 'text-violet-600 dark:text-violet-400' : 'text-gray-400 dark:text-gray-500'
+                  }`}>{day.day}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
-        <div class="flex justify-between mt-4 px-2">
-          {dailyViews.map((day: any, index: number) => (
-            <span class={`text-[10px] font-bold ${
-              index === dailyViews.length - 1 ? 'text-stone-900' : 'text-stone-400'
-            }`}>{day.day}</span>
-          ))}
-        </div>
+
+        <!-- Peak day info -->
+        {(() => {
+          const peak = dailyViews.reduce((max: any, d: any) => d.views > (max?.views || 0) ? d : max, null);
+          return peak && peak.views > 0 ? (
+            <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <span class="material-symbols-outlined text-sm text-violet-500">trending_up</span>
+              Hari terbaik: <span class="font-bold text-gray-900 dark:text-white">{peak.day}</span> dengan <span class="font-bold text-violet-600 dark:text-violet-400">{peak.views.toLocaleString()} views</span>
+            </div>
+          ) : null;
+        })()}
       </section>
 
       <!-- Activity Feed -->
-      <section class="bg-surface-container-lowest p-8 rounded-xl editorial-shadow">
-        <h3 class="text-xl font-headline font-bold mb-8">Aktivitas Terbaru</h3>
+      <section class="bg-surface-container-lowest p-5 md:p-8 rounded-xl editorial-shadow">
+        <h3 class="text-base md:text-xl font-headline font-bold mb-6 md:mb-8">Aktivitas Terbaru</h3>
         <div class="space-y-6">
           {activities.slice(0, 4).map((activity: any) => (
             <div class="flex space-x-4">
@@ -162,12 +209,12 @@ const activities = await getRecentActivities();
     </div>
 
     <!-- Secondary Section: Popular Content -->
-    <section class="mt-12">
-      <div class="flex items-center justify-between mb-8">
-        <h3 class="text-2xl font-headline font-bold">Postingan Populer Minggu Ini</h3>
-        <a class="text-sm font-bold underline underline-offset-4 decoration-stone-200" href="/dashboard/artikel">Semua Postingan</a>
+    <section class="mt-8 md:mt-12">
+      <div class="flex items-center justify-between mb-5 md:mb-8">
+        <h3 class="text-lg md:text-2xl font-headline font-bold">Postingan Populer</h3>
+        <a class="text-sm font-bold underline underline-offset-4 decoration-stone-200" href="/dashboard/artikel">Semua</a>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8">
         {articles.slice(0, 3).map((article: any) => (
           <a href={`/artikel/${article.slug}`} class="group block">
             <div class="aspect-[16/10] bg-surface-container overflow-hidden rounded-lg mb-4">

@@ -38,40 +38,55 @@ for (let i = 0; i < Math.min(totalPages, 7); i++) {
 
   <main class="bg-gray-50 dark:bg-gray-950 min-h-screen">
     <!-- Hero -->
-    <section class="bg-gradient-to-br from-violet-700 via-violet-600 to-blue-600 py-14 md:py-20">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="max-w-2xl mb-8">
-          <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white mb-3">
+    <section class="bg-gradient-to-br from-violet-700 via-violet-600 to-blue-600 py-10 md:py-20">
+      <div class="max-w-7xl mx-auto px-4 md:px-6">
+        <div class="max-w-2xl mb-6 md:mb-8">
+          <h1 class="text-2xl md:text-5xl font-black tracking-tight text-white mb-2 md:mb-3">
             Jelajahi Semua Artikel
           </h1>
-          <p class="text-white/80 text-lg">
+          <p class="text-white/80 text-sm md:text-lg">
             {allArticlesRaw.length} artikel tersedia untuk kamu baca
           </p>
         </div>
         <!-- Search di hero -->
         <form action="/artikel" method="get" class="flex gap-2 max-w-xl">
           <div class="relative flex-1">
-            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+            <span class="material-symbols-outlined absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
             <input
               type="text"
               name="q"
               placeholder="Cari artikel..."
               value={q}
-              class="w-full pl-11 pr-4 py-3.5 bg-white dark:bg-gray-900 rounded-xl text-sm outline-none text-gray-900 dark:text-white placeholder:text-gray-400 shadow-lg"
+              class="w-full pl-10 md:pl-11 pr-3 md:pr-4 py-3 md:py-3.5 bg-white dark:bg-gray-900 rounded-xl text-sm outline-none text-gray-900 dark:text-white placeholder:text-gray-400 shadow-lg"
             />
           </div>
-          <button type="submit" class="bg-white text-violet-700 font-bold px-6 py-3.5 rounded-xl text-sm hover:bg-gray-100 transition-colors shadow-lg whitespace-nowrap">
+          <button type="submit" class="bg-white text-violet-700 font-bold px-4 md:px-6 py-3 md:py-3.5 rounded-xl text-sm hover:bg-gray-100 transition-colors shadow-lg whitespace-nowrap flex-shrink-0">
             Cari
           </button>
         </form>
       </div>
     </section>
 
-    <div class="max-w-7xl mx-auto px-6 py-10">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div class="max-w-7xl mx-auto px-3 md:px-6 py-5 md:py-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
 
         <!-- Main Content -->
         <div class="lg:col-span-9">
+
+          <!-- Mobile: Stats + Kategori strip -->
+          <div class="lg:hidden mb-4 space-y-3">
+            <!-- Stats compact -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-3 flex items-center gap-3">
+                <div class="text-xl font-black text-violet-600">{allArticlesRaw.length}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Artikel</div>
+              </div>
+              <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-3 flex items-center gap-3">
+                <div class="text-xl font-black text-blue-600">{categories.length}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Kategori</div>
+              </div>
+            </div>
+          </div>
 
           <!-- Filter Tabs -->
           <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
@@ -157,38 +172,34 @@ for (let i = 0; i < Math.min(totalPages, 7); i++) {
 
           <!-- Articles Grid -->
           {gridArticles.length > 0 && (
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
               {gridArticles.map((article: any) => {
                 const category = categories.find((c: any) => c.id === article.category_id);
                 return (
-                  <a href={`/artikel/${article.slug}`} class="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-violet-300 dark:hover:border-violet-700 shadow-sm hover:shadow-md transition-all flex flex-col">
+                  <a href={`/artikel/${article.slug}`} class="group bg-white dark:bg-gray-900 rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-violet-300 dark:hover:border-violet-700 shadow-sm hover:shadow-md transition-all flex flex-col">
                     <div class="relative aspect-[16/10] bg-gray-200 dark:bg-gray-800 overflow-hidden">
                       <img
                         src={article.cover_image || 'https://via.placeholder.com/800x500'}
                         alt={article.title}
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div class="absolute top-3 left-3">
-                        <span class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-violet-600 dark:text-violet-400 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+                      <div class="absolute top-2 left-2">
+                        <span class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-violet-600 dark:text-violet-400 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full text-[9px] md:text-xs font-bold uppercase tracking-wide">
                           {category?.name || 'Artikel'}
                         </span>
                       </div>
                     </div>
-                    <div class="p-4 flex flex-col flex-1">
-                      <h2 class="text-base font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors flex-1">
+                    <div class="p-2.5 md:p-4 flex flex-col flex-1">
+                      <h2 class="text-xs md:text-base font-bold text-gray-900 dark:text-white mb-1 md:mb-2 line-clamp-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors flex-1 leading-snug">
                         {article.title}
                       </h2>
-                      <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{article.excerpt}</p>
-                      <div class="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 pt-3 border-t border-gray-100 dark:border-gray-800">
-                        <span class="flex items-center gap-1">
-                          <span class="material-symbols-outlined text-sm">schedule</span>
+                      <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-2 md:mb-3 hidden sm:block">{article.excerpt}</p>
+                      <div class="flex items-center gap-2 text-[10px] md:text-xs text-gray-400 dark:text-gray-500 pt-2 md:pt-3 border-t border-gray-100 dark:border-gray-800">
+                        <span class="flex items-center gap-0.5">
+                          <span class="material-symbols-outlined text-xs">schedule</span>
                           {article.read_time} mnt
                         </span>
-                        <span class="flex items-center gap-1">
-                          <span class="material-symbols-outlined text-sm">visibility</span>
-                          {article.views || 0}
-                        </span>
-                        <span class="ml-auto">
+                        <span class="ml-auto hidden sm:block">
                           {article.published_at ? new Date(article.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : ''}
                         </span>
                       </div>
@@ -201,7 +212,7 @@ for (let i = 0; i < Math.min(totalPages, 7); i++) {
 
           <!-- Pagination -->
           {totalPages > 1 && (
-            <div class="mt-10 flex justify-center items-center gap-1.5">
+            <div class="mt-8 md:mt-10 flex justify-center items-center gap-1.5">
               <a
                 href={page > 1 ? `/artikel?page=${page - 1}${q ? `&q=${q}` : ''}` : '#'}
                 class={`p-2 rounded-lg transition-colors ${page <= 1 ? 'text-gray-300 dark:text-gray-700 pointer-events-none' : 'text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700'}`}
@@ -211,7 +222,7 @@ for (let i = 0; i < Math.min(totalPages, 7); i++) {
               {pageNumbers.map((pageNum) => (
                 <a
                   href={`/artikel?page=${pageNum}${q ? `&q=${q}` : ''}`}
-                  class={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition-all ${pageNum === page ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-violet-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'}`}
+                  class={`w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-lg font-bold text-sm transition-all ${pageNum === page ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-violet-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'}`}
                 >
                   {pageNum}
                 </a>
@@ -224,10 +235,24 @@ for (let i = 0; i < Math.min(totalPages, 7); i++) {
               </a>
             </div>
           )}
+
+          <!-- Mobile: Newsletter banner -->
+          <div class="lg:hidden mt-6">
+            <div class="bg-gradient-to-r from-violet-600 to-blue-600 rounded-xl p-4 flex items-center gap-4 text-white">
+              <span class="material-symbols-outlined text-3xl flex-shrink-0">mail</span>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold">Newsletter Gratis</p>
+                <p class="text-xs opacity-80">Artikel terbaru langsung ke inbox kamu</p>
+              </div>
+              <a href="/berlangganan" class="flex-shrink-0 bg-white text-violet-600 font-bold text-xs px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors whitespace-nowrap">
+                Daftar
+              </a>
+            </div>
+          </div>
         </div>
 
         <!-- Sidebar -->
-        <aside class="lg:col-span-3 space-y-5">
+        <aside class="hidden lg:block lg:col-span-3 space-y-5">
           <!-- Stats -->
           <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5">
             <div class="grid grid-cols-2 gap-3">

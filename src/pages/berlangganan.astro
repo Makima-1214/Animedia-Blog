@@ -7,19 +7,19 @@ import Header from '../components/Header.astro';
   <Header />
   <main class="pt-8 bg-white dark:bg-gray-950">
     <!-- Hero Section -->
-    <section class="px-8 py-20 md:py-32 flex flex-col items-center text-center max-w-4xl mx-auto">
+    <section class="px-4 md:px-8 py-12 md:py-20 lg:py-32 flex flex-col items-center text-center max-w-4xl mx-auto">
       <span class="text-xs uppercase tracking-[0.2em] text-gray-600 dark:text-gray-400 font-semibold mb-6">Subscription Plans</span>
-      <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight mb-8 text-gray-900 dark:text-white">Dukung Jurnalisme Berkualitas</h1>
+      <h1 class="text-3xl md:text-5xl lg:text-7xl font-extrabold tracking-tighter leading-tight mb-8 text-gray-900 dark:text-white">Dukung Jurnalisme Berkualitas</h1>
       <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
         Dapatkan akses eksklusif ke laporan mendalam, analisis tajam, dan konten premium yang dikurasi khusus untuk pembaca cerdas. Pilih paket yang sesuai dengan kebutuhan Anda.
       </p>
     </section>
 
     <!-- Pricing Tiers -->
-    <section class="px-8 pb-32">
+    <section class="px-4 md:px-8 pb-16 md:pb-32">
       <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-0">
         <!-- Free Tier -->
-        <div class="p-10 bg-surface border-r-0 md:border-r border-outline-variant/20 flex flex-col justify-between">
+        <div class="p-6 md:p-10 bg-surface border-b md:border-b-0 md:border-r border-outline-variant/20 flex flex-col justify-between">
           <div>
             <h3 class="text-2xl font-bold mb-2">Gratis</h3>
             <p class="text-on-surface-variant text-sm mb-8 leading-relaxed">Mulailah perjalanan membaca Anda tanpa biaya sepeser pun.</p>
@@ -48,7 +48,7 @@ import Header from '../components/Header.astro';
         </div>
 
         <!-- Premium Tier (Highlighted) -->
-        <div class="p-10 bg-surface-container-lowest shadow-[0_40px_100px_rgba(0,0,0,0.04)] relative z-10 flex flex-col justify-between transform md:scale-105">
+        <div class="p-6 md:p-10 bg-surface-container-lowest shadow-[0_40px_100px_rgba(0,0,0,0.04)] relative z-10 flex flex-col justify-between md:scale-105">
           <div class="absolute top-0 left-0 w-full h-1 bg-on-surface"></div>
           <div>
             <div class="flex justify-between items-start mb-2">
@@ -85,7 +85,7 @@ import Header from '../components/Header.astro';
         </div>
 
         <!-- Institutional Tier -->
-        <div class="p-10 bg-surface border-l-0 md:border-l border-outline-variant/20 flex flex-col justify-between">
+        <div class="p-6 md:p-10 bg-surface border-b md:border-b-0 md:border-l border-outline-variant/20 flex flex-col justify-between">
           <div>
             <h3 class="text-2xl font-bold mb-2">Institusi</h3>
             <p class="text-on-surface-variant text-sm mb-8 leading-relaxed">Solusi lengkap untuk tim, perusahaan, dan organisasi pendidikan.</p>
@@ -119,32 +119,32 @@ import Header from '../components/Header.astro';
     </section>
 
     <!-- Asymmetric Detail Section -->
-    <section class="bg-surface-container-low py-32 overflow-hidden">
-      <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <section class="bg-surface-container-low py-16 md:py-32 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
         <div class="relative">
           <img
             alt="Reading Experience"
-            class="w-full h-[600px] object-cover rounded-sm grayscale"
+            class="w-full h-52 md:h-[600px] object-cover rounded-sm grayscale"
             src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop"
           />
-          <div class="absolute -bottom-8 -right-8 bg-on-surface text-surface p-12 hidden md:block">
-            <p class="font-headline text-3xl font-bold leading-tight tracking-tighter italic">
+          <div class="absolute -bottom-8 -right-8 bg-on-surface text-surface p-8 md:p-12 hidden md:block">
+            <p class="font-headline text-2xl md:text-3xl font-bold leading-tight tracking-tighter italic">
               "Esensi dari literasi adalah pemahaman, bukan sekadar kecepatan."
             </p>
           </div>
         </div>
-        <div class="space-y-8">
-          <h2 class="text-4xl font-bold tracking-tighter leading-tight">Pengalaman Membaca yang Tak Tertandingi</h2>
-          <p class="text-on-surface-variant leading-relaxed">
+        <div class="space-y-6 md:space-y-8">
+          <h2 class="text-2xl md:text-4xl font-bold tracking-tighter leading-tight">Pengalaman Membaca yang Tak Tertandingi</h2>
+          <p class="text-on-surface-variant leading-relaxed text-sm md:text-base">
             Kami percaya bahwa desain adalah bagian dari narasi. Dengan berlangganan, Anda tidak hanya mendapatkan teks, tetapi sebuah pengalaman kurasi visual dan intelektual yang jernih, bebas dari gangguan pop-up atau clickbait yang merusak fokus Anda.
           </p>
-          <div class="grid grid-cols-2 gap-8 pt-4">
+          <div class="grid grid-cols-2 gap-6 md:gap-8 pt-2 md:pt-4">
             <div>
-              <span class="text-3xl font-extrabold block mb-1">500+</span>
+              <span class="text-2xl md:text-3xl font-extrabold block mb-1">500+</span>
               <span class="text-xs uppercase tracking-widest text-outline">Arsip Eksklusif</span>
             </div>
             <div>
-              <span class="text-3xl font-extrabold block mb-1">24/7</span>
+              <span class="text-2xl md:text-3xl font-extrabold block mb-1">24/7</span>
               <span class="text-xs uppercase tracking-widest text-outline">Akses Digital</span>
             </div>
           </div>
@@ -153,7 +153,7 @@ import Header from '../components/Header.astro';
     </section>
 
     <!-- FAQ Section -->
-    <section class="px-8 py-32 max-w-4xl mx-auto">
+    <section class="px-4 md:px-8 py-16 md:py-32 max-w-4xl mx-auto">
       <h2 class="text-3xl font-bold mb-16 tracking-tighter text-center">Pertanyaan Umum</h2>
       <div class="space-y-12">
         <div class="group">
@@ -184,7 +184,7 @@ import Header from '../components/Header.astro';
     </section>
 
     <!-- Newsletter Subscription Form -->
-    <section class="px-8 py-20 bg-gray-50 dark:bg-gray-900">
+    <section class="px-4 md:px-8 py-12 md:py-20 bg-gray-50 dark:bg-gray-900">
       <div class="max-w-2xl mx-auto text-center">
         <span class="material-symbols-outlined text-5xl text-violet-600 dark:text-violet-400 mb-4">mail</span>
         <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Berlangganan Newsletter Gratis</h2>
@@ -214,22 +214,6 @@ import Header from '../components/Header.astro';
       </div>
     </section>
   </main>
-
-  <!-- Footer -->
-  <footer class="bg-stone-100 dark:bg-stone-900 w-full py-16 px-8 mt-auto">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-8 w-full max-w-7xl mx-auto">
-      <div class="text-lg font-bold text-stone-900 dark:text-stone-50">Animedia</div>
-      <div class="flex flex-wrap justify-center gap-8 text-sm tracking-wide leading-relaxed">
-        <a class="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-opacity opacity-80 hover:opacity-100" href="/">Beranda</a>
-        <a class="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-opacity opacity-80 hover:opacity-100" href="/artikel">Artikel</a>
-        <a class="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-opacity opacity-80 hover:opacity-100" href="/berlangganan">Newsletter</a>
-        <a class="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 transition-opacity opacity-80 hover:opacity-100" href="/toko">Toko</a>
-      </div>
-      <div class="text-stone-700 dark:text-stone-300 text-sm tracking-wide leading-relaxed">
-        © {new Date().getFullYear()} Animedia. All rights reserved.
-      </div>
-    </div>
-  </footer>
 
   <script is:inline>
     // Newsletter form submission

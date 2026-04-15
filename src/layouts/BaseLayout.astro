@@ -19,9 +19,12 @@ const {
   noindex = false,
 } = Astro.props;
 
-const site = 'https://architectledger.web.id';
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? site);
-const ogImage = new URL(image, Astro.site ?? site);
+import { getSiteConfig } from '../lib/settings.js';
+const site = await getSiteConfig();
+
+const site_url = 'https://animedia.web.id';
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? site_url);
+const ogImage = new URL(image, Astro.site ?? site_url);
 ---
 
 <!DOCTYPE html>
@@ -32,7 +35,7 @@ const ogImage = new URL(image, Astro.site ?? site);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
-    <title>{title} | Animedia</title>
+    <title>{title} | {site.name}</title>
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     <meta name="author" content={author} />
@@ -68,15 +71,15 @@ const ogImage = new URL(image, Astro.site ?? site);
     <!-- Open Graph -->
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={`${title} | Animedia`} />
+    <meta property="og:title" content={`${title} | ${site.name}`} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:site_name" content="Animedia" />
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content="id_ID" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={`${title} | Animedia`} />
+    <meta name="twitter:title" content={`${title} | ${site.name}`} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
@@ -207,10 +210,49 @@ const ogImage = new URL(image, Astro.site ?? site);
       .dark ::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.3);
       }
+
+      /* Hide scrollbar utility */
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
     </style>
   </head>
   <body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
     <slot />
+
+    <!-- Global Footer -->
+    <footer class="w-full border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <!-- Brand -->
+          <div class="flex items-center gap-2">
+            {site.logoUrl ? (
+              <img src={site.logoUrl} alt={site.name} class="h-7 w-auto object-contain" />
+            ) : (
+              <>
+                <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-2xl">architecture</span>
+                <span class="text-lg font-black tracking-tighter text-gray-900 dark:text-white">{site.name}</span>
+              </>
+            )}
+          </div>
+          <!-- Nav links -->
+          <nav class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <a href="/" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">Beranda</a>
+            <a href="/artikel" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">Artikel</a>
+            <a href="/toko" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">Toko</a>
+            <a href="/berlangganan" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">Newsletter</a>
+          </nav>
+          <!-- Copyright -->
+          <p class="text-xs text-gray-400 dark:text-gray-500">
+            © {new Date().getFullYear()} {site.name}. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
     
     <script>
       // Smooth page transitions

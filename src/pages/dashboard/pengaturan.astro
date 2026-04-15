@@ -23,6 +23,72 @@ const adminAvatar = admin?.avatar || `https://ui-avatars.com/api/?name=${encodeU
     </header>
 
     <form id="settingsForm" class="space-y-16 md:space-y-24">
+      <!-- ── Identitas Situs ─────────────────────────────── -->
+      <section class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
+        <div class="md:col-span-4">
+          <h3 class="font-headline text-xl font-bold text-on-surface mb-2">Identitas Situs</h3>
+          <p class="text-sm text-on-surface-variant leading-snug">Nama dan logo yang tampil di header, footer, dan halaman login.</p>
+        </div>
+        <div class="md:col-span-8 bg-surface-container-lowest p-6 md:p-8 rounded-xl space-y-6">
+          <!-- Nama Situs -->
+          <div class="space-y-2">
+            <label class="font-label text-[11px] uppercase tracking-widest font-bold text-on-surface-variant">Nama Situs</label>
+            <input
+              name="site_name"
+              type="text"
+              value={settings.site_name || 'Animedia'}
+              class="w-full border-b border-outline-variant bg-transparent py-2 focus:border-primary focus:ring-0 transition-colors text-sm font-mono"
+              placeholder="Nama situs Anda"
+            />
+            <p class="text-[10px] text-on-surface-variant/70">Tampil di header, footer, tab browser, dan halaman login.</p>
+          </div>
+          <!-- Tagline -->
+          <div class="space-y-2">
+            <label class="font-label text-[11px] uppercase tracking-widest font-bold text-on-surface-variant">Tagline</label>
+            <input
+              name="site_tagline"
+              type="text"
+              value={settings.site_tagline || 'Portal Berita Teknologi & Pop Culture'}
+              class="w-full border-b border-outline-variant bg-transparent py-2 focus:border-primary focus:ring-0 transition-colors text-sm font-mono"
+              placeholder="Deskripsi singkat situs"
+            />
+            <p class="text-[10px] text-on-surface-variant/70">Tampil di halaman login dan meta description.</p>
+          </div>
+          <!-- Logo URL -->
+          <div class="space-y-2">
+            <label class="font-label text-[11px] uppercase tracking-widest font-bold text-on-surface-variant">URL Logo</label>
+            <div class="flex items-center gap-3">
+              <div id="logoPreviewWrap" class={`w-12 h-12 rounded-lg border border-outline-variant flex items-center justify-center overflow-hidden flex-shrink-0 ${settings.site_logo_url ? '' : 'bg-surface-container'}`}>
+                {settings.site_logo_url ? (
+                  <img id="logoPreview" src={settings.site_logo_url} alt="Logo" class="w-full h-full object-contain" />
+                ) : (
+                  <span id="logoPreview" class="material-symbols-outlined text-outline-variant">image</span>
+                )}
+              </div>
+              <input
+                id="siteLogoUrl"
+                name="site_logo_url"
+                type="url"
+                value={settings.site_logo_url || ''}
+                class="flex-1 border-b border-outline-variant bg-transparent py-2 focus:border-primary focus:ring-0 transition-colors font-mono text-sm"
+                placeholder="https://example.com/logo.png"
+              />
+            </div>
+            <p class="text-[10px] text-on-surface-variant/70">Kosongkan untuk pakai ikon + nama teks. Rekomendasi: PNG transparan, tinggi 40–60px.</p>
+          </div>
+          <!-- Upload Logo -->
+          <div class="space-y-2">
+            <label class="font-label text-[11px] uppercase tracking-widest font-bold text-on-surface-variant">Atau Upload Logo</label>
+            <label class="cursor-pointer inline-flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-lg text-sm font-bold hover:bg-surface-container-highest transition-colors">
+              <span class="material-symbols-outlined text-sm">upload</span>
+              Pilih File Logo
+              <input type="file" id="logoFile" accept="image/*" class="hidden" />
+            </label>
+            <p id="logoUploadStatus" class="text-xs text-on-surface-variant"></p>
+          </div>
+        </div>
+      </section>
+
       <!-- Admin Profile Section -->
       <section class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
         <div class="md:col-span-4">
@@ -213,6 +279,40 @@ const adminAvatar = admin?.avatar || `https://ui-avatars.com/api/?name=${encodeU
   </div>
 
   <script is:inline>
+    // Logo preview on URL input
+    document.getElementById('siteLogoUrl').addEventListener('input', function() {
+      const wrap = document.getElementById('logoPreviewWrap');
+      const preview = document.getElementById('logoPreview');
+      if (this.value) {
+        wrap.innerHTML = `<img id="logoPreview" src="${this.value}" alt="Logo" class="w-full h-full object-contain" />`;
+      } else {
+        wrap.innerHTML = `<span id="logoPreview" class="material-symbols-outlined text-outline-variant">image</span>`;
+      }
+    });
+
+    // Upload logo
+    document.getElementById('logoFile').addEventListener('change', async function() {
+      const file = this.files[0];
+      if (!file) return;
+      const status = document.getElementById('logoUploadStatus');
+      status.textContent = 'Mengupload...';
+      const fd = new FormData();
+      fd.append('file', file);
+      try {
+        const res = await fetch('/api/upload/image', { method: 'POST', body: fd });
+        const result = await res.json();
+        if (result.success) {
+          document.getElementById('siteLogoUrl').value = result.url;
+          document.getElementById('logoPreviewWrap').innerHTML = `<img id="logoPreview" src="${result.url}" alt="Logo" class="w-full h-full object-contain" />`;
+          status.textContent = '✅ Upload berhasil!';
+        } else {
+          status.textContent = '❌ ' + result.message;
+        }
+      } catch (e) {
+        status.textContent = '❌ Gagal upload';
+      }
+    });
+
     // Avatar preview on URL input
     document.getElementById('adminAvatar').addEventListener('input', function() {
       if (this.value) document.getElementById('avatarPreview').src = this.value;

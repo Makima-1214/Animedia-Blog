@@ -34,8 +34,8 @@ const userComments = commentsResult.rows;
   <Header />
 
   <!-- Toast -->
-  <div id="toast" class="fixed top-6 right-6 z-50 transform translate-x-[420px] transition-all duration-500 ease-out">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 flex items-center gap-3 min-w-[340px] border border-gray-100 dark:border-gray-700">
+  <div id="toast" class="fixed bottom-4 left-4 right-4 md:bottom-auto md:top-6 md:left-auto md:right-6 md:w-auto md:min-w-[340px] z-50 transform transition-all duration-500 ease-out">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 flex items-center gap-3 border border-gray-100 dark:border-gray-700">
       <span id="toastIcon" class="material-symbols-outlined text-2xl"></span>
       <p id="toastMessage" class="text-sm font-medium flex-1"></p>
     </div>
@@ -45,7 +45,7 @@ const userComments = commentsResult.rows;
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
       <!-- Sidebar -->
       <aside class="lg:col-span-4">
-        <div class="bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 sticky top-24">
+        <div class="bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 lg:sticky lg:top-24">
           <!-- Avatar -->
           <div class="flex flex-col items-center text-center mb-6">
             <div class="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white mb-4 shadow-lg">
@@ -71,36 +71,36 @@ const userComments = commentsResult.rows;
           </div>
 
           <!-- Quick Actions -->
-          <div class="space-y-2">
+          <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0 -mx-1 px-1 lg:mx-0 lg:px-0 no-scrollbar">
             <button
               data-tab="edit"
-              class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
+              class="tab-btn flex-shrink-0 lg:w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left whitespace-nowrap"
             >
-              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400">edit</span>
-              <span class="font-medium text-gray-700 dark:text-gray-300">Edit Profil</span>
+              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-lg">edit</span>
+              <span class="font-medium text-gray-700 dark:text-gray-300 text-sm">Edit Profil</span>
             </button>
             <button
               data-tab="password"
-              class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
+              class="tab-btn flex-shrink-0 lg:w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left whitespace-nowrap"
             >
-              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400">lock</span>
-              <span class="font-medium text-gray-700 dark:text-gray-300">Ganti Password</span>
+              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-lg">lock</span>
+              <span class="font-medium text-gray-700 dark:text-gray-300 text-sm">Ganti Password</span>
             </button>
             <button
               data-tab="preferences"
-              class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
+              class="tab-btn flex-shrink-0 lg:w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left whitespace-nowrap"
             >
-              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400">settings</span>
-              <span class="font-medium text-gray-700 dark:text-gray-300">Preferensi</span>
+              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-lg">settings</span>
+              <span class="font-medium text-gray-700 dark:text-gray-300 text-sm">Preferensi</span>
             </button>
             <button
               data-tab="comments"
-              class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
+              class="tab-btn flex-shrink-0 lg:w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left whitespace-nowrap"
             >
-              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400">forum</span>
-              <span class="font-medium text-gray-700 dark:text-gray-300">Komentar Saya</span>
+              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-lg">forum</span>
+              <span class="font-medium text-gray-700 dark:text-gray-300 text-sm">Komentar</span>
               {userComments.length > 0 && (
-                <span class="ml-auto text-xs font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 px-2 py-0.5 rounded-full">{userComments.length}</span>
+                <span class="ml-auto text-xs font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 px-2 py-0.5 rounded-full">{String(userComments.length)}</span>
               )}
             </button>
           </div>
@@ -111,7 +111,7 @@ const userComments = commentsResult.rows;
       <div class="lg:col-span-8">
         <!-- Edit Profile Tab -->
         <div id="edit-tab" class="tab-content bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Edit Profil</h3>
+          <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Edit Profil</h3>
           
           <form id="updateProfileForm" class="space-y-5">
             <div>
@@ -148,7 +148,7 @@ const userComments = commentsResult.rows;
 
         <!-- Change Password Tab -->
         <div id="password-tab" class="tab-content hidden bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Ganti Password</h3>
+          <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Ganti Password</h3>
           
           <form id="changePasswordForm" class="space-y-5">
             <div>
@@ -228,7 +228,7 @@ const userComments = commentsResult.rows;
 
         <!-- Preferences Tab -->
         <div id="preferences-tab" class="tab-content hidden bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Preferensi</h3>
+          <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Preferensi</h3>
           
           <div class="space-y-6">
             <!-- Newsletter -->
@@ -278,7 +278,7 @@ const userComments = commentsResult.rows;
 
         <!-- Comments Tab -->
         <div id="comments-tab" class="tab-content hidden bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Komentar Saya</h3>
+          <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Komentar Saya</h3>
           {userComments.length === 0 ? (
             <div class="text-center py-12">
               <span class="material-symbols-outlined text-5xl text-gray-300 dark:text-gray-700 block mb-3">forum</span>
@@ -328,12 +328,24 @@ const userComments = commentsResult.rows;
       }
       
       toastMessage.textContent = message;
-      toast.style.transform = 'translateX(0)';
+
+      const isMobile = window.innerWidth < 768;
+      toast.style.transform = isMobile ? 'translateY(0)' : 'translateX(0)';
       
       setTimeout(() => {
-        toast.style.transform = 'translateX(420px)';
+        toast.style.transform = isMobile ? 'translateY(100px)' : 'translateX(420px)';
       }, 4000);
     }
+
+    // Set initial hidden state based on viewport
+    (function() {
+      const toast = document.getElementById('toast');
+      if (window.innerWidth < 768) {
+        toast.style.transform = 'translateY(100px)';
+      } else {
+        toast.style.transform = 'translateX(420px)';
+      }
+    })();
 
     // Tab switching
     const tabBtns = document.querySelectorAll('.tab-btn');

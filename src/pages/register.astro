@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getSession } from '../lib/simple-auth';
+import { getSiteConfig } from '../lib/settings.js';
 
 // Check if already logged in
 const token = Astro.cookies.get('session_token')?.value;
@@ -10,6 +11,7 @@ if (token) {
     return Astro.redirect('/');
   }
 }
+const site = await getSiteConfig();
 ---
 
 <BaseLayout title="Register" noindex={true}>
@@ -31,9 +33,11 @@ if (token) {
       <!-- Logo -->
       <div class="text-center mb-8">
         <h1 class="font-headline text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-1">
-          Animedia
+          {site.logoUrl ? (
+            <img src={site.logoUrl} alt={site.name} class="h-10 w-auto object-contain mx-auto" />
+          ) : site.name}
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">Portal Berita Teknologi & Pop Culture</p>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">{site.tagline}</p>
       </div>
 
       <!-- Form Card -->
