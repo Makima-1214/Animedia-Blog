@@ -221,11 +221,11 @@ const ogImage = new URL(image, Astro.site ?? site_url);
       }
     </style>
   </head>
-  <body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-white selection:bg-violet-100 selection:text-violet-900">
     <slot />
 
     <!-- Global Footer -->
-    <footer class="w-full bg-gray-950 dark:bg-gray-950 text-gray-400 mt-auto">
+    <footer class="w-full bg-gray-900 text-gray-400 mt-auto">
       <!-- Main Footer -->
       <div class="max-w-7xl mx-auto px-4 md:px-6 pt-12 pb-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
