@@ -626,3 +626,17 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
     }
   });
 </script>
+
+<style>
+  /* Gambar dalam konten artikel: full width, rasio landscape 16:9 */
+  .prose img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+  }
+</style>

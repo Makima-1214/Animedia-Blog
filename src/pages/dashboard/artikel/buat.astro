@@ -334,7 +334,7 @@ const categories = await getAllCategories() as Category[];
     document.getElementById('btnImage').addEventListener('click', function() {
       var url = prompt('URL gambar:');
       if (url) {
-        document.execCommand('insertHTML', false, '<img src="' + url + '" alt="image" style="max-width:100%;border-radius:0.5rem;margin:0.5rem 0;" />');
+        document.execCommand('insertHTML', false, '<img src="' + url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
       }
       ed.focus();
     });
