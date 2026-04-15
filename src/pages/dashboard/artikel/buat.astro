@@ -380,17 +380,23 @@ const categories = await getAllCategories() as Category[];
       if (!file) return;
       var status = document.getElementById('upload-status');
       status.textContent = 'Mengupload...';
-      var fd = new FormData();
-      fd.append('file', file);
       try {
-        var res = await fetch('/api/upload/image', { method: 'POST', body: fd });
+        var signRes = await fetch('/api/upload/sign');
+        var sign = await signRes.json();
+        var fd = new FormData();
+        fd.append('file', file);
+        fd.append('folder', 'blog-articles');
+        fd.append('timestamp', sign.timestamp);
+        fd.append('api_key', sign.api_key);
+        fd.append('signature', sign.signature);
+        var res = await fetch('https://api.cloudinary.com/v1_1/' + sign.cloud_name + '/image/upload', { method: 'POST', body: fd });
         var result = await res.json();
-        if (result.success) {
-          document.getElementById('coverImage').value = result.url;
-          document.getElementById('coverImageUrl').value = result.url;
-          document.getElementById('cover-preview').innerHTML = '<img src="' + result.url + '" class="w-full h-full object-cover" />';
+        if (result.secure_url) {
+          document.getElementById('coverImage').value = result.secure_url;
+          document.getElementById('coverImageUrl').value = result.secure_url;
+          document.getElementById('cover-preview').innerHTML = '<img src="' + result.secure_url + '" class="w-full h-full object-cover" />';
           status.textContent = '✅ Upload berhasil!';
-        } else { status.textContent = '❌ ' + result.message; }
+        } else { status.textContent = '❌ ' + (result.error?.message || 'Gagal upload'); }
       } catch(e) { status.textContent = '❌ Gagal upload'; }
     });
 
@@ -493,16 +499,22 @@ const categories = await getAllCategories() as Category[];
         if (!file) return;
         var status = document.getElementById('imgModalStatus');
         status.textContent = 'Mengupload...';
-        var fd = new FormData();
-        fd.append('file', file);
         try {
-          var res = await fetch('/api/upload/image', { method: 'POST', body: fd });
+          var signRes = await fetch('/api/upload/sign');
+          var sign = await signRes.json();
+          var fd = new FormData();
+          fd.append('file', file);
+          fd.append('folder', 'blog-articles');
+          fd.append('timestamp', sign.timestamp);
+          fd.append('api_key', sign.api_key);
+          fd.append('signature', sign.signature);
+          var res = await fetch('https://api.cloudinary.com/v1_1/' + sign.cloud_name + '/image/upload', { method: 'POST', body: fd });
           var result = await res.json();
-          if (result.success) {
-            document.execCommand('insertHTML', false, '<img src="' + result.url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
+          if (result.secure_url) {
+            document.execCommand('insertHTML', false, '<img src="' + result.secure_url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
             document.getElementById('imgModal').classList.add('hidden');
             ed.focus();
-          } else { status.textContent = '❌ ' + result.message; }
+          } else { status.textContent = '❌ ' + (result.error?.message || 'Gagal upload'); }
         } catch(e) { status.textContent = '❌ Gagal upload'; }
       });
     })();
