@@ -87,9 +87,7 @@ const enrichedComments = await Promise.all(comments.map(async (c: any) => {
       }, async (confirmed) => {
         if (!confirmed) return;
         try {
-          const formData = new FormData();
-          formData.append('id', id);
-          const response = await fetch('/api/comments/delete', { method: 'POST', body: formData });
+          const response = await fetch('/api/comments/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
           const result = await response.json();
           if (result.success) {
             alert('✅ Komentar berhasil dihapus!');

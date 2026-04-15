@@ -327,12 +327,10 @@ const categories = await getAllCategories();
       }, async (confirmed) => {
         if (!confirmed) return;
 
-        const formData = new FormData();
-        formData.append('id', id);
-
         fetch('/api/articles/delete', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
         })
         .then(response => response.json())
         .then(result => {

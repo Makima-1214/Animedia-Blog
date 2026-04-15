@@ -8,9 +8,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    const id = formData.get('id')?.toString();
-    const name = formData.get('name')?.toString();
+    const ct = request.headers.get('content-type') || '';
+    const b = ct.includes('application/json') ? await request.json() : Object.fromEntries(await request.formData());
+    const id = b.id?.toString();
+    const name = b.name?.toString();
 
     if (!id || !name) {
       return new Response(JSON.stringify({ success: false, message: 'ID dan nama wajib diisi' }), { status: 400 });

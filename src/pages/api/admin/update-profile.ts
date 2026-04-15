@@ -19,9 +19,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   try {
-    const formData = await request.formData();
-    const name = formData.get('name')?.toString()?.trim();
-    const avatar = formData.get('avatar')?.toString()?.trim() || '';
+    const ct = request.headers.get('content-type') || '';
+    const b = ct.includes('application/json') ? await request.json() : Object.fromEntries(await request.formData());
+    const name = b.name?.toString()?.trim();
+    const avatar = b.avatar?.toString()?.trim() || '';
 
     if (!name) {
       return new Response(JSON.stringify({ success: false, message: 'Nama tidak boleh kosong' }), { status: 400 });

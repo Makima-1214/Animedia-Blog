@@ -166,7 +166,8 @@ const articles = await getAllArticles();
       try {
         const response = await fetch('/api/categories/create', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(formData))
         });
 
         const result = await response.json();
@@ -194,7 +195,8 @@ const articles = await getAllArticles();
 
         const response = await fetch('/api/categories/update', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, name: newName.trim() })
         });
 
         const result = await response.json();
@@ -226,7 +228,7 @@ const articles = await getAllArticles();
         try {
           const formData = new FormData();
           formData.append('id', id);
-          const response = await fetch('/api/categories/delete', { method: 'POST', body: formData });
+          const response = await fetch('/api/categories/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
           const result = await response.json();
           if (result.success) {
             alert('✅ Kategori berhasil dihapus!');

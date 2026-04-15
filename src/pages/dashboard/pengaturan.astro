@@ -347,11 +347,7 @@ const adminAvatar = admin?.avatar || `https://ui-avatars.com/api/?name=${encodeU
       const avatar = document.getElementById('adminAvatar').value.trim();
       if (!name) { alert('Nama tidak boleh kosong'); return; }
 
-      const fd = new FormData();
-      fd.append('name', name);
-      fd.append('avatar', avatar);
-
-      const res = await fetch('/api/admin/update-profile', { method: 'POST', body: fd });
+      const res = await fetch('/api/admin/update-profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, avatar }) });
       const result = await res.json();
       if (result.success) {
         // Update preview with fallback to UI Avatars if no avatar
@@ -417,11 +413,12 @@ const adminAvatar = admin?.avatar || `https://ui-avatars.com/api/?name=${encodeU
         toggles.forEach(toggle => {
           formData.append(toggle.dataset.name, toggle.dataset.value);
         });
-        
+        const data = Object.fromEntries(formData);
         try {
           const response = await fetch('/api/settings/update', {
             method: 'POST',
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
           });
           
           const result = await response.json();

@@ -17,8 +17,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   try {
-    const formData = await request.formData();
-    const id = formData.get('id')?.toString();
+    const ct = request.headers.get('content-type') || '';
+    const b = ct.includes('application/json') ? await request.json() : Object.fromEntries(await request.formData());
+    const id = b.id?.toString();
     if (!id) {
       return new Response(JSON.stringify({ success: false, message: 'ID tidak valid' }), { status: 400 });
     }

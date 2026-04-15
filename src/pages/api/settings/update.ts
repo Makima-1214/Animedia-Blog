@@ -12,23 +12,22 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    
-    // Extract settings from form
+    const ct = request.headers.get('content-type') || '';
+    const b = ct.includes('application/json') ? await request.json() : Object.fromEntries(await request.formData());
     const settings = {
-      site_name: formData.get('site_name')?.toString() || 'Animedia',
-      site_title: formData.get('site_title')?.toString() || 'Animedia',
-      site_tagline: formData.get('site_tagline')?.toString() || '',
-      site_logo_url: formData.get('site_logo_url')?.toString() || '',
-      site_favicon_url: formData.get('site_favicon_url')?.toString() || '',
-      breaking_news: formData.get('breaking_news')?.toString() || '',
-      maintenance_mode: formData.get('maintenance_mode') === 'true' ? 'true' : 'false',
-      posts_per_page: formData.get('posts_per_page')?.toString() || '12',
-      pagination_style: formData.get('pagination_style')?.toString() || 'numbers',
-      homepage_display: formData.get('homepage_display')?.toString() || 'latest',
-      allow_comments: formData.get('allow_comments') === 'true' ? 'true' : 'false',
-      nested_comments: formData.get('nested_comments') === 'true' ? 'true' : 'false',
-      manual_approval: formData.get('manual_approval') === 'true' ? 'true' : 'false',
+      site_name: b.site_name?.toString() || 'Animedia',
+      site_title: b.site_title?.toString() || 'Animedia',
+      site_tagline: b.site_tagline?.toString() || '',
+      site_logo_url: b.site_logo_url?.toString() || '',
+      site_favicon_url: b.site_favicon_url?.toString() || '',
+      breaking_news: b.breaking_news?.toString() || '',
+      maintenance_mode: b.maintenance_mode === 'true' ? 'true' : 'false',
+      posts_per_page: b.posts_per_page?.toString() || '12',
+      pagination_style: b.pagination_style?.toString() || 'numbers',
+      homepage_display: b.homepage_display?.toString() || 'latest',
+      allow_comments: b.allow_comments === 'true' ? 'true' : 'false',
+      nested_comments: b.nested_comments === 'true' ? 'true' : 'false',
+      manual_approval: b.manual_approval === 'true' ? 'true' : 'false',
     };
 
     await updateSettings(settings);

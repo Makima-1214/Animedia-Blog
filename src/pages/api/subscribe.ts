@@ -12,8 +12,9 @@ export const POST: APIRoute = async ({ request }) => {
     }
     subscribeRateLimit.set(ip, Date.now());
 
-    const formData = await request.formData();
-    const email = formData.get('email')?.toString()?.trim().toLowerCase();
+    const ct = request.headers.get('content-type') || '';
+    const b = ct.includes('application/json') ? await request.json() : Object.fromEntries(await request.formData());
+    const email = b.email?.toString()?.trim().toLowerCase();
 
     if (!email) {
       return new Response(JSON.stringify({ success: false, message: 'Email wajib diisi' }), { status: 400 });
