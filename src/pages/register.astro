@@ -187,6 +187,7 @@ const site = await getSiteConfig();
       try {
         const response = await fetch('/api/auth/register', {
           method: 'POST',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
           body: formData
         });
         
