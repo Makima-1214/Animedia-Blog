@@ -4,6 +4,11 @@
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "astro",
   "outputDirectory": "dist",
+  "functions": {
+    "src/pages/api/upload/image.ts": {
+      "maxDuration": 30
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
