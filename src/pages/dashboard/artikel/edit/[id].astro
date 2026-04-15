@@ -145,14 +145,29 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
 
         <!-- Cover Image -->
         <div class="space-y-2">
-          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">URL Gambar Cover</label>
-          <input
-            type="url"
-            name="coverImage"
-            value={article.cover_image || ''}
-            class="w-full border-b border-outline-variant bg-transparent py-2 focus:border-primary focus:ring-0 transition-colors"
-            placeholder="https://example.com/image.jpg"
-          />
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Gambar Cover</label>
+          <div class="flex items-center gap-4">
+            <input type="hidden" name="coverImage" id="coverImage" value={article.cover_image || ''} />
+            <div id="cover-preview" class="w-20 h-14 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant flex-shrink-0">
+              {article.cover_image
+                ? <img src={article.cover_image} class="w-full h-full object-cover" />
+                : <span class="material-symbols-outlined text-outline-variant">image</span>
+              }
+            </div>
+            <div class="flex flex-col gap-2 flex-1">
+              <label class="cursor-pointer bg-surface-container-high px-4 py-2 rounded-lg text-sm font-bold hover:bg-surface-container-highest transition-colors flex items-center gap-2 w-fit">
+                <span class="material-symbols-outlined text-sm">upload</span>
+                Upload Gambar
+                <input type="file" id="coverImageFile" accept="image/*" class="hidden" />
+              </label>
+              <p class="text-[10px] text-on-surface-variant">Atau masukkan URL:</p>
+              <input type="url" id="coverImageUrl"
+                value={article.cover_image || ''}
+                class="border border-outline-variant bg-transparent rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary"
+                placeholder="https://example.com/image.jpg" />
+            </div>
+          </div>
+          <p id="upload-status" class="text-xs text-on-surface-variant"></p>
         </div>
 
         <!-- Category & Settings -->
@@ -429,6 +444,31 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
   <script is:inline>
     const ARTICLE_ID = document.querySelector('input[name="id"]').value;
 
+    // Cover image upload
+    document.getElementById('coverImageFile').addEventListener('change', async function() {
+      var file = this.files[0];
+      if (!file) return;
+      var status = document.getElementById('upload-status');
+      status.textContent = 'Mengupload...';
+      var fd = new FormData();
+      fd.append('file', file);
+      try {
+        var res = await fetch('/api/upload/image', { method: 'POST', body: fd });
+        var result = await res.json();
+        if (result.success) {
+          document.getElementById('coverImage').value = result.url;
+          document.getElementById('coverImageUrl').value = result.url;
+          document.getElementById('cover-preview').innerHTML = '<img src="' + result.url + '" class="w-full h-full object-cover" />';
+          status.textContent = '✅ Upload berhasil!';
+        } else { status.textContent = '❌ ' + result.message; }
+      } catch(e) { status.textContent = '❌ Gagal upload'; }
+    });
+
+    document.getElementById('coverImageUrl').addEventListener('input', function() {
+      document.getElementById('coverImage').value = this.value;
+      if (this.value) document.getElementById('cover-preview').innerHTML = '<img src="' + this.value + '" class="w-full h-full object-cover" />';
+    });
+
     function switchTab(tab) {
       const isNew = tab === 'new';
       document.getElementById('formNew').classList.toggle('hidden', !isNew);
@@ -551,7 +591,7 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
         slug: formData.get('slug'),
         excerpt: formData.get('excerpt'),
         content: document.getElementById('content-editor').innerHTML,
-        coverImage: formData.get('coverImage'),
+        coverImage: document.getElementById('coverImage').value,
         categoryId: formData.get('categoryId'),
         status: formData.get('status'),
         readTime: formData.get('readTime'),
