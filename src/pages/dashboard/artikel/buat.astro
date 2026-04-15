@@ -382,8 +382,18 @@ const categories = await getAllCategories() as Category[];
       if (!html || html === '') { alert('⚠️ Konten artikel tidak boleh kosong'); return; }
       document.getElementById('content').value = html;
       var formData = new FormData(this);
+      var data = {
+        title: formData.get('title'),
+        slug: formData.get('slug'),
+        excerpt: formData.get('excerpt'),
+        content: html,
+        coverImage: formData.get('coverImage'),
+        categoryId: formData.get('categoryId'),
+        status: formData.get('status'),
+        tags: formData.get('tags')
+      };
       try {
-        var response = await fetch('/api/articles/create', { method: 'POST', body: formData });
+        var response = await fetch('/api/articles/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
         var result = await response.json();
         if (result.success) {
           alert('✅ Artikel berhasil dibuat!');

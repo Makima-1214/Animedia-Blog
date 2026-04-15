@@ -8,8 +8,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    const id = formData.get('id')?.toString();
+    const contentType = request.headers.get('content-type') || '';
+    let id: string | undefined;
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      id = body.id;
+    } else {
+      const formData = await request.formData();
+      id = formData.get('id')?.toString();
+    }
 
     if (!id) {
       return new Response(JSON.stringify({ success: false, message: 'ID artikel tidak valid' }), { status: 400 });

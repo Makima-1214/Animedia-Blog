@@ -8,23 +8,32 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    const id = formData.get('id')?.toString();
-    const title = formData.get('title')?.toString();
-    const slug = formData.get('slug')?.toString();
-    const excerpt = formData.get('excerpt')?.toString();
-    const content = formData.get('content')?.toString();
-    const coverImage = formData.get('coverImage')?.toString();
-    const categoryId = formData.get('categoryId')?.toString();
-    const status = formData.get('status')?.toString();
-    const readTime = parseInt(formData.get('readTime')?.toString() || '5');
+    const contentType = request.headers.get('content-type') || '';
+    let id, title, slug, excerpt, content, coverImage, categoryId, status, readTime, published_at;
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      ({ id, title, slug, excerpt, content, coverImage, categoryId, status, published_at } = body);
+      readTime = parseInt(body.readTime || '5');
+    } else {
+      const formData = await request.formData();
+      id = formData.get('id')?.toString();
+      title = formData.get('title')?.toString();
+      slug = formData.get('slug')?.toString();
+      excerpt = formData.get('excerpt')?.toString();
+      content = formData.get('content')?.toString();
+      coverImage = formData.get('coverImage')?.toString();
+      categoryId = formData.get('categoryId')?.toString();
+      status = formData.get('status')?.toString();
+      readTime = parseInt(formData.get('readTime')?.toString() || '5');
+      published_at = formData.get('published_at')?.toString();
+    }
 
     if (!id || !title || !slug || !excerpt || !content || !categoryId) {
       return new Response(JSON.stringify({ success: false, message: 'Semua field wajib diisi' }), { status: 400 });
     }
 
     const publishedAt = status === 'published'
-      ? (formData.get('published_at')?.toString() || new Date().toISOString())
+      ? (published_at || new Date().toISOString())
       : null;
 
     await db.execute({

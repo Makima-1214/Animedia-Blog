@@ -9,15 +9,24 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    const title = formData.get('title')?.toString();
-    const slug = formData.get('slug')?.toString();
-    const excerpt = formData.get('excerpt')?.toString();
-    const content = formData.get('content')?.toString();
-    const coverImage = formData.get('coverImage')?.toString();
-    const categoryId = formData.get('categoryId')?.toString();
-    const status = formData.get('status')?.toString() || 'draft';
-    const tags = formData.get('tags')?.toString() || '';
+    const contentType = request.headers.get('content-type') || '';
+    let title, slug, excerpt, content, coverImage, categoryId, status, tags;
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      ({ title, slug, excerpt, content, coverImage, categoryId, status, tags } = body);
+      tags = tags || '';
+      status = status || 'draft';
+    } else {
+      const formData = await request.formData();
+      title = formData.get('title')?.toString();
+      slug = formData.get('slug')?.toString();
+      excerpt = formData.get('excerpt')?.toString();
+      content = formData.get('content')?.toString();
+      coverImage = formData.get('coverImage')?.toString();
+      categoryId = formData.get('categoryId')?.toString();
+      status = formData.get('status')?.toString() || 'draft';
+      tags = formData.get('tags')?.toString() || '';
+    }
     const readTime = calculateReadTime(content);
 
     if (!title || !slug || !excerpt || !content || !categoryId) {

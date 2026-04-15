@@ -3,10 +3,21 @@ import { verifyResetCode, resetPassword } from '../../../lib/simple-auth';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const formData = await request.formData();
-    const email = formData.get('email')?.toString();
-    const code = formData.get('code')?.toString();
-    const newPassword = formData.get('password')?.toString();
+    const contentType = request.headers.get('content-type') || '';
+    let email: string | undefined;
+    let code: string | undefined;
+    let newPassword: string | undefined;
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      email = body.email;
+      code = body.code;
+      newPassword = body.password;
+    } else {
+      const formData = await request.formData();
+      email = formData.get('email')?.toString();
+      code = formData.get('code')?.toString();
+      newPassword = formData.get('password')?.toString();
+    }
 
     if (!email || !code || !newPassword) {
       return new Response(JSON.stringify({ 
