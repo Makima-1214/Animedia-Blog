@@ -350,33 +350,6 @@ const categories = await getAllCategories() as Category[];
       document.getElementById('imgUrlInput').value = '';
       document.getElementById('imgModalStatus').textContent = '';
     });
-    document.getElementById('imgModalClose').addEventListener('click', function() {
-      document.getElementById('imgModal').classList.add('hidden');
-    });
-    document.getElementById('imgInsertUrl').addEventListener('click', function() {
-      var url = document.getElementById('imgUrlInput').value.trim();
-      if (!url) return;
-      document.execCommand('insertHTML', false, '<img src="' + url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
-      document.getElementById('imgModal').classList.add('hidden');
-      ed.focus();
-    });
-    document.getElementById('imgUploadFile').addEventListener('change', async function() {
-      var file = this.files[0];
-      if (!file) return;
-      var status = document.getElementById('imgModalStatus');
-      status.textContent = 'Mengupload...';
-      var fd = new FormData();
-      fd.append('file', file);
-      try {
-        var res = await fetch('/api/upload/image', { method: 'POST', body: fd });
-        var result = await res.json();
-        if (result.success) {
-          document.execCommand('insertHTML', false, '<img src="' + result.url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
-          document.getElementById('imgModal').classList.add('hidden');
-          ed.focus();
-        } else { status.textContent = '❌ ' + result.message; }
-      } catch(e) { status.textContent = '❌ Gagal upload'; }
-    });
 
     // Table
     document.getElementById('btnTable').addEventListener('click', function() {
@@ -499,4 +472,39 @@ const categories = await getAllCategories() as Category[];
       <p id="imgModalStatus" class="text-xs text-gray-500 mt-2"></p>
     </div>
   </div>
+  <script is:inline>
+    (function() {
+      var ed = document.getElementById('content-editor');
+      document.getElementById('imgModalClose').addEventListener('click', function() {
+        document.getElementById('imgModal').classList.add('hidden');
+      });
+      document.getElementById('imgModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+      });
+      document.getElementById('imgInsertUrl').addEventListener('click', function() {
+        var url = document.getElementById('imgUrlInput').value.trim();
+        if (!url) return;
+        document.execCommand('insertHTML', false, '<img src="' + url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
+        document.getElementById('imgModal').classList.add('hidden');
+        ed.focus();
+      });
+      document.getElementById('imgUploadFile').addEventListener('change', async function() {
+        var file = this.files[0];
+        if (!file) return;
+        var status = document.getElementById('imgModalStatus');
+        status.textContent = 'Mengupload...';
+        var fd = new FormData();
+        fd.append('file', file);
+        try {
+          var res = await fetch('/api/upload/image', { method: 'POST', body: fd });
+          var result = await res.json();
+          if (result.success) {
+            document.execCommand('insertHTML', false, '<img src="' + result.url + '" alt="image" style="width:100%;max-width:100%;aspect-ratio:16/9;object-fit:cover;height:auto;border-radius:0.5rem;margin:0.75rem 0;display:block;" />');
+            document.getElementById('imgModal').classList.add('hidden');
+            ed.focus();
+          } else { status.textContent = '❌ ' + result.message; }
+        } catch(e) { status.textContent = '❌ Gagal upload'; }
+      });
+    })();
+  </script>
 </DashboardLayout>
