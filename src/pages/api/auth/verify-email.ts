@@ -5,9 +5,18 @@ import db from '../../../lib/turso.js';
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    const formData = await request.formData();
-    const email = formData.get('email')?.toString();
-    const code = formData.get('code')?.toString();
+    const contentType = request.headers.get('content-type') || '';
+    let email: string | undefined;
+    let code: string | undefined;
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      email = body.email;
+      code = body.code;
+    } else {
+      const formData = await request.formData();
+      email = formData.get('email')?.toString();
+      code = formData.get('code')?.toString();
+    }
 
     if (!email || !code) {
       return new Response(JSON.stringify({ success: false, message: 'Email dan kode verifikasi wajib diisi' }), { status: 400 });

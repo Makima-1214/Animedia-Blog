@@ -28,9 +28,18 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         message: 'Terlalu banyak percobaan login. Coba lagi dalam 15 menit.'
       }), { status: 429, headers: { 'Content-Type': 'application/json' } });
     }
-    const formData = await request.formData();
-    const username = formData.get('username')?.toString();
-    const password = formData.get('password')?.toString();
+    const contentType = request.headers.get('content-type') || '';
+    let username: string | undefined;
+    let password: string | undefined;
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      username = body.username;
+      password = body.password;
+    } else {
+      const formData = await request.formData();
+      username = formData.get('username')?.toString();
+      password = formData.get('password')?.toString();
+    }
 
     if (!username || !password) {
       return new Response(JSON.stringify({ 

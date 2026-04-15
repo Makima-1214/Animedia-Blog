@@ -5,8 +5,15 @@ import nodemailer from 'nodemailer';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const formData = await request.formData();
-    const email = formData.get('email')?.toString();
+    const contentType = request.headers.get('content-type') || '';
+    let email: string | undefined;
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      email = body.email;
+    } else {
+      const formData = await request.formData();
+      email = formData.get('email')?.toString();
+    }
 
     if (!email) {
       return new Response(JSON.stringify({ success: false, message: 'Email wajib diisi' }), { status: 400 });

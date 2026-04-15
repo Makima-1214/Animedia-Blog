@@ -171,7 +171,11 @@ const email = Astro.url.searchParams.get('email') || '';
       try {
         const response = await fetch('/api/auth/verify-email', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.get('email'),
+            code: formData.get('code')
+          })
         });
         
         const result = await response.json();
