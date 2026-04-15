@@ -10,7 +10,7 @@ interface Props {
 const { title, activePage } = Astro.props;
 ---
 
-<BaseLayout title={title}>
+<BaseLayout title={title} noFooter={true}>
   <style>
     /* Dashboard: skip body fade-in, langsung tampil */
     body { animation: none !important; opacity: 1 !important; }
