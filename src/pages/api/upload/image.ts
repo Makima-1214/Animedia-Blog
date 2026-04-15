@@ -8,11 +8,6 @@ cloudinary.config({
 });
 
 export const POST: APIRoute = async ({ request, cookies }) => {
-  const adminSession = cookies.get('admin_session');
-  if (!adminSession) {
-    return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
-  }
-
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
