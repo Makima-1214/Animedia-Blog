@@ -348,6 +348,17 @@ const allAffiliates = (await getAllAffiliates() as any[]).filter((p: any) => p.a
     var ed = document.getElementById('content-editor');
     if (initialContent) ed.innerHTML = initialContent;
 
+    // Clean paste - strip semua style/class saat paste dari luar
+    ed.addEventListener('paste', function(e) {
+      e.preventDefault();
+      var text = (e.clipboardData || window.clipboardData).getData('text/html') || (e.clipboardData || window.clipboardData).getData('text/plain');
+      var clean = text
+        .replace(/<span[^>]*style="[^"]*--tw-[^"]*"[^>]*>(.*?)<\/span>/gi, '$1')
+        .replace(/\s*style="[^"]*--tw-[^"]*"/gi, '')
+        .replace(/\s*class="[^"]*"/gi, '');
+      document.execCommand('insertHTML', false, clean);
+    });
+
     document.getElementById('btnMoreTools').addEventListener('click', function() {
       var extra = document.getElementById('toolbar-extra');
       extra.classList.toggle('hidden');
