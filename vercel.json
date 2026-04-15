@@ -5,7 +5,7 @@
   "framework": "astro",
   "outputDirectory": "dist",
   "functions": {
-    "src/pages/api/upload/image.ts": {
+    "api/upload/image": {
       "maxDuration": 30
     }
   },
