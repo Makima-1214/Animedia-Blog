@@ -3,9 +3,19 @@ import { getUserByEmail, verifyPassword, createSession } from '../../../lib/simp
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    const formData = await request.formData();
-    const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
+    let email: string | undefined;
+    let password: string | undefined;
+
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      email = body.email;
+      password = body.password;
+    } else {
+      const formData = await request.formData();
+      email = formData.get('email')?.toString();
+      password = formData.get('password')?.toString();
+    }
 
     if (!email || !password) {
       return new Response(JSON.stringify({ 

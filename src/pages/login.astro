@@ -174,8 +174,11 @@ const site = await getSiteConfig();
       try {
         const response = await fetch('/api/auth/login', {
           method: 'POST',
-          headers: { 'X-Requested-With': 'XMLHttpRequest' },
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.get('email'),
+            password: formData.get('password')
+          })
         });
         
         const result = await response.json();

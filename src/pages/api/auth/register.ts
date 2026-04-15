@@ -5,10 +5,22 @@ import db from '../../../lib/turso.js';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const formData = await request.formData();
-    const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
-    const name = formData.get('name')?.toString();
+    let email: string | undefined;
+    let password: string | undefined;
+    let name: string | undefined;
+
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      email = body.email;
+      password = body.password;
+      name = body.name;
+    } else {
+      const formData = await request.formData();
+      email = formData.get('email')?.toString();
+      password = formData.get('password')?.toString();
+      name = formData.get('name')?.toString();
+    }
 
     if (!email || !password || !name) {
       return new Response(JSON.stringify({ success: false, message: 'Semua field wajib diisi' }), { status: 400 });
