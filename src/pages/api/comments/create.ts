@@ -89,6 +89,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   } catch (error) {
     console.error('Create comment error:', error);
-    return new Response(JSON.stringify({ success: false, message: 'Terjadi kesalahan server' }), { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ success: false, message: `Kesalahan server: ${msg}` }), { status: 500 });
   }
 };
