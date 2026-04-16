@@ -98,18 +98,27 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     const id = crypto.randomUUID();
+    
+    // Cek setting manual_approval
+    const approvalSetting = await db.execute({ sql: `SELECT value FROM settings WHERE key = 'manual_approval'`, args: [] });
+    const manualApproval = approvalSetting.rows[0]?.value === 'true';
+    const status = manualApproval ? 'pending' : 'approved';
+
     await db.execute({
-      sql: `INSERT INTO comments (id, content, article_id, author_name, author_email, parent_id, status) VALUES (?, ?, ?, ?, ?, ?, 'approved')`,
-      args: [id, safeContent, articleId, authorName, authorEmail, parentId]
+      sql: `INSERT INTO comments (id, content, article_id, author_name, author_email, parent_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [id, safeContent, articleId, authorName, authorEmail, parentId, status]
     });
 
     return new Response(JSON.stringify({
       success: true,
-      message: 'Komentar berhasil dikirim',
+      message: manualApproval
+        ? 'Komentar berhasil dikirim dan menunggu persetujuan admin.'
+        : 'Komentar berhasil dikirim',
       id,
       author_name: authorName,
       content: safeContent,
-      parent_id: parentId
+      parent_id: parentId,
+      pending: manualApproval,
     }), { status: 200 });
 
   } catch (error) {

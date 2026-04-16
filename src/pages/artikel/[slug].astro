@@ -43,7 +43,9 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
   image={article.cover_image || ''}
   type="article"
   keywords={tags.map((t: any) => t.name).join(', ') || category?.name || 'artikel'}
-  author="Editor Utama"
+  author={authorName}
+  publishedAt={article.published_at ? String(article.published_at) : undefined}
+  modifiedAt={article.updated_at ? String(article.updated_at) : (article.published_at ? String(article.published_at) : undefined)}
 >
   <Header />
 
@@ -605,20 +607,27 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
       });
       const result = await response.json();
       if (result.success) {
-        showFeedback('Komentar berhasil dikirim!', 'success');
         const textarea = commentForm.querySelector('textarea')!;
-        const commentsList = document.getElementById('comments-list') as HTMLElement;
-        const newComment = document.createElement('div');
-        newComment.className = 'bg-gray-50 dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800';
-        newComment.innerHTML = buildCommentHTML(result.author_name, textarea.value);
-        commentsList.appendChild(newComment);
-        const countEl = document.querySelector('h3');
-        if (countEl) {
-          const match = countEl.textContent?.match(/\d+/);
-          countEl.textContent = `Diskusi (${match ? parseInt(match[0]) + 1 : 1})`;
+        if (result.pending) {
+          // Komentar menunggu moderasi
+          showFeedback('Komentar dikirim dan menunggu persetujuan admin.', 'success');
+          textarea.value = '';
+          submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm">hourglass_empty</span> Menunggu Moderasi';
+        } else {
+          showFeedback('Komentar berhasil dikirim!', 'success');
+          const commentsList = document.getElementById('comments-list') as HTMLElement;
+          const newComment = document.createElement('div');
+          newComment.className = 'bg-gray-50 dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800';
+          newComment.innerHTML = buildCommentHTML(result.author_name, textarea.value);
+          commentsList.appendChild(newComment);
+          const countEl = document.querySelector('h3');
+          if (countEl) {
+            const match = countEl.textContent?.match(/\d+/);
+            countEl.textContent = `Diskusi (${match ? parseInt(match[0]) + 1 : 1})`;
+          }
+          textarea.value = '';
+          submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm">check</span> Terkirim';
         }
-        textarea.value = '';
-        submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm">check</span> Terkirim';
       } else {
         showFeedback('Gagal: ' + result.message, 'error');
         submitBtn.disabled = false;
