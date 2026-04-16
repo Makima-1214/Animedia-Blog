@@ -558,15 +558,15 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
         const content = textarea.value.trim();
         if (!content) return;
         const articleIdInput = commentForm.querySelector('[name="article_id"]') as HTMLInputElement;
-        const fd = new FormData();
-        fd.append('content', content);
-        fd.append('article_id', articleIdInput.value);
-        fd.append('parent_id', parentId);
         const submitReplyBtn = replyForm.querySelector('button[type="submit"]') as HTMLButtonElement;
         submitReplyBtn.disabled = true;
         submitReplyBtn.textContent = 'Mengirim...';
         try {
-          const res = await fetch('/api/comments/create', { method: 'POST', body: fd });
+          const res = await fetch('/api/comments/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content, article_id: articleIdInput.value, parent_id: parentId })
+          });
           const result = await res.json();
           if (result.success) {
             let repliesContainer = document.querySelector(`.replies-container[data-parent="${parentId}"]`) as HTMLElement;
@@ -595,9 +595,14 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
     e.preventDefault();
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">progress_activity</span> Mengirim...';
-    const formData = new FormData(commentForm);
+    const articleId = (commentForm.querySelector('[name="article_id"]') as HTMLInputElement).value;
+    const content = (commentForm.querySelector('textarea') as HTMLTextAreaElement).value.trim();
     try {
-      const response = await fetch('/api/comments/create', { method: 'POST', body: formData });
+      const response = await fetch('/api/comments/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ article_id: articleId, content })
+      });
       const result = await response.json();
       if (result.success) {
         showFeedback('Komentar berhasil dikirim!', 'success');

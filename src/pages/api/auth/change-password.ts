@@ -17,9 +17,18 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, message: 'Sesi tidak valid' }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    const oldPassword = formData.get('oldPassword')?.toString();
-    const newPassword = formData.get('newPassword')?.toString();
+    const ct = request.headers.get('content-type') || '';
+    let oldPassword: string | undefined;
+    let newPassword: string | undefined;
+    if (ct.includes('application/json')) {
+      const body = await request.json();
+      oldPassword = body.oldPassword;
+      newPassword = body.newPassword;
+    } else {
+      const formData = await request.formData();
+      oldPassword = formData.get('oldPassword')?.toString();
+      newPassword = formData.get('newPassword')?.toString();
+    }
 
     if (!oldPassword || !newPassword) {
       return new Response(JSON.stringify({ 

@@ -48,10 +48,22 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, message: 'Sesi tidak valid' }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    const content = formData.get('content')?.toString()?.trim();
-    const articleId = formData.get('article_id')?.toString();
-    const parentId = formData.get('parent_id')?.toString() || null;
+    const contentType = request.headers.get('content-type') || '';
+    let content: string | undefined;
+    let articleId: string | undefined;
+    let parentId: string | null = null;
+
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      content = body.content?.trim();
+      articleId = body.article_id;
+      parentId = body.parent_id || null;
+    } else {
+      const formData = await request.formData();
+      content = formData.get('content')?.toString()?.trim();
+      articleId = formData.get('article_id')?.toString();
+      parentId = formData.get('parent_id')?.toString() || null;
+    }
 
     if (!content || !articleId) {
       return new Response(JSON.stringify({ success: false, message: 'Konten dan artikel wajib diisi' }), { status: 400 });

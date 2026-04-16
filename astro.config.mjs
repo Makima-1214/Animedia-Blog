@@ -7,6 +7,9 @@ export default defineConfig({
   site: 'https://animedia.web.id',
   output: 'server',
   adapter: vercel(),
+  security: {
+    checkOrigin: false,
+  },
   integrations: [
     tailwind(),
     sitemap({

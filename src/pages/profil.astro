@@ -390,7 +390,7 @@ const userComments = commentsResult.rows;
     updateForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const formData = new FormData(updateForm);
+      const name = updateForm.querySelector('input[name="name"]').value.trim();
       const btnText = document.getElementById('updateBtnText');
       const btnLoader = document.getElementById('updateBtnLoader');
       const submitBtn = updateForm.querySelector('button[type="submit"]');
@@ -402,7 +402,8 @@ const userComments = commentsResult.rows;
       try {
         const response = await fetch('/api/auth/update-profile', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
         });
         
         const result = await response.json();
@@ -427,9 +428,9 @@ const userComments = commentsResult.rows;
     passwordForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const formData = new FormData(passwordForm);
-      const newPassword = formData.get('newPassword');
-      const confirmPassword = formData.get('confirmPassword');
+      const oldPassword = passwordForm.querySelector('input[name="oldPassword"]').value;
+      const newPassword = passwordForm.querySelector('input[name="newPassword"]').value;
+      const confirmPassword = passwordForm.querySelector('input[name="confirmPassword"]').value;
       
       if (newPassword !== confirmPassword) {
         showToast('Password baru tidak cocok', 'error');
@@ -447,7 +448,8 @@ const userComments = commentsResult.rows;
       try {
         const response = await fetch('/api/auth/change-password', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ oldPassword, newPassword })
         });
         
         const result = await response.json();

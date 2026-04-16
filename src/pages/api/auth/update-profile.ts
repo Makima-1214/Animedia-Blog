@@ -14,8 +14,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, message: 'Session expired' }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    const name = formData.get('name')?.toString();
+    const ct = request.headers.get('content-type') || '';
+    const name = ct.includes('application/json')
+      ? (await request.json()).name
+      : (await request.formData()).get('name')?.toString();
 
     if (!name) {
       return new Response(JSON.stringify({ success: false, message: 'Nama wajib diisi' }), { status: 400 });

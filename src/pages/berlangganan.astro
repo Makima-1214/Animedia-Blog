@@ -221,9 +221,7 @@ import Header from '../components/Header.astro';
     newsletterForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const formData = new FormData(newsletterForm);
-      const submitBtn = newsletterForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
+      const email = newsletterForm.querySelector('input[name="email"]').value.trim();
       
       submitBtn.textContent = 'Mengirim...';
       submitBtn.disabled = true;
@@ -231,7 +229,8 @@ import Header from '../components/Header.astro';
       try {
         const response = await fetch('/api/subscribe', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
         });
         
         const result = await response.json();
