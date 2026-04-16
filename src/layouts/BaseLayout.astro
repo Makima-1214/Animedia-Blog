@@ -237,6 +237,14 @@ const ogImage = new URL(image, Astro.site ?? site_url);
       .no-scrollbar::-webkit-scrollbar {
         display: none;
       }
+      /* Sembunyikan scrollbar di semua elemen overflow-x-auto */
+      .overflow-x-auto {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .overflow-x-auto::-webkit-scrollbar {
+        display: none;
+      }
     </style>
   </head>
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-white selection:bg-violet-100 selection:text-violet-900">

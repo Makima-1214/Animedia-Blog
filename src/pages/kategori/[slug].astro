@@ -26,40 +26,6 @@ const description = category.description || `Artikel tentang ${category.name}`;
 <BaseLayout title={title} description={description}>
   <Header />
 
-  <!-- Mobile horizontal strip: Kategori pills + Tag pills (hidden on lg+) -->
-  <div class="lg:hidden border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-    <!-- Kategori pills -->
-    <div class="px-3 pt-3 pb-1">
-      <p class="text-[10px] font-black tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">Kategori</p>
-      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {allCategories.map((cat: any) => (
-          <a
-            href={`/kategori/${cat.slug}`}
-            class={`shrink-0 px-3 py-1 rounded-full text-xs font-bold transition-all ${
-              cat.id === category.id
-                ? 'bg-blue-600 text-white dark:bg-blue-500'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400'
-            }`}
-          >{cat.name}</a>
-        ))}
-      </div>
-    </div>
-    <!-- Tag pills -->
-    {allTags.length > 0 && (
-      <div class="px-3 pb-3">
-        <p class="text-[10px] font-black tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">Tags</p>
-        <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {allTags.slice(0, 8).map((tag: any) => (
-            <a
-              href={`/tag/${tag.slug}`}
-              class="shrink-0 px-3 py-1 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full border border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
-            >#{tag.name}</a>
-          ))}
-        </div>
-      </div>
-    )}
-  </div>
-
   <!-- Main Content Canvas -->
   <main class="flex-grow max-w-7xl mx-auto px-3 md:px-6 py-6 md:py-12 w-full">
     <!-- Breadcrumb & Title -->

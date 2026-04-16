@@ -14,6 +14,9 @@ const { title, activePage } = Astro.props;
   <style>
     /* Dashboard: skip body fade-in, langsung tampil */
     body { animation: none !important; opacity: 1 !important; }
+    /* Sembunyikan scrollbar horizontal di tabel dashboard */
+    .overflow-x-auto { scrollbar-width: none; -ms-overflow-style: none; }
+    .overflow-x-auto::-webkit-scrollbar { display: none; }
     .editorial-shadow {
       box-shadow: 0 40px 40px -40px rgba(45, 52, 53, 0.04);
     }
