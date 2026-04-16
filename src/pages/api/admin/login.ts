@@ -1,7 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAdminByUsername } from '../../../lib/turso-helpers.js';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import db from '../../../lib/turso.js';
 
 // Simple in-memory rate limiter
@@ -73,18 +72,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     }
 
-    // Generate secure random token
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-
-    // Store token in DB
-    await db.execute({
-      sql: `INSERT INTO admin_sessions (token, admin_id, expires_at) VALUES (?, ?, ?)`,
-      args: [token, (admin as any).id, expiresAt]
-    });
-
-    // Set session cookie with secure token
-    cookies.set('admin_session', token, {
+    // Set session cookie with admin id
+    cookies.set('admin_session', (admin as any).id, {
       path: '/',
       httpOnly: true,
       secure: import.meta.env.PROD,
