@@ -5,6 +5,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        // ── Light mode (Material Design tokens) ──────────────────
         'secondary': '#576068',
         'on-secondary-container': '#4a535a',
         'secondary-fixed-dim': '#ccd5de',
@@ -78,6 +79,124 @@ export default {
         '.no-scrollbar::-webkit-scrollbar': { display: 'none' },
         '.no-scrollbar': { '-ms-overflow-style': 'none', 'scrollbar-width': 'none' },
       })
-    }
+    },
+    // ── Dark mode overrides untuk Material Design tokens ─────────
+    // Semua class seperti bg-surface-container, text-on-surface, dll
+    // akan otomatis pakai warna gelap saat .dark aktif di <html>
+    function({ addBase }) {
+      addBase({
+        // Light mode (default) — sudah di-handle oleh colors di atas
+        // Dark mode overrides
+        '.dark': {
+          '--tw-color-primary':                  '#588cff',
+          '--tw-color-on-primary':               '#002f87',
+          '--tw-color-primary-container':        '#003fad',
+          '--tw-color-on-primary-container':     '#dae2ff',
+          '--tw-color-secondary':                '#b0bec8',
+          '--tw-color-on-secondary':             '#1b2b33',
+          '--tw-color-secondary-container':      '#323d45',
+          '--tw-color-on-secondary-container':   '#ccd5de',
+          '--tw-color-tertiary':                 '#c8c2e2',
+          '--tw-color-on-tertiary':              '#302d47',
+          '--tw-color-tertiary-container':       '#47435e',
+          '--tw-color-on-tertiary-container':    '#e3dbfd',
+          '--tw-color-error':                    '#ffb3ae',
+          '--tw-color-on-error':                 '#5c1212',
+          '--tw-color-error-container':          '#7d2a28',
+          '--tw-color-on-error-container':       '#ffdad7',
+          '--tw-color-background':               '#0f1417',
+          '--tw-color-on-background':            '#dde3ea',
+          '--tw-color-surface':                  '#0f1417',
+          '--tw-color-on-surface':               '#dde3ea',
+          '--tw-color-surface-variant':          '#3d4a54',
+          '--tw-color-on-surface-variant':       '#b8c5d0',
+          '--tw-color-outline':                  '#82909c',
+          '--tw-color-outline-variant':          '#3d4a54',
+          '--tw-color-surface-container-lowest': '#0a0e11',
+          '--tw-color-surface-container-low':    '#17202a',
+          '--tw-color-surface-container':        '#1b2530',
+          '--tw-color-surface-container-high':   '#252f3a',
+          '--tw-color-surface-container-highest':'#303a45',
+          '--tw-color-surface-bright':           '#353f4a',
+          '--tw-color-surface-dim':              '#0f1417',
+          '--tw-color-inverse-surface':          '#dde3ea',
+          '--tw-color-inverse-on-surface':       '#2c3540',
+          '--tw-color-inverse-primary':          '#0057ce',
+          '--tw-color-surface-tint':             '#588cff',
+        },
+      });
+    },
+    // Plugin untuk apply CSS variables ke utility classes
+    function({ addUtilities, theme }) {
+      const darkOverrides = {
+        // text utilities
+        '.dark .text-primary':                  { color: '#588cff' },
+        '.dark .text-on-primary':               { color: '#002f87' },
+        '.dark .text-on-primary-container':     { color: '#dae2ff' },
+        '.dark .text-secondary':                { color: '#b0bec8' },
+        '.dark .text-on-secondary':             { color: '#1b2b33' },
+        '.dark .text-on-secondary-container':   { color: '#ccd5de' },
+        '.dark .text-tertiary':                 { color: '#c8c2e2' },
+        '.dark .text-on-tertiary':              { color: '#302d47' },
+        '.dark .text-on-tertiary-container':    { color: '#e3dbfd' },
+        '.dark .text-on-surface':               { color: '#dde3ea' },
+        '.dark .text-on-surface-variant':       { color: '#b8c5d0' },
+        '.dark .text-on-background':            { color: '#dde3ea' },
+        '.dark .text-outline':                  { color: '#82909c' },
+        '.dark .text-outline-variant':          { color: '#3d4a54' },
+        '.dark .text-on-primary-fixed':         { color: '#dae2ff' },
+        '.dark .text-on-primary-fixed-variant': { color: '#c5d4ff' },
+        '.dark .text-on-secondary-fixed':       { color: '#ccd5de' },
+        '.dark .text-on-tertiary-fixed':        { color: '#e3dbfd' },
+        '.dark .text-inverse-primary':          { color: '#0057ce' },
+        '.dark .text-inverse-on-surface':       { color: '#2c3540' },
+        // bg utilities
+        '.dark .bg-primary':                    { backgroundColor: '#588cff' },
+        '.dark .bg-on-primary':                 { backgroundColor: '#002f87' },
+        '.dark .bg-primary-container':          { backgroundColor: '#003fad' },
+        '.dark .bg-on-primary-container':       { backgroundColor: '#dae2ff' },
+        '.dark .bg-secondary':                  { backgroundColor: '#b0bec8' },
+        '.dark .bg-secondary-container':        { backgroundColor: '#323d45' },
+        '.dark .bg-tertiary-container':         { backgroundColor: '#47435e' },
+        '.dark .bg-surface':                    { backgroundColor: '#0f1417' },
+        '.dark .bg-surface-variant':            { backgroundColor: '#3d4a54' },
+        '.dark .bg-surface-container-lowest':   { backgroundColor: '#0a0e11' },
+        '.dark .bg-surface-container-low':      { backgroundColor: '#17202a' },
+        '.dark .bg-surface-container':          { backgroundColor: '#1b2530' },
+        '.dark .bg-surface-container-high':     { backgroundColor: '#252f3a' },
+        '.dark .bg-surface-container-highest':  { backgroundColor: '#303a45' },
+        '.dark .bg-surface-bright':             { backgroundColor: '#353f4a' },
+        '.dark .bg-surface-dim':                { backgroundColor: '#0f1417' },
+        '.dark .bg-inverse-surface':            { backgroundColor: '#dde3ea' },
+        '.dark .bg-primary-fixed':              { backgroundColor: '#003fad' },
+        '.dark .bg-primary-fixed-dim':          { backgroundColor: '#002f87' },
+        '.dark .bg-secondary-fixed':            { backgroundColor: '#323d45' },
+        '.dark .bg-secondary-fixed-dim':        { backgroundColor: '#1b2b33' },
+        '.dark .bg-tertiary-fixed':             { backgroundColor: '#47435e' },
+        '.dark .bg-tertiary-fixed-dim':         { backgroundColor: '#302d47' },
+        // border utilities
+        '.dark .border-outline':                { borderColor: '#82909c' },
+        '.dark .border-outline-variant':        { borderColor: '#3d4a54' },
+        '.dark .border-primary':                { borderColor: '#588cff' },
+        '.dark .border-secondary':              { borderColor: '#b0bec8' },
+        '.dark .border-surface-container':      { borderColor: '#1b2530' },
+        '.dark .border-surface-container-high': { borderColor: '#252f3a' },
+        // hover utilities (pakai arbitrary selector)
+        '.dark .hover\\:bg-primary:hover':      { backgroundColor: '#588cff' },
+        '.dark .hover\\:bg-surface:hover':      { backgroundColor: '#0f1417' },
+        '.dark .hover\\:bg-surface-container-highest:hover': { backgroundColor: '#303a45' },
+        '.dark .hover\\:text-primary:hover':    { color: '#588cff' },
+        '.dark .hover\\:border-primary:hover':  { borderColor: '#588cff' },
+        '.dark .hover\\:bg-white:hover':        { backgroundColor: '#252f3a' },
+        '.dark .hover\\:bg-surface-container:hover': { backgroundColor: '#1b2530' },
+        // on-primary for active states
+        '.dark .bg-primary .text-on-primary':   { color: '#002f87' },
+        '.dark .text-on-primary-container':     { color: '#dae2ff' },
+        // tag cards
+        '.dark .bg-white':                      { backgroundColor: '#1b2530' },
+        '.dark .border-slate-100':              { borderColor: '#252f3a' },
+      };
+      addUtilities(darkOverrides);
+    },
   ]
 }

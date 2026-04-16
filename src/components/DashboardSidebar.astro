@@ -7,12 +7,8 @@ interface Props {
 
 const { activePage } = Astro.props;
 
-const adminToken = Astro.cookies.get('admin_session')?.value;
-const sessionRow = adminToken ? await db.execute({
-  sql: `SELECT a.name, a.avatar FROM admin_sessions s JOIN admins a ON s.admin_id = a.id WHERE s.token = ? AND s.expires_at > ?`,
-  args: [adminToken, new Date().toISOString()]
-}) : null;
-const adminRow = sessionRow?.rows[0] as any;
+const adminId = Astro.cookies.get('admin_session')?.value;
+const adminRow = adminId ? (await db.execute({ sql: 'SELECT name, avatar FROM admins WHERE id = ?', args: [adminId] })).rows[0] as any : null;
 const adminName = adminRow?.name || 'Administrator';
 const adminAvatar = adminRow?.avatar || null;
 ---

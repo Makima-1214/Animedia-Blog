@@ -27,18 +27,18 @@ const description = category.description || `Artikel tentang ${category.name}`;
   <Header />
 
   <!-- Mobile horizontal strip: Kategori pills + Tag pills (hidden on lg+) -->
-  <div class="lg:hidden border-b border-outline-variant/20 bg-surface-container-lowest">
+  <div class="lg:hidden border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
     <!-- Kategori pills -->
     <div class="px-3 pt-3 pb-1">
-      <p class="text-[10px] font-black tracking-widest text-on-surface-variant uppercase mb-2">Kategori</p>
+      <p class="text-[10px] font-black tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">Kategori</p>
       <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {allCategories.map((cat: any) => (
           <a
             href={`/kategori/${cat.slug}`}
             class={`shrink-0 px-3 py-1 rounded-full text-xs font-bold transition-all ${
               cat.id === category.id
-                ? 'bg-primary text-on-primary'
-                : 'bg-surface-container text-on-surface-variant border border-outline-variant/40 hover:border-primary hover:text-primary'
+                ? 'bg-blue-600 text-white dark:bg-blue-500'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
           >{cat.name}</a>
         ))}
@@ -47,12 +47,12 @@ const description = category.description || `Artikel tentang ${category.name}`;
     <!-- Tag pills -->
     {allTags.length > 0 && (
       <div class="px-3 pb-3">
-        <p class="text-[10px] font-black tracking-widest text-on-surface-variant uppercase mb-2">Tags</p>
+        <p class="text-[10px] font-black tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">Tags</p>
         <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {allTags.slice(0, 8).map((tag: any) => (
             <a
               href={`/tag/${tag.slug}`}
-              class="shrink-0 px-3 py-1 bg-white text-on-surface-variant text-xs font-semibold rounded-full border border-slate-100 hover:border-primary hover:text-primary transition-all"
+              class="shrink-0 px-3 py-1 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full border border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
             >#{tag.name}</a>
           ))}
         </div>
@@ -64,15 +64,15 @@ const description = category.description || `Artikel tentang ${category.name}`;
   <main class="flex-grow max-w-7xl mx-auto px-3 md:px-6 py-6 md:py-12 w-full">
     <!-- Breadcrumb & Title -->
     <div class="mb-12">
-      <div class="flex flex-wrap items-center gap-2 text-xs font-bold tracking-widest text-on-surface-variant mb-2 uppercase">
-        <a class="hover:text-primary shrink-0" href="/">BERANDA</a>
+      <div class="flex flex-wrap items-center gap-2 text-xs font-bold tracking-widest text-gray-500 dark:text-gray-400 mb-2 uppercase">
+        <a class="hover:text-blue-600 dark:hover:text-blue-400 shrink-0" href="/">BERANDA</a>
         <span class="material-symbols-outlined text-xs shrink-0">chevron_right</span>
-        <span class="text-primary truncate">{category.name.toUpperCase()}</span>
+        <span class="text-blue-600 dark:text-blue-400 truncate">{category.name.toUpperCase()}</span>
       </div>
-      <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tighter text-on-surface">
-        Katalog {category.name} & <span class="text-primary">Ulasan Eksklusif</span>
+      <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tighter text-gray-900 dark:text-white">
+        Katalog {category.name} & <span class="text-blue-600 dark:text-blue-400">Ulasan Eksklusif</span>
       </h1>
-      <p class="mt-4 text-on-surface-variant max-w-2xl leading-relaxed">
+      <p class="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
         {category.description || `Menjelajahi dunia ${category.name} melalui sudut pandang editorial yang tajam.`}
       </p>
     </div>
@@ -84,30 +84,30 @@ const description = category.description || `Artikel tentang ${category.name}`;
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Card pertama: full width di mobile, col-span-1 di md+ */}
           {articles.slice(0, 1).map((article: any) => (
-            <article class="bg-surface-container-lowest rounded-xl overflow-hidden group">
+            <article class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden group border border-gray-100 dark:border-gray-800">
               <div class="relative h-64 overflow-hidden">
                 <img
                   alt={article.title}
                   class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   src={article.cover_image || 'https://via.placeholder.com/800x400'}
                 />
-                <div class="absolute top-4 left-4 bg-primary text-on-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                <div class="absolute top-4 left-4 bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
                   UTAMA
                 </div>
               </div>
               <div class="p-4 md:p-8">
-                <div class="flex items-center gap-3 mb-4 text-xs font-semibold text-tertiary">
+                <div class="flex items-center gap-3 mb-4 text-xs font-semibold text-gray-500 dark:text-gray-400">
                   <span>{article.published_at ? new Date(article.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase() : ''}</span>
-                  <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                  <span class="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
                   <span>ARTIKEL</span>
                 </div>
-                <h2 class="text-2xl font-bold leading-tight mb-4 group-hover:text-primary transition-colors">
+                <h2 class="text-2xl font-bold leading-tight mb-4 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {article.title}
                 </h2>
-                <p class="text-on-surface-variant text-sm leading-relaxed mb-6">
+                <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
                   {article.excerpt}
                 </p>
-                <a href={`/artikel/${article.slug}`} class="inline-flex items-center gap-2 text-primary font-bold text-sm">
+                <a href={`/artikel/${article.slug}`} class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm">
                   BACA SELENGKAPNYA <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
               </div>
@@ -117,15 +117,15 @@ const description = category.description || `Artikel tentang ${category.name}`;
           {/* 3 card berikutnya: list horizontal di mobile, flex-col di md+ */}
           <div class="flex flex-col gap-6">
             {articles.slice(1, 4).map((article: any) => (
-              <article class="bg-surface-container-lowest rounded-xl p-4 flex gap-4 hover:bg-surface transition-colors">
+              <article class="bg-white dark:bg-gray-900 rounded-xl p-4 flex gap-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border border-gray-100 dark:border-gray-800">
                 <div class="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-lg overflow-hidden">
                   <img alt={article.title} class="w-full h-full object-cover" src={article.cover_image || 'https://via.placeholder.com/200'} />
                 </div>
                 <div class="flex-1 min-w-0">
                   <a href={`/artikel/${article.slug}`}>
-                    <h3 class="font-bold leading-snug mb-2 line-clamp-2 hover:text-primary text-sm md:text-base">{article.title}</h3>
+                    <h3 class="font-bold leading-snug mb-2 line-clamp-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 text-sm md:text-base">{article.title}</h3>
                   </a>
-                  <div class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
+                  <div class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     {category.name.toUpperCase()}
                   </div>
                 </div>
@@ -137,18 +137,18 @@ const description = category.description || `Artikel tentang ${category.name}`;
         <!-- Review Grid (Editorial Style) -->
         <div class="space-y-8">
           <div class="flex items-center justify-between">
-            <h2 class="text-xl font-black tracking-tight flex items-center gap-2">
-              <span class="w-2 h-8 bg-primary"></span>
+            <h2 class="text-xl font-black tracking-tight flex items-center gap-2 text-gray-900 dark:text-white">
+              <span class="w-2 h-8 bg-blue-600 dark:bg-blue-500"></span>
               ARTIKEL TERBARU
             </h2>
-            <a class="text-xs font-bold text-primary hover:underline" href="/artikel">LIHAT SEMUA</a>
+            <a class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline" href="/artikel">LIHAT SEMUA</a>
           </div>
 
           <div class="space-y-6">
             {articles.map((article: any) => (
               <article class="flex gap-4 group cursor-pointer">
                 <a href={`/artikel/${article.slug}`} class="flex gap-4 w-full">
-                  <div class="w-32 md:w-56 h-32 md:h-40 flex-shrink-0 overflow-hidden rounded-xl bg-surface-container shadow-sm border border-outline-variant/30">
+                  <div class="w-32 md:w-56 h-32 md:h-40 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700">
                     <img
                       alt={article.title}
                       class="w-full h-full object-cover transition-transform group-hover:scale-105"
@@ -157,20 +157,20 @@ const description = category.description || `Artikel tentang ${category.name}`;
                   </div>
                   <div class="flex-grow">
                     <div class="flex items-center gap-2 mb-1 md:mb-2">
-                      <span class="text-[10px] font-bold text-primary uppercase tracking-wider">
+                      <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
                         {category.name}
                       </span>
-                      <span class="text-[10px] text-on-surface-variant/60 font-medium uppercase hidden md:inline">
+                      <span class="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase hidden md:inline">
                         {article.published_at ? new Date(article.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
                       </span>
                     </div>
-                    <h4 class="text-base md:text-xl font-extrabold text-on-surface group-hover:text-primary transition-colors leading-tight mb-1 md:mb-2 line-clamp-2">
+                    <h4 class="text-base md:text-xl font-extrabold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight mb-1 md:mb-2 line-clamp-2">
                       {article.title}
                     </h4>
-                    <p class="text-on-surface-variant text-xs md:text-sm leading-relaxed line-clamp-2 mb-2 md:mb-4 hidden md:block">
+                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm leading-relaxed line-clamp-2 mb-2 md:mb-4 hidden md:block">
                       {article.excerpt}
                     </p>
-                    <div class="flex items-center text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
+                    <div class="flex items-center text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       <span class="material-symbols-outlined text-sm mr-1">person</span> Editor •
                       <span class="material-symbols-outlined text-sm mx-1">schedule</span> {article.read_time} Menit
                     </div>
@@ -183,10 +183,10 @@ const description = category.description || `Artikel tentang ${category.name}`;
 
         <!-- Pagination -->
         {totalPages > 1 && (
-          <div class="pt-8 border-t border-outline-variant/20 flex justify-between items-center">
+          <div class="pt-8 border-t border-gray-200 dark:border-gray-800 flex justify-between items-center">
             <a
               href={page > 1 ? `/kategori/${slug}?page=${page - 1}` : '#'}
-              class={`flex items-center gap-2 text-sm font-bold transition-colors ${page <= 1 ? 'text-outline pointer-events-none' : 'text-on-surface-variant hover:text-primary'}`}
+              class={`flex items-center gap-2 text-sm font-bold transition-colors ${page <= 1 ? 'text-gray-300 dark:text-gray-600 pointer-events-none' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'}`}
             >
               <span class="material-symbols-outlined">west</span>
               <span class="hidden sm:inline">SEBELUMNYA</span>
@@ -196,14 +196,14 @@ const description = category.description || `Artikel tentang ${category.name}`;
                 <a
                   href={`/kategori/${slug}?page=${p}`}
                   class={`w-9 h-9 flex items-center justify-center rounded-lg font-bold text-sm transition-all ${
-                    p === page ? 'bg-primary text-on-primary shadow-md' : 'hover:bg-surface-container-highest'
+                    p === page ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >{p}</a>
               ))}
             </div>
             <a
               href={page < totalPages ? `/kategori/${slug}?page=${page + 1}` : '#'}
-              class={`flex items-center gap-2 text-sm font-bold transition-colors ${page >= totalPages ? 'text-outline pointer-events-none' : 'text-on-surface-variant hover:text-primary'}`}
+              class={`flex items-center gap-2 text-sm font-bold transition-colors ${page >= totalPages ? 'text-gray-300 dark:text-gray-600 pointer-events-none' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'}`}
             >
               <span class="hidden sm:inline">BERIKUTNYA</span>
               <span class="material-symbols-outlined">east</span>
@@ -215,46 +215,46 @@ const description = category.description || `Artikel tentang ${category.name}`;
       <!-- Sidebar (4 cols) — hidden on mobile, shown on lg+ -->
       <aside class="hidden lg:block lg:col-span-4 space-y-10">
         <!-- Trending Topics -->
-        <div class="bg-surface-container-lowest rounded-2xl p-8 border border-outline-variant/10">
-          <h3 class="text-sm font-black tracking-widest text-on-surface uppercase mb-6">Trending Tags</h3>
+        <div class="bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-100 dark:border-gray-800">
+          <h3 class="text-sm font-black tracking-widest text-gray-900 dark:text-white uppercase mb-6">Trending Tags</h3>
           {allTags.length > 0 ? (
             <div class="flex flex-wrap gap-2">
               {allTags.slice(0, 8).map((tag: any) => (
-                <a class="px-4 py-2 bg-white text-on-surface-variant text-xs font-semibold rounded-full border border-slate-100 hover:border-primary hover:text-primary transition-all" href={`/tag/${tag.slug}`}>#{tag.name}</a>
+                <a class="px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full border border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all" href={`/tag/${tag.slug}`}>#{tag.name}</a>
               ))}
             </div>
           ) : (
-            <p class="text-xs text-on-surface-variant">Belum ada tag tersedia.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Belum ada tag tersedia.</p>
           )}
         </div>
 
         <!-- Newsletter -->
-        <div class="bg-primary rounded-2xl p-8 text-on-primary">
+        <div class="bg-blue-600 dark:bg-blue-700 rounded-2xl p-8 text-white">
           <h3 class="text-xl font-black leading-tight mb-4">Dapatkan Update Mingguan</h3>
           <p class="text-sm opacity-80 mb-6">Kurasi artikel terbaik dan berita terbaru langsung ke inbox Anda.</p>
-          <a href="/berlangganan" class="block w-full bg-white text-primary font-bold py-3 rounded-xl shadow-lg hover:bg-primary-fixed transition-all text-center text-sm">
+          <a href="/berlangganan" class="block w-full bg-white text-blue-600 font-bold py-3 rounded-xl shadow-lg hover:bg-gray-100 transition-all text-center text-sm">
             BERLANGGANAN
           </a>
         </div>
 
         <!-- All Categories -->
-        <div class="bg-surface-container/30 rounded-2xl p-6 border border-outline-variant/50">
-          <h3 class="text-[11px] font-black tracking-[0.2em] text-on-surface-variant uppercase mb-4 border-l-4 border-secondary pl-4">Indeks Kategori</h3>
+        <div class="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+          <h3 class="text-[11px] font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 uppercase mb-4 border-l-4 border-gray-400 dark:border-gray-600 pl-4">Indeks Kategori</h3>
           <div class="flex flex-col gap-1">
             {allCategories.map((cat: any) => (
               <a
                 href={`/kategori/${cat.slug}`}
                 class={`flex items-center justify-between py-2 px-3 rounded-lg transition-all group ${
                   cat.id === category.id
-                    ? 'bg-primary text-on-primary shadow-md'
-                    : 'hover:bg-white hover:shadow-sm'
+                    ? 'bg-blue-600 dark:bg-blue-700 text-white shadow-md'
+                    : 'hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm'
                 }`}
               >
                 <span class={`text-sm font-bold ${
-                  cat.id === category.id ? 'text-on-primary' : 'text-on-surface group-hover:text-primary'
+                  cat.id === category.id ? 'text-white' : 'text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400'
                 }`}>{cat.name}</span>
                 <span class={`text-xs px-2 py-0.5 rounded-full font-bold ${
-                  cat.id === category.id ? 'bg-white/20 text-on-primary' : 'bg-primary-container text-on-primary-container'
+                  cat.id === category.id ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                 }`}>
                   {allArticlesAll.filter((a: any) => a.category_id === cat.id).length}
                 </span>

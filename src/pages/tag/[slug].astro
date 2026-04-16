@@ -17,15 +17,15 @@ const allTags: any[] = await getAllTags();
   <Header />
   <main class="max-w-7xl mx-auto px-3 md:px-6 py-6 md:py-12">
     <div class="mb-10">
-      <div class="flex items-center gap-2 text-xs font-bold tracking-widest text-on-surface-variant mb-4 uppercase">
-        <a href="/" class="hover:text-primary">Beranda</a>
+      <div class="flex items-center gap-2 text-xs font-bold tracking-widest text-on-surface-variant dark:text-gray-400 mb-4 uppercase">
+        <a href="/" class="hover:text-primary dark:hover:text-blue-400">Beranda</a>
         <span class="material-symbols-outlined text-xs">chevron_right</span>
-        <span class="text-primary">#{tag.name}</span>
+        <span class="text-primary dark:text-blue-400">#{tag.name}</span>
       </div>
-      <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+      <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-on-surface dark:text-white mb-2">
         #{tag.name}
       </h1>
-      <p class="text-on-surface-variant mt-2">{articles.length} artikel ditemukan</p>
+      <p class="text-on-surface-variant dark:text-gray-400 mt-2">{articles.length} artikel ditemukan</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -38,8 +38,8 @@ const allTags: any[] = await getAllTags();
                 href={`/tag/${t.slug}`}
                 class={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-bold transition-colors ${
                   t.slug === slug
-                    ? 'bg-primary text-on-primary'
-                    : 'bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary'
+                    ? 'bg-primary text-white dark:bg-blue-600'
+                    : 'bg-surface-container dark:bg-gray-800 text-on-surface dark:text-gray-300 hover:bg-primary hover:text-white dark:hover:bg-blue-600'
                 }`}
               >
                 #{t.name}
@@ -49,8 +49,8 @@ const allTags: any[] = await getAllTags();
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           {articles.map((article: any) => (
-            <article class="bg-white rounded-2xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow group">
-              <div class="h-36 md:h-48 overflow-hidden bg-surface-container">
+            <article class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-outline-variant/30 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow group">
+              <div class="h-36 md:h-48 overflow-hidden bg-surface-container dark:bg-gray-700">
                 <img
                   alt={article.title}
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -58,11 +58,11 @@ const allTags: any[] = await getAllTags();
                 />
               </div>
               <div class="p-4 md:p-6">
-                <h2 class="text-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                <h2 class="text-lg font-bold text-on-surface dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                   <a href={`/artikel/${article.slug}`}>{article.title}</a>
                 </h2>
-                <p class="text-on-surface-variant text-sm line-clamp-2 mb-3">{article.excerpt}</p>
-                <div class="flex items-center justify-between text-xs text-on-surface-variant">
+                <p class="text-on-surface-variant dark:text-gray-400 text-sm line-clamp-2 mb-3">{article.excerpt}</p>
+                <div class="flex items-center justify-between text-xs text-on-surface-variant dark:text-gray-500">
                   <span>{article.read_time} min baca</span>
                   <span>{article.views} views</span>
                 </div>
@@ -73,8 +73,8 @@ const allTags: any[] = await getAllTags();
       </div>
 
       <aside class="hidden lg:block lg:col-span-4">
-        <div class="bg-surface-container/30 p-6 rounded-2xl border border-outline-variant/50 sticky top-24">
-          <h4 class="text-[11px] font-black uppercase tracking-[0.2em] text-on-surface-variant mb-4 border-l-4 border-secondary pl-4">
+        <div class="bg-surface-container/30 dark:bg-gray-900 p-6 rounded-2xl border border-outline-variant/50 dark:border-gray-700 sticky top-24">
+          <h4 class="text-[11px] font-black uppercase tracking-[0.2em] text-on-surface-variant dark:text-gray-400 mb-4 border-l-4 border-secondary pl-4">
             Semua Tag
           </h4>
           <div class="flex flex-wrap gap-2">
@@ -83,8 +83,8 @@ const allTags: any[] = await getAllTags();
                 href={`/tag/${t.slug}`}
                 class={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${
                   t.slug === slug
-                    ? 'bg-primary text-on-primary'
-                    : 'bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary'
+                    ? 'bg-primary text-white dark:bg-blue-600'
+                    : 'bg-surface-container dark:bg-gray-800 text-on-surface dark:text-gray-300 hover:bg-primary hover:text-white dark:hover:bg-blue-600'
                 }`}
               >
                 #{t.name}

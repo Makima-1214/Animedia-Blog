@@ -71,6 +71,21 @@ const ogImage = new URL(image, Astro.site ?? site_url);
       <meta name="google-site-verification" content={import.meta.env.GOOGLE_SITE_VERIFICATION} />
     )}
 
+    <!-- Google Analytics -->
+    {import.meta.env.GOOGLE_ANALYTICS_ID && (
+      <>
+        <script is:inline define:vars={{ gaId: import.meta.env.GOOGLE_ANALYTICS_ID }}
+          async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.GOOGLE_ANALYTICS_ID}`}>
+        </script>
+        <script is:inline define:vars={{ gaId: import.meta.env.GOOGLE_ANALYTICS_ID }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaId);
+        </script>
+      </>
+    )}
+
     <!-- Open Graph -->
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonicalURL} />

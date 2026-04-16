@@ -192,7 +192,7 @@ const users = result.rows;
   async function deleteUser(id, name) {
     window.showConfirm({
       title: 'Hapus Pengguna?',
-      message: `Akun "${name}" beserta semua komentarnya akan dihapus permanen.`,
+      message: `Akun "${name}" beserta semua sesi dan komentarnya akan dihapus permanen.`,
       okText: 'Hapus',
       okIcon: 'delete',
       okClass: 'bg-red-500 hover:bg-red-600',
