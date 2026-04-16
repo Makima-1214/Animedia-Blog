@@ -4,13 +4,8 @@ import { getAllSettings } from '../../lib/settings.js';
 import { getAdminById } from '../../lib/turso-helpers.js';
 
 const settings = await getAllSettings();
-const adminToken = Astro.cookies.get('admin_session')?.value;
-import db from '../../lib/turso.js';
-const adminSessionRow = adminToken ? await db.execute({
-  sql: `SELECT a.* FROM admin_sessions s JOIN admins a ON s.admin_id = a.id WHERE s.token = ? AND s.expires_at > ?`,
-  args: [adminToken, new Date().toISOString()]
-}) : null;
-const admin = adminSessionRow?.rows[0] as any || null;
+const adminId = Astro.cookies.get('admin_session')?.value;
+const admin = adminId ? await getAdminById(adminId) as any : null;
 const adminAvatar = admin?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(admin?.name || 'Admin')}&background=7c3aed&color=fff&size=200&bold=true&rounded=true`;
 ---
 
