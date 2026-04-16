@@ -258,6 +258,16 @@ const ogImage = new URL(image, Astro.site ?? site_url);
           document.body.classList.remove('page-transition-in');
         }, 300);
       });
+
+      // Patch global fetch: tambahkan x-requested-with agar Vercel CSRF tidak memblokir
+      const _originalFetch = window.fetch;
+      window.fetch = function(input, init = {}) {
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+        if (typeof url === 'string' && url.startsWith('/api/')) {
+          init.headers = Object.assign({ 'x-requested-with': 'XMLHttpRequest' }, init.headers || {});
+        }
+        return _originalFetch.call(this, input, init);
+      };
     </script>
   </body>
 </html>
