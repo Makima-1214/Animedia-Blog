@@ -1,7 +1,7 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import { getActiveAffiliates } from '../lib/turso-helpers.js';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import { getActiveAffiliates } from '../../lib/turso-helpers.js';
 
 const products = await getActiveAffiliates();
 const platforms = [...new Set(products.map((p: any) => p.platform).filter(Boolean))] as string[];
@@ -74,9 +74,7 @@ const platforms = [...new Set(products.map((p: any) => p.platform).filter(Boolea
 
                 <!-- Image -->
                 <a
-                  href={product.affiliate_url}
-                  target="_blank"
-                  rel="noopener noreferrer sponsored"
+                  href={`/toko/${product.id}`}
                   class="block relative overflow-hidden bg-gray-50 dark:bg-gray-800 aspect-square"
                 >
                   {product.image ? (
@@ -101,9 +99,11 @@ const platforms = [...new Set(products.map((p: any) => p.platform).filter(Boolea
                 <!-- Info -->
                 <div class="p-3 md:p-4 flex flex-col flex-1 gap-2">
                   <!-- Nama produk -->
-                  <h2 class="font-bold text-sm text-gray-900 dark:text-white leading-snug line-clamp-2">
-                    {product.name}
-                  </h2>
+                  <a href={`/toko/${product.id}`}>
+                    <h2 class="font-bold text-sm text-gray-900 dark:text-white leading-snug line-clamp-2 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                      {product.name}
+                    </h2>
+                  </a>
 
                   <!-- Harga + Tombol beli -->
                   <div class="mt-auto flex items-center justify-between gap-2 pt-1">

@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import { getAffiliateById, getActiveAffiliates } from '../../lib/turso-helpers.js';
+import db from '../../lib/turso.js';
+
+const { id } = Astro.params;
+if (!id) return Astro.redirect('/toko');
+
+const product: any = await getAffiliateById(id);
+if (!product || !product.is_active) return Astro.redirect('/toko');
+
+// Ambil artikel terkait langsung dari DB
+let article: any = null;
+if (product.article_id) {
+  const res = await db.execute({ sql: 'SELECT id, title, slug, cover_image FROM articles WHERE id = ?', args: [product.article_id] });
+  article = res.rows[0] || null;
+}
+
+// Produk lain dari platform yang sama atau artikel yang sama
+const allProducts: any[] = await getActiveAffiliates();
+const related = allProducts
+  .filter((p: any) => p.id !== product.id && (p.platform === product.platform || p.article_id === product.article_id))
+  .slice(0, 4);
+---
+
+<BaseLayout
+  title={`${product.name} — Toko Animedia`}
+  description={product.description || `Beli ${product.name} dengan harga terbaik. Rekomendasi dari editor Animedia.`}
+  image={product.image || ''}
+>
+  <Header />
+
+  <main class="bg-gray-50 dark:bg-gray-950 min-h-screen">
+
+    <!-- Breadcrumb -->
+    <div class="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+      <div class="max-w-5xl mx-auto px-4 md:px-6 py-3">
+        <nav class="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+          <a href="/" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">Beranda</a>
+          <span class="material-symbols-outlined text-[11px]">chevron_right</span>
+          <a href="/toko" class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors">Toko</a>
+          <span class="material-symbols-outlined text-[11px]">chevron_right</span>
+          <span class="text-gray-600 dark:text-gray-300 truncate max-w-[200px]">{product.name}</span>
+        </nav>
+      </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
+
+      <!-- Product Detail Card -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm mb-10">
+        <div class="grid md:grid-cols-2 gap-0">
+
+          <!-- Gambar -->
+          <div class="relative bg-gray-50 dark:bg-gray-800 aspect-square md:aspect-auto md:min-h-[400px] flex items-center justify-center overflow-hidden">
+            {product.image ? (
+              <img
+                src={product.image}
+                alt={product.name}
+                class="w-full h-full object-cover"
+              />
+            ) : (
+              <div class="flex flex-col items-center gap-3 text-gray-300 dark:text-gray-600">
+                <span class="material-symbols-outlined text-7xl">inventory_2</span>
+                <span class="text-sm font-medium">Tidak ada gambar</span>
+              </div>
+            )}
+            {product.platform && (
+              <span class="absolute top-4 left-4 text-[10px] font-black uppercase tracking-wider bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full border border-gray-100 dark:border-gray-700 shadow-sm">
+                {product.platform}
+              </span>
+            )}
+          </div>
+
+          <!-- Info -->
+          <div class="p-6 md:p-8 flex flex-col">
+
+            <!-- Platform badge -->
+            {product.platform && (
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 px-3 py-1 rounded-full w-fit mb-4">
+                <span class="material-symbols-outlined text-[14px]">storefront</span>
+                {product.platform}
+              </span>
+            )}
+
+            <!-- Nama -->
+            <h1 class="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white leading-snug mb-3">
+              {product.name}
+            </h1>
+
+            <!-- Harga -->
+            {product.price ? (
+              <div class="mb-5">
+                <p class="text-3xl font-black text-violet-600 dark:text-violet-400">
+                  Rp {product.price}
+                </p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">*Harga dapat berubah sewaktu-waktu</p>
+              </div>
+            ) : (
+              <div class="mb-5">
+                <p class="text-lg font-bold text-gray-400 dark:text-gray-500">Cek harga terbaru</p>
+              </div>
+            )}
+
+            <!-- Deskripsi -->
+            {product.description && (
+              <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 border-l-2 border-violet-200 dark:border-violet-800 pl-3">
+                {product.description}
+              </p>
+            )}
+
+            <!-- CTA Beli -->
+            <div class="mt-auto space-y-3">
+              <a
+                href={product.affiliate_url}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                class="flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white font-bold py-3.5 px-6 rounded-xl transition-colors text-sm shadow-md shadow-violet-600/20"
+              >
+                <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Beli Sekarang di {product.platform || 'Toko'}
+                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+              </a>
+
+              <a
+                href="/toko"
+                class="flex items-center justify-center gap-2 w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold py-3 px-6 rounded-xl transition-colors text-sm"
+              >
+                <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                Kembali ke Toko
+              </a>
+            </div>
+
+            <!-- Artikel sumber -->
+            {article && (
+              <div class="mt-5 pt-5 border-t border-gray-100 dark:border-gray-800">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">Direkomendasikan dalam artikel</p>
+                <a
+                  href={`/artikel/${article.slug}`}
+                  class="flex items-start gap-3 group"
+                >
+                  {article.cover_image && (
+                    <img src={article.cover_image} alt={article.title} class="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
+                  )}
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors line-clamp-2 leading-snug">
+                      {article.title}
+                    </p>
+                    <span class="text-[10px] text-violet-500 dark:text-violet-400 flex items-center gap-0.5 mt-1">
+                      Baca artikel <span class="material-symbols-outlined text-[11px]">arrow_forward</span>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <!-- Disclosure -->
+      <div class="bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-xl px-4 py-3 flex items-start gap-3 mb-10">
+        <span class="material-symbols-outlined text-amber-500 text-[18px] flex-shrink-0 mt-0.5">info</span>
+        <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+          Link di halaman ini adalah <strong>link afiliasi</strong>. Kami mendapat komisi kecil dari setiap pembelian tanpa biaya tambahan buat kamu. Ini membantu kami terus membuat konten berkualitas. ❤️
+        </p>
+      </div>
+
+      <!-- Produk Terkait -->
+      {related.length > 0 && (
+        <div>
+          <h2 class="text-lg font-extrabold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
+            <span class="w-1 h-6 bg-violet-600 rounded-full"></span>
+            Produk Terkait
+          </h2>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+            {related.map((p: any) => (
+              <a
+                href={`/toko/${p.id}`}
+                class="group bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
+              >
+                <div class="aspect-square bg-gray-50 dark:bg-gray-800 overflow-hidden">
+                  {p.image ? (
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center">
+                      <span class="material-symbols-outlined text-4xl text-gray-200 dark:text-gray-700">inventory_2</span>
+                    </div>
+                  )}
+                </div>
+                <div class="p-3 flex flex-col flex-1 gap-1.5">
+                  <h3 class="text-xs font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                    {p.name}
+                  </h3>
+                  {p.price ? (
+                    <p class="text-xs font-black text-violet-600 dark:text-violet-400 mt-auto">Rp {p.price}</p>
+                  ) : (
+                    <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-auto">Cek harga</p>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </main>
+</BaseLayout>
