@@ -4,18 +4,17 @@ import { createClient } from '@libsql/client';
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
 
-  // Hanya proteksi route /dashboard/*
+  // Proteksi route /dashboard/*
   if (!pathname.startsWith('/dashboard')) {
     return next();
   }
 
-  const token = context.cookies.get('admin_session')?.value;
+  const adminId = context.cookies.get('admin_session')?.value;
 
-  if (!token) {
+  if (!adminId) {
     return context.redirect('/admin/login');
   }
 
-  // Verify token di DB
   try {
     const db = createClient({
       url: import.meta.env.TURSO_DATABASE_URL,
@@ -23,8 +22,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     });
 
     const result = await db.execute({
-      sql: `SELECT admin_id FROM admin_sessions WHERE token = ? AND expires_at > ?`,
-      args: [token, new Date().toISOString()]
+      sql: `SELECT id FROM admins WHERE id = ?`,
+      args: [adminId]
     });
 
     if (!result.rows[0]) {

@@ -201,9 +201,11 @@ const users = result.rows;
       icon: 'person_remove'
     }, async (confirmed) => {
       if (!confirmed) return;
-      const fd = new FormData();
-      fd.append('id', id);
-      const res = await fetch('/api/admin/delete-user', { method: 'POST', body: fd });
+      const res = await fetch('/api/admin/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
       const result = await res.json();
       if (result.success) {
         alert('✅ Pengguna berhasil dihapus');
