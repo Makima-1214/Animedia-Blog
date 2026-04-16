@@ -150,8 +150,8 @@ export async function getActiveAffiliates() {
   const result = await db.execute(`
     SELECT ap.*, a.title as article_title, a.slug as article_slug
     FROM affiliate_products ap
-    JOIN articles a ON ap.article_id = a.id
-    WHERE ap.is_active = 1 AND a.status = 'published'
+    LEFT JOIN articles a ON ap.article_id = a.id
+    WHERE ap.is_active = 1
     ORDER BY ap.sort_order ASC, ap.created_at DESC
   `);
   return result.rows;
@@ -180,9 +180,10 @@ export async function getAffiliatesAdminByArticle(articleId) {
 
 export async function createAffiliate(data) {
   const id = Date.now().toString() + Math.random().toString(36).slice(2);
+  // article_id opsional — bisa null untuk produk standalone
   await db.execute({
     sql: `INSERT INTO affiliate_products (id, article_id, name, description, image, price, affiliate_url, platform, is_active, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    args: [id, data.article_id, data.name, data.description || '', data.image || '', data.price || '', data.affiliate_url, data.platform || '', data.is_active ?? 1, data.sort_order ?? 0]
+    args: [id, data.article_id || null, data.name, data.description || '', data.image || '', data.price || '', data.affiliate_url, data.platform || '', data.is_active ?? 1, data.sort_order ?? 0]
   });
 }
 

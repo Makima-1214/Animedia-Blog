@@ -9,11 +9,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   try {
     const formData = await request.formData();
     const action = formData.get('action')?.toString();
-    const articleId = formData.get('article_id')?.toString();
-
-    if (!articleId) {
-      return new Response(JSON.stringify({ success: false, message: 'article_id wajib diisi' }), { status: 400 });
-    }
+    const articleId = formData.get('article_id')?.toString() || null;
 
     if (action === 'delete') {
       const id = formData.get('id')?.toString();
@@ -40,7 +36,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       sort_order: parseInt(formData.get('sort_order')?.toString() || '0'),
     });
 
-    const products = await getAffiliatesAdminByArticle(articleId);
+    const products = articleId ? await getAffiliatesAdminByArticle(articleId) : [];
     return new Response(JSON.stringify({ success: true, products }));
   } catch (error) {
     return new Response(JSON.stringify({ success: false, message: (error as Error).message }), { status: 500 });

@@ -313,7 +313,7 @@ const articles = await getAllArticles() as any[];
 
     const fd = new FormData();
     if (id) fd.append('id', id);
-    fd.append('article_id', document.getElementById('modal_article').value || '1');
+    fd.append('article_id', document.getElementById('modal_article').value || '');
     fd.append('name', name);
     fd.append('affiliate_url', url);
     fd.append('price', document.getElementById('modal_price').value);
