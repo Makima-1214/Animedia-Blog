@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+---
+<BaseLayout title="Kontak" description="Hubungi tim Animedia untuk pertanyaan, saran, atau kerja sama.">
+  <Header />
+  <main class="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-20">
+    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6">Kontak</h1>
+    <div class="prose prose-lg dark:prose-invert max-w-none">
+      <p>Ada pertanyaan, saran, koreksi artikel, atau ingin mengajak kerja sama? Kami senang mendengar dari kamu.</p>
+      <h2>Email</h2>
+      <p>Kirim pesan ke: <a href="mailto:admin@animedia.web.id">admin@animedia.web.id</a></p>
+      <h2>Kerja Sama & Iklan</h2>
+      <p>Jika kamu mewakili brand dan tertarik untuk beriklan, review produk, atau bentuk kolaborasi lainnya, silakan kirim email dengan subjek <strong>"Kerja Sama - [Nama Brand]"</strong>.</p>
+      <h2>Koreksi & Saran Artikel</h2>
+      <p>Menemukan informasi yang kurang tepat di artikel kami? Kami sangat menghargai masukan. Kirim email dengan subjek <strong>"Koreksi - [Judul Artikel]"</strong>.</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Kami berusaha membalas setiap pesan dalam 1-3 hari kerja.</p>
+    </div>
+  </main>
+</BaseLayout>

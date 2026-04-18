@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+const lastUpdated = '15 April 2026';
+---
+<BaseLayout title="Disclaimer" description="Disclaimer Animedia mengenai akurasi informasi, rumor, dan konten afiliasi.">
+  <Header />
+  <main class="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-20">
+    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-2">Disclaimer</h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">Terakhir diperbarui: {lastUpdated}</p>
+    <div class="prose prose-lg dark:prose-invert max-w-none">
+      <h2>Akurasi Informasi</h2>
+      <p>Animedia berusaha menyajikan informasi yang akurat dan terkini. Namun, kami tidak menjamin keakuratan, kelengkapan, atau kesesuaian informasi yang tersedia di website ini untuk tujuan tertentu.</p>
+
+      <h2>Rumor & Bocoran (Leaks)</h2>
+      <p>Beberapa artikel di Animedia membahas rumor, bocoran, dan spekulasi mengenai produk teknologi, film, anime, atau game yang belum dirilis secara resmi. Informasi tersebut bersumber dari laporan pihak ketiga dan <strong>dapat berubah sewaktu-waktu</strong>. Animedia tidak bertanggung jawab atas ketidakakuratan informasi yang berasal dari sumber eksternal.</p>
+
+      <h2>Spesifikasi Teknis</h2>
+      <p>Spesifikasi produk yang kami cantumkan bersumber dari pengumuman resmi produsen atau laporan media terpercaya. Kami tidak bertanggung jawab atas perubahan spesifikasi yang dilakukan produsen setelah artikel diterbitkan.</p>
+
+      <h2>Konten Afiliasi</h2>
+      <p>Beberapa artikel dan halaman di Animedia mengandung tautan afiliasi. Artinya, kami dapat menerima komisi jika kamu melakukan pembelian melalui tautan tersebut, tanpa biaya tambahan dari pihak kamu. Hal ini membantu kami dalam mengelola dan mengembangkan website.</p>
+
+      <h2>Hak Cipta</h2>
+      <p>Gambar dan media yang digunakan di website ini bersumber dari pemilik hak cipta masing-masing. Jika kamu merasa ada konten yang melanggar hak cipta, silakan hubungi kami di <a href="mailto:admin@animedia.web.id">admin@animedia.web.id</a>.</p>
+
+      <h2>Tautan Eksternal</h2>
+      <p>Website ini dapat memuat tautan ke website pihak ketiga. Animedia tidak bertanggung jawab atas konten atau kebijakan privasi website tersebut.</p>
+    </div>
+  </main>
+</BaseLayout>

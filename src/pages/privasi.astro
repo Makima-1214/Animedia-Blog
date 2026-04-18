@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+const lastUpdated = '15 April 2026';
+---
+<BaseLayout title="Kebijakan Privasi" description="Kebijakan privasi Animedia menjelaskan bagaimana kami mengumpulkan dan menggunakan data pengunjung." noindex={false}>
+  <Header />
+  <main class="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-20">
+    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-2">Kebijakan Privasi</h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">Terakhir diperbarui: {lastUpdated}</p>
+    <div class="prose prose-lg dark:prose-invert max-w-none">
+      <p>Kebijakan Privasi ini menjelaskan bagaimana Animedia (<strong>animedia.web.id</strong>) mengumpulkan, menggunakan, dan melindungi informasi yang kamu berikan saat menggunakan website ini.</p>
+
+      <h2>Informasi yang Kami Kumpulkan</h2>
+      <p>Kami dapat mengumpulkan informasi berikut:</p>
+      <ul>
+        <li>Data yang kamu berikan secara sukarela saat mendaftar atau berlangganan newsletter (nama, alamat email).</li>
+        <li>Data penggunaan standar seperti halaman yang dikunjungi, durasi kunjungan, dan jenis perangkat — dikumpulkan secara anonim untuk keperluan statistik.</li>
+        <li>Cookies yang digunakan untuk meningkatkan pengalaman browsing.</li>
+      </ul>
+
+      <h2>Penggunaan Cookies</h2>
+      <p>Website ini menggunakan cookies untuk menyimpan preferensi pengguna dan menganalisis traffic. Kamu dapat menonaktifkan cookies melalui pengaturan browser, namun beberapa fitur website mungkin tidak berfungsi optimal.</p>
+
+      <h2>Bagaimana Kami Menggunakan Informasi</h2>
+      <ul>
+        <li>Mengirimkan newsletter yang kamu daftarkan.</li>
+        <li>Meningkatkan konten dan pengalaman pengguna di website.</li>
+        <li>Menganalisis tren penggunaan secara anonim.</li>
+      </ul>
+
+      <h2>Layanan Pihak Ketiga</h2>
+      <p>Website ini dapat menggunakan layanan pihak ketiga seperti Google Analytics untuk analisis traffic. Layanan tersebut memiliki kebijakan privasi masing-masing yang terpisah dari kebijakan ini.</p>
+
+      <h2>Keamanan Data</h2>
+      <p>Kami berkomitmen untuk menjaga keamanan data kamu. Namun, tidak ada metode transmisi data melalui internet yang 100% aman.</p>
+
+      <h2>Perubahan Kebijakan</h2>
+      <p>Kami dapat memperbarui kebijakan privasi ini sewaktu-waktu. Perubahan akan dipublikasikan di halaman ini dengan tanggal pembaruan terbaru.</p>
+
+      <h2>Hubungi Kami</h2>
+      <p>Jika ada pertanyaan mengenai kebijakan privasi ini, hubungi kami di <a href="mailto:admin@animedia.web.id">admin@animedia.web.id</a>.</p>
+    </div>
+  </main>
+</BaseLayout>
