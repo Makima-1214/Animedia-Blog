@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import ArticleEnhancements from './_article-enhancements.astro';
-import { getArticleBySlug, getCategoryBySlug, getAllCategories, incrementArticleViews, getCommentsByArticle, getTagsByArticle, getAffiliatesByArticle, getAdminById, getRelatedArticles } from '../../lib/turso-helpers.js';
+import { getArticleBySlug, getCategoryBySlug, getAllCategories, getCommentsByArticle, getTagsByArticle, getAffiliatesByArticle, getAdminById, getRelatedArticles } from '../../lib/turso-helpers.js';
 import { getSession } from '../../lib/simple-auth';
 import { toString, toNumber } from '../../lib/type-helpers';
 
@@ -19,7 +19,7 @@ if (!article) {
   return Astro.redirect('/');
 }
 
-await incrementArticleViews(article.id);
+// View tracking moved to client-side for accuracy
 
 const categories = await getAllCategories();
 const category: any = categories.find((c: any) => c.id === article.category_id);
@@ -850,3 +850,34 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
   <!-- Article Enhancements: TOC, Copy Code, Reading Progress -->
   <ArticleEnhancements />
 </BaseLayout>
+
+
+<script define:vars={{ articleId: article.id }}>
+  // Accurate view tracking with bot detection and 24h cooldown
+  (function() {
+    // Check if already tracked in localStorage (backup)
+    const storageKey = `viewed_${articleId}`;
+    const lastViewed = localStorage.getItem(storageKey);
+    const now = Date.now();
+    
+    // If viewed in last 24 hours, skip
+    if (lastViewed && (now - parseInt(lastViewed)) < 24 * 60 * 60 * 1000) {
+      return;
+    }
+    
+    // Track view via API
+    fetch('/api/articles/view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ articleId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // Store in localStorage
+        localStorage.setItem(storageKey, now.toString());
+      }
+    })
+    .catch(err => console.error('View tracking error:', err));
+  })();
+</script>
