@@ -43,14 +43,18 @@ const thinTags = tagsWithCount.filter(t => t.articleCount > 0 && t.articleCount 
             Kelola dan optimasi tag untuk SEO yang lebih baik
           </p>
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <button id="cleanup-empty-btn" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold text-sm transition-colors flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">delete_sweep</span>
             Hapus Tag Kosong ({emptyTags})
           </button>
-          <button id="cleanup-thin-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-sm transition-colors flex items-center gap-2">
+          <button id="cleanup-noindex-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-sm transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">block</span>
+            Hapus Tag Noindex ({noindexTags})
+          </button>
+          <button id="cleanup-all-btn" class="px-4 py-2 bg-gray-900 hover:bg-black text-white rounded-lg font-bold text-sm transition-colors flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">cleaning_services</span>
-            Hapus Tag Tipis ({thinTags})
+            Hapus Semua Tag Buruk
           </button>
         </div>
       </div>
@@ -222,11 +226,11 @@ const thinTags = tagsWithCount.filter(t => t.articleCount > 0 && t.articleCount 
       const emptyCount = parseInt(document.getElementById('cleanup-empty-btn')?.textContent?.match(/\d+/)?.[0] || '0');
       
       if (emptyCount === 0) {
-        alert('Tidak ada tag kosong yang perlu dihapus!');
+        alert('✅ Tidak ada tag kosong yang perlu dihapus!');
         return;
       }
       
-      if (!confirm(`Hapus ${emptyCount} tag kosong?\n\nTag tanpa artikel akan dihapus permanen.`)) {
+      if (!confirm(`🗑️ Hapus ${emptyCount} tag kosong?\n\n✅ Tag tanpa artikel akan dihapus permanen.\n✅ Artikel tetap aman.`)) {
         return;
       }
       
@@ -243,24 +247,24 @@ const thinTags = tagsWithCount.filter(t => t.articleCount > 0 && t.articleCount 
           alert(`✅ Berhasil menghapus ${result.deleted} tag kosong!`);
           window.location.reload();
         } else {
-          alert('Gagal membersihkan tag: ' + result.message);
+          alert('❌ Gagal membersihkan tag: ' + result.message);
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Terjadi kesalahan saat membersihkan tag');
+        alert('❌ Terjadi kesalahan saat membersihkan tag');
       }
     });
     
-    // Cleanup thin tags
-    document.getElementById('cleanup-thin-btn')?.addEventListener('click', async () => {
-      const thinCount = parseInt(document.getElementById('cleanup-thin-btn')?.textContent?.match(/\d+/)?.[0] || '0');
+    // Cleanup noindex tags (thin tags)
+    document.getElementById('cleanup-noindex-btn')?.addEventListener('click', async () => {
+      const noindexCount = parseInt(document.getElementById('cleanup-noindex-btn')?.textContent?.match(/\d+/)?.[0] || '0');
       
-      if (thinCount === 0) {
-        alert('Tidak ada tag tipis yang perlu dihapus!');
+      if (noindexCount === 0) {
+        alert('✅ Tidak ada tag noindex yang perlu dihapus!');
         return;
       }
       
-      if (!confirm(`Hapus ${thinCount} tag tipis (< 5 artikel)?\n\nTag dengan artikel sedikit akan dihapus. Artikel tetap aman.`)) {
+      if (!confirm(`🗑️ Hapus ${noindexCount} tag noindex (< 5 artikel)?\n\n✅ Tag dengan artikel sedikit akan dihapus.\n✅ Artikel tetap aman, hanya tag yang dihapus.\n\n⚠️ Ini akan membersihkan semua tag yang tidak terindex Google!`)) {
         return;
       }
       
@@ -274,14 +278,65 @@ const thinTags = tagsWithCount.filter(t => t.articleCount > 0 && t.articleCount 
         const result = await response.json();
         
         if (result.success) {
-          alert(`✅ Berhasil menghapus ${result.deleted} tag tipis!`);
+          alert(`✅ Berhasil menghapus ${result.deleted} tag noindex!\n\n🎉 Website Anda sekarang lebih SEO-friendly!`);
           window.location.reload();
         } else {
-          alert('Gagal membersihkan tag: ' + result.message);
+          alert('❌ Gagal membersihkan tag: ' + result.message);
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Terjadi kesalahan saat membersihkan tag');
+        alert('❌ Terjadi kesalahan saat membersihkan tag');
+      }
+    });
+    
+    // Cleanup ALL bad tags (empty + noindex)
+    document.getElementById('cleanup-all-btn')?.addEventListener('click', async () => {
+      const emptyCount = parseInt(document.getElementById('cleanup-empty-btn')?.textContent?.match(/\d+/)?.[0] || '0');
+      const noindexCount = parseInt(document.getElementById('cleanup-noindex-btn')?.textContent?.match(/\d+/)?.[0] || '0');
+      const totalCount = emptyCount + noindexCount;
+      
+      if (totalCount === 0) {
+        alert('✅ Tidak ada tag buruk yang perlu dihapus!\n\nSemua tag Anda sudah berkualitas!');
+        return;
+      }
+      
+      if (!confirm(`🔥 HAPUS SEMUA TAG BURUK?\n\n📊 Total yang akan dihapus: ${totalCount} tag\n   • ${emptyCount} tag kosong\n   • ${noindexCount} tag noindex\n\n✅ Artikel tetap aman\n✅ Hanya tag yang dihapus\n✅ SEO akan jauh lebih baik\n\n⚠️ Proses ini tidak bisa di-undo!`)) {
+        return;
+      }
+      
+      try {
+        // Delete empty tags first
+        const emptyResponse = await fetch('/api/tags/cleanup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'empty' })
+        });
+        
+        const emptyResult = await emptyResponse.json();
+        
+        // Then delete thin/noindex tags
+        const thinResponse = await fetch('/api/tags/cleanup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'thin' })
+        });
+        
+        const thinResult = await thinResponse.json();
+        
+        const totalDeleted = (emptyResult.deleted || 0) + (thinResult.deleted || 0);
+        
+        if (emptyResult.success && thinResult.success) {
+          alert(`🎉 CLEANUP SELESAI!\n\n✅ Berhasil menghapus ${totalDeleted} tag buruk!\n   • ${emptyResult.deleted} tag kosong\n   • ${thinResult.deleted} tag noindex\n\n🚀 Website Anda sekarang jauh lebih SEO-friendly!`);
+          window.location.reload();
+        } else {
+          alert('⚠️ Cleanup sebagian berhasil:\n' + 
+                `• Tag kosong: ${emptyResult.deleted || 0} dihapus\n` +
+                `• Tag noindex: ${thinResult.deleted || 0} dihapus`);
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Terjadi kesalahan saat membersihkan tag');
       }
     });
     
