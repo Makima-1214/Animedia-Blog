@@ -1,0 +1,244 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { getAllTags } from '../../lib/turso-helpers.js';
+import turso from '../../lib/turso.js';
+
+const allTags = await getAllTags();
+
+// Get article count per tag
+const tagCountsResult = await turso.execute(`
+  SELECT tag_id, COUNT(*) as count 
+  FROM article_tags 
+  GROUP BY tag_id
+`);
+
+const tagCounts = new Map(
+  tagCountsResult.rows.map((row: any) => [row.tag_id, Number(row.count)])
+);
+
+// Enrich tags with article count
+const tagsWithCount = allTags.map((tag: any) => ({
+  ...tag,
+  articleCount: tagCounts.get(tag.id) || 0
+})).sort((a, b) => b.articleCount - a.articleCount);
+
+// Statistics
+const MIN_ARTICLES_FOR_INDEX = 5;
+const totalTags = tagsWithCount.length;
+const indexedTags = tagsWithCount.filter(t => t.articleCount >= MIN_ARTICLES_FOR_INDEX).length;
+const noindexTags = totalTags - indexedTags;
+const emptyTags = tagsWithCount.filter(t => t.articleCount === 0).length;
+const thinTags = tagsWithCount.filter(t => t.articleCount > 0 && t.articleCount < MIN_ARTICLES_FOR_INDEX).length;
+---
+
+<DashboardLayout title="Tag Management" activePage="tags">
+  <div class="p-4 md:p-8 lg:p-12">
+    <header class="mb-8 md:mb-12">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl md:text-4xl lg:text-5xl font-headline font-extrabold tracking-tighter text-on-surface mb-2">
+            Tag Management
+          </h2>
+          <p class="text-sm md:text-base text-on-surface-variant font-body">
+            Kelola dan optimasi tag untuk SEO yang lebih baik
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+      <!-- Total Tags -->
+      <div class="bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">label</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Total</span>
+        </div>
+        <div class="text-4xl font-black mb-1">{totalTags}</div>
+        <div class="text-sm opacity-90">Total Tag</div>
+      </div>
+
+      <!-- Indexed Tags -->
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">check_circle</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Indexed</span>
+        </div>
+        <div class="text-4xl font-black mb-1">{indexedTags}</div>
+        <div class="text-sm opacity-90">Tag Terindex (5+ artikel)</div>
+      </div>
+
+      <!-- Noindex Tags -->
+      <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">block</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Noindex</span>
+        </div>
+        <div class="text-4xl font-black mb-1">{noindexTags}</div>
+        <div class="text-sm opacity-90">Tag Tidak Terindex</div>
+      </div>
+
+      <!-- Empty Tags -->
+      <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">warning</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Empty</span>
+        </div>
+        <div class="text-4xl font-black mb-1">{emptyTags}</div>
+        <div class="text-sm opacity-90">Tag Kosong (0 artikel)</div>
+      </div>
+    </div>
+
+    <!-- SEO Info -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-8">
+      <div class="flex items-start gap-4">
+        <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl flex-shrink-0">info</span>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">SEO Best Practice</h3>
+          <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-green-600 dark:text-green-400 flex-shrink-0">✓</span>
+              <span><strong>Indexed Tags ({indexedTags}):</strong> Tag dengan 5+ artikel akan di-index Google (bagus untuk SEO)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-orange-600 dark:text-orange-400 flex-shrink-0">⚠</span>
+              <span><strong>Thin Tags ({thinTags}):</strong> Tag dengan 1-4 artikel tidak di-index (hemat crawl budget)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-600 dark:text-red-400 flex-shrink-0">✗</span>
+              <span><strong>Empty Tags ({emptyTags}):</strong> Tag tanpa artikel sebaiknya dihapus</span>
+            </li>
+          </ul>
+          <div class="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg">
+            <p class="text-sm font-semibold text-gray-900 dark:text-white mb-2">💡 Rekomendasi:</p>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <li>• Merge tag yang mirip (contoh: "tutorial-react" + "react-tutorial" → "React")</li>
+              <li>• Hapus tag kosong atau yang jarang digunakan</li>
+              <li>• Gunakan tag yang broad, bukan terlalu spesifik</li>
+              <li>• Target: 20-50 tag berkualitas lebih baik dari 200+ tag tipis</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags Table -->
+    <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <span class="material-symbols-outlined text-violet-600">list</span>
+          Semua Tag
+        </h3>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Tag</th>
+              <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Artikel</th>
+              <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status SEO</th>
+              <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+            {tagsWithCount.map((tag) => {
+              const isIndexed = tag.articleCount >= MIN_ARTICLES_FOR_INDEX;
+              const isEmpty = tag.articleCount === 0;
+              const isThin = tag.articleCount > 0 && tag.articleCount < MIN_ARTICLES_FOR_INDEX;
+              
+              return (
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <span class="material-symbols-outlined text-gray-400 text-lg">label</span>
+                      <div>
+                        <a href={`/tag/${tag.slug}`} target="_blank" class="font-semibold text-gray-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400">
+                          #{tag.name}
+                        </a>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{tag.slug}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class={`inline-flex items-center justify-center w-12 h-12 rounded-full font-bold text-lg ${
+                      isEmpty ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' :
+                      isThin ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' :
+                      'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                    }`}>
+                      {tag.articleCount}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    {isIndexed ? (
+                      <span class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-bold">
+                        <span class="material-symbols-outlined text-sm">check_circle</span>
+                        Indexed
+                      </span>
+                    ) : isEmpty ? (
+                      <span class="inline-flex items-center gap-1 px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold">
+                        <span class="material-symbols-outlined text-sm">warning</span>
+                        Empty
+                      </span>
+                    ) : (
+                      <span class="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full text-xs font-bold">
+                        <span class="material-symbols-outlined text-sm">block</span>
+                        Noindex
+                      </span>
+                    )}
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                      <a href={`/tag/${tag.slug}`} target="_blank" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Lihat Tag">
+                        <span class="material-symbols-outlined text-gray-600 dark:text-gray-400 text-lg">visibility</span>
+                      </a>
+                      <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors delete-tag-btn" data-id={tag.id} data-name={tag.name} title="Hapus Tag">
+                        <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-lg">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Delete tag functionality
+    document.querySelectorAll('.delete-tag-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const tagId = btn.getAttribute('data-id');
+        const tagName = btn.getAttribute('data-name');
+        
+        if (!confirm(`Hapus tag "${tagName}"?\n\nTag akan dihapus dari semua artikel.`)) {
+          return;
+        }
+        
+        try {
+          const response = await fetch('/api/tags/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: tagId })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            if (window.showToast) {
+              window.showToast('Tag berhasil dihapus!', 'success');
+            }
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            alert('Gagal menghapus tag: ' + result.message);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Terjadi kesalahan saat menghapus tag');
+        }
+      });
+    });
+  </script>
+</DashboardLayout>

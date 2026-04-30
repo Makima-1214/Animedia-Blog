@@ -2,7 +2,7 @@
 import db from '../lib/turso.js';
 
 interface Props {
-  activePage: 'dashboard' | 'artikel' | 'kategori' | 'komentar' | 'pengaturan' | 'afiliasi' | 'pengguna' | 'analytics';
+  activePage: 'dashboard' | 'artikel' | 'kategori' | 'tags' | 'komentar' | 'pengaturan' | 'afiliasi' | 'pengguna' | 'analytics';
 }
 
 const { activePage } = Astro.props;
@@ -90,6 +90,17 @@ const adminAvatar = adminRow?.avatar || null;
     >
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span class="font-body text-sm">Kategori</span>
+    </a>
+    <a 
+      class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${
+        activePage === 'tags' 
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-r-lg translate-x-1' 
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-800/50'
+      }`}
+      href="/dashboard/tags"
+    >
+      <span class="material-symbols-outlined text-[20px]">label</span>
+      <span class="font-body text-sm">Tags</span>
     </a>
     <a 
       class={`flex items-center space-x-3 px-3 py-2.5 transition-all duration-200 ${

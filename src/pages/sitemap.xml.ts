@@ -1,16 +1,35 @@
 import type { APIRoute } from 'astro';
 import { getAllArticles, getAllCategories, getAllTags } from '../lib/turso-helpers.js';
+import turso from '../lib/turso.js';
 
 export const prerender = false;
 
 const site = 'https://animedia.web.id';
 
 export const GET: APIRoute = async () => {
-  const [articles, categories, tags] = await Promise.all([
+  const [articles, categories, allTags] = await Promise.all([
     getAllArticles(),
     getAllCategories(),
     getAllTags(),
   ]);
+
+  // Get article count per tag
+  const tagCountsResult = await turso.execute(`
+    SELECT tag_id, COUNT(*) as count 
+    FROM article_tags 
+    GROUP BY tag_id
+  `);
+  
+  const tagCounts = new Map(
+    tagCountsResult.rows.map((row: any) => [row.tag_id, Number(row.count)])
+  );
+
+  // Filter tags: only include tags with 5+ articles
+  const MIN_ARTICLES_FOR_INDEX = 5;
+  const valuableTags = allTags.filter((tag: any) => {
+    const count = tagCounts.get(tag.id) || 0;
+    return count >= MIN_ARTICLES_FOR_INDEX;
+  });
 
   const now = new Date().toISOString().split('T')[0];
 
@@ -45,12 +64,12 @@ export const GET: APIRoute = async () => {
     <priority>0.7</priority>
   </url>`),
 
-    ...tags.map((tag: any) => `
+    ...valuableTags.map((tag: any) => `
   <url>
     <loc>${site}/tag/${tag.slug}</loc>
     <lastmod>${now}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
   </url>`),
 
     ...articles.map((article: any) => {

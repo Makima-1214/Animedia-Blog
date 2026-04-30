@@ -12,9 +12,17 @@ if (!tag) return Astro.redirect('/');
 
 const articles: any[] = await getArticlesByTag(slug);
 const allTags: any[] = await getAllTags();
+
+// Determine if tag should be indexed (5+ articles)
+const MIN_ARTICLES_FOR_INDEX = 5;
+const shouldIndex = articles.length >= MIN_ARTICLES_FOR_INDEX;
 ---
 
-<BaseLayout title={`#${tag.name} - Animedia`} description={`Artikel dengan tag ${tag.name}`}>
+<BaseLayout 
+  title={`#${tag.name} - Animedia`} 
+  description={`Artikel dengan tag ${tag.name}`}
+  noindex={!shouldIndex}
+>
   <Header />
   <main class="max-w-7xl mx-auto px-3 md:px-6 py-6 md:py-12">
     <div class="mb-10">
