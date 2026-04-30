@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import turso from '../../../lib/turso.js';
-import { parseRequestBody } from '../../../lib/parse-request';
+import { parseRequest } from '../../../lib/parse-request';
 
 const MIN_ARTICLES_FOR_INDEX = 5;
 
@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       });
     }
 
-    const body = await parseRequestBody(request);
+    const body = await parseRequest(request);
     const { mode } = body;
 
     if (!mode || !['empty', 'thin'].includes(mode)) {
