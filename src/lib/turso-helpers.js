@@ -8,24 +8,35 @@ export function calculateReadTime(content) {
 
 // Articles
 export async function getAllArticles() {
-  // Get published articles AND scheduled articles that have reached their publish time
-  const result = await db.execute(`
-    SELECT * FROM articles 
-    WHERE (status = 'published' OR (status = 'scheduled' AND scheduled_at <= datetime('now')))
-    ORDER BY COALESCE(published_at, scheduled_at) DESC
-  `);
-  
-  // Auto-publish scheduled articles that have reached their time
-  for (const article of result.rows) {
-    if (article.status === 'scheduled' && article.scheduled_at <= new Date().toISOString()) {
-      await db.execute({
-        sql: `UPDATE articles SET status = 'published', published_at = scheduled_at WHERE id = ?`,
-        args: [article.id]
-      });
+  try {
+    // Try new query with scheduled_at (for databases that have been migrated)
+    const result = await db.execute(`
+      SELECT * FROM articles 
+      WHERE (status = 'published' OR (status = 'scheduled' AND scheduled_at <= datetime('now')))
+      ORDER BY COALESCE(published_at, scheduled_at, created_at) DESC
+    `);
+    
+    // Auto-publish scheduled articles that have reached their time
+    for (const article of result.rows) {
+      if (article.status === 'scheduled' && article.scheduled_at && article.scheduled_at <= new Date().toISOString()) {
+        await db.execute({
+          sql: `UPDATE articles SET status = 'published', published_at = scheduled_at WHERE id = ?`,
+          args: [article.id]
+        });
+      }
     }
+    
+    return result.rows.filter(a => a.status === 'published');
+  } catch (error) {
+    // Fallback to old query if scheduled_at column doesn't exist yet
+    console.warn('Falling back to old query (scheduled_at column may not exist):', error);
+    const result = await db.execute(`
+      SELECT * FROM articles 
+      WHERE status = 'published' 
+      ORDER BY published_at DESC
+    `);
+    return result.rows;
   }
-  
-  return result.rows.filter(a => a.status === 'published');
 }
 
 export async function getArticleBySlug(slug) {

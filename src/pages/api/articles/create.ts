@@ -42,10 +42,20 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const id = Date.now().toString();
     const publishedAt = status === 'published' ? new Date().toISOString() : null;
 
-    await db.execute({
-      sql: `INSERT INTO articles (id, title, slug, excerpt, content, cover_image, category_id, status, read_time, published_at, scheduled_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [id, title, slug, excerpt, content, coverImage || null, categoryId, status, readTime, publishedAt, scheduledAt]
-    });
+    // Try to insert with scheduled_at column (new schema)
+    try {
+      await db.execute({
+        sql: `INSERT INTO articles (id, title, slug, excerpt, content, cover_image, category_id, status, read_time, published_at, scheduled_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [id, title, slug, excerpt, content, coverImage || null, categoryId, status, readTime, publishedAt, scheduledAt]
+      });
+    } catch (error) {
+      // Fallback to old schema if scheduled_at column doesn't exist
+      console.warn('Falling back to old schema (scheduled_at column may not exist)');
+      await db.execute({
+        sql: `INSERT INTO articles (id, title, slug, excerpt, content, cover_image, category_id, status, read_time, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [id, title, slug, excerpt, content, coverImage || null, categoryId, status === 'scheduled' ? 'draft' : status, readTime, publishedAt]
+      });
+    }
 
     if (tags.trim()) {
       const tagNames = tags.split(',').map((t: string) => t.trim()).filter((t: string) => t.length > 0);
