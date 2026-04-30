@@ -192,6 +192,9 @@ const ogImage = image ? new URL(image, Astro.site ?? site_url) : null;
     <!-- Enhanced Dark Mode -->
     <script src="/dark-mode-enhanced.js" is:inline></script>
     
+    <!-- Enhanced Animations -->
+    <script src="/enhanced-animations.js" is:inline></script>
+    
     <style>
       /* Prevent FOUT for Material Symbols - hide until font ready */
       .material-symbols-outlined {
@@ -205,6 +208,108 @@ const ogImage = image ? new URL(image, Astro.site ?? site_url) : null;
         display: inline-block;
         width: 1em;
         height: 1em;
+      }
+
+      /* Enhanced Design System Variables */
+      :root {
+        --animation-duration: 300ms;
+        --transition-duration: 300ms;
+        --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
+        
+        /* Spacing Scale */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-12: 3rem;
+        --space-16: 4rem;
+        
+        /* Border Radius Scale */
+        --radius-sm: 0.5rem;
+        --radius-md: 0.75rem;
+        --radius-lg: 1rem;
+        --radius-xl: 1.5rem;
+        
+        /* Shadow Scale */
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+      }
+
+      /* Improved Mobile Spacing */
+      @media (max-width: 768px) {
+        .container {
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+        }
+      }
+
+      /* Enhanced Card Hover Effects */
+      .card-hover {
+        transition: transform var(--transition-duration) var(--ease-out-expo),
+                    box-shadow var(--transition-duration) var(--ease-out-expo);
+      }
+
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      /* Smooth Image Loading */
+      img {
+        transition: opacity 0.3s ease, filter 0.3s ease;
+      }
+
+      img[loading="lazy"] {
+        opacity: 0;
+      }
+
+      img[loading="lazy"].loaded,
+      img:not([loading="lazy"]) {
+        opacity: 1;
+      }
+
+      /* Better Focus Styles */
+      *:focus-visible {
+        outline: 2px solid #7c3aed;
+        outline-offset: 2px;
+        border-radius: 0.25rem;
+      }
+
+      /* Smooth Scrollbar */
+      ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(124, 58, 237, 0.3);
+        border-radius: 6px;
+        border: 3px solid transparent;
+        background-clip: padding-box;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(124, 58, 237, 0.5);
+        background-clip: padding-box;
+      }
+
+      .dark ::-webkit-scrollbar-thumb {
+        background: rgba(167, 139, 250, 0.3);
+        background-clip: padding-box;
+      }
+
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: rgba(167, 139, 250, 0.5);
+        background-clip: padding-box;
       }
     </style>
     
