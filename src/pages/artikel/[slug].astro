@@ -139,8 +139,31 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
         )}
 
         <!-- Article Content -->
-        <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-[1.9] prose-p:text-[1.05rem] md:prose-p:text-[1.125rem] prose-a:text-violet-600 dark:prose-a:text-violet-400 prose-strong:text-gray-900 dark:prose-strong:text-white prose-blockquote:border-violet-600 dark:prose-blockquote:border-violet-400 prose-code:text-violet-600 dark:prose-code:text-violet-400 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:leading-[1.9] leading-[1.9] px-1 md:text-justify md:hyphens-auto">
-          <p class="mb-8 text-lg md:text-xl leading-relaxed text-gray-600 dark:text-gray-400 italic border-l-4 border-violet-400 dark:border-violet-600 pl-4">
+        <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none 
+          prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:font-bold prose-headings:mb-6 prose-headings:mt-10
+          prose-h1:text-3xl md:prose-h1:text-4xl prose-h1:leading-tight
+          prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:leading-snug
+          prose-h3:text-xl md:prose-h3:text-2xl
+          prose-p:text-gray-700 dark:prose-p:text-gray-300 
+          prose-p:leading-[2] md:prose-p:leading-[2.2] 
+          prose-p:text-[1.0625rem] md:prose-p:text-[1.1875rem]
+          prose-p:mb-6 md:prose-p:mb-8
+          prose-a:text-violet-600 dark:prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline
+          prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-bold
+          prose-blockquote:border-l-4 prose-blockquote:border-violet-600 dark:prose-blockquote:border-violet-400 
+          prose-blockquote:pl-6 prose-blockquote:py-2 prose-blockquote:my-8
+          prose-blockquote:text-gray-600 dark:prose-blockquote:text-gray-400 prose-blockquote:italic
+          prose-code:text-violet-600 dark:prose-code:text-violet-400 prose-code:bg-violet-50 dark:prose-code:bg-violet-900/20 
+          prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+          prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:text-gray-100 prose-pre:p-6 prose-pre:rounded-xl prose-pre:my-8
+          prose-ul:my-6 prose-ol:my-6
+          prose-li:text-gray-700 dark:prose-li:text-gray-300 
+          prose-li:leading-[2] md:prose-li:leading-[2.2]
+          prose-li:mb-3 prose-li:text-[1.0625rem] md:prose-li:text-[1.1875rem]
+          prose-img:rounded-xl prose-img:shadow-lg prose-img:my-10
+          leading-[2] md:leading-[2.2] 
+          px-1 md:text-justify md:hyphens-auto">
+          <p class="mb-8 text-lg md:text-xl leading-[1.8] text-gray-600 dark:text-gray-400 italic border-l-4 border-violet-400 dark:border-violet-600 pl-6 py-3 bg-violet-50/50 dark:bg-violet-900/10 rounded-r-lg">
             {article.excerpt}
           </p>
           
