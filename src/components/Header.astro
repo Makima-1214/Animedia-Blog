@@ -54,6 +54,17 @@ const site = await getSiteConfig();
           <span class="material-symbols-outlined text-xl">shopping_bag</span>
         </a>
 
+        <!-- Bookmarks -->
+        <a
+          href="/bookmarks"
+          class={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-center relative ${pathname === '/bookmarks' ? 'text-violet-600 dark:text-violet-400' : 'text-gray-700 dark:text-gray-300'}`}
+          aria-label="Artikel Tersimpan"
+          title="Bookmarks"
+        >
+          <span class="material-symbols-outlined text-xl">bookmarks</span>
+          <span id="bookmark-count" class="hidden absolute -top-1 -right-1 bg-violet-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"></span>
+        </a>
+
         <!-- Dark Mode Toggle -->
         <button
           id="theme-toggle"

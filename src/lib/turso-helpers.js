@@ -67,10 +67,70 @@ export async function getArticleById(id) {
 }
 
 export async function getRelatedArticles(categoryId, excludeId, limit = 3) {
+  // Smart algorithm: Priority based on tags, category, and popularity
+  
+  // 1. Get current article's tags
+  const currentTags = await db.execute({
+    sql: `SELECT tag_id FROM article_tags WHERE article_id = ?`,
+    args: [excludeId]
+  });
+  const tagIds = currentTags.rows.map(t => t.tag_id);
+  
+  if (tagIds.length > 0) {
+    // 2. Find articles with matching tags (highest priority)
+    const tagMatches = await db.execute({
+      sql: `
+        SELECT a.*, COUNT(at.tag_id) as tag_matches, COALESCE(a.views, 0) as view_count
+        FROM articles a
+        JOIN article_tags at ON a.id = at.article_id
+        WHERE at.tag_id IN (${tagIds.map(() => '?').join(',')})
+          AND a.id != ?
+          AND a.status = 'published'
+        GROUP BY a.id
+        ORDER BY tag_matches DESC, view_count DESC, a.published_at DESC
+        LIMIT ?
+      `,
+      args: [...tagIds, excludeId, limit]
+    });
+    
+    if (tagMatches.rows.length >= limit) {
+      return tagMatches.rows;
+    }
+    
+    // 3. If not enough, add popular articles from same category
+    const remaining = limit - tagMatches.rows.length;
+    const excludeIds = [excludeId, ...tagMatches.rows.map(a => a.id)];
+    
+    const categoryMatches = await db.execute({
+      sql: `
+        SELECT *, COALESCE(views, 0) as view_count
+        FROM articles 
+        WHERE category_id = ? 
+          AND id NOT IN (${excludeIds.map(() => '?').join(',')})
+          AND status = 'published' 
+        ORDER BY view_count DESC, published_at DESC 
+        LIMIT ?
+      `,
+      args: [categoryId, ...excludeIds, remaining]
+    });
+    
+    return [...tagMatches.rows, ...categoryMatches.rows];
+  }
+  
+  // 4. Fallback: Popular articles from same category
   const result = await db.execute({
-    sql: `SELECT * FROM articles WHERE category_id = ? AND id != ? AND status = 'published' ORDER BY published_at DESC LIMIT ?`,
+    sql: `
+      SELECT *, COALESCE(views, 0) as view_count
+      FROM articles 
+      WHERE category_id = ? 
+        AND id != ? 
+        AND status = 'published' 
+      ORDER BY view_count DESC, published_at DESC 
+      LIMIT ?
+    `,
     args: [categoryId, excludeId, limit]
   });
+  
   return result.rows;
 }
 

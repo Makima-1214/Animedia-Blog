@@ -1,0 +1,215 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { getAllArticles, getAllCategories } from '../../lib/turso-helpers.js';
+
+const articles = await getAllArticles();
+const categories = await getAllCategories();
+
+// Calculate analytics
+const totalArticles = articles.length;
+const totalViews = articles.reduce((sum, a) => sum + (Number(a.views) || 0), 0);
+const avgViews = totalArticles > 0 ? Math.round(totalViews / totalArticles) : 0;
+
+// Popular articles (top 10)
+const popularArticles = [...articles]
+  .sort((a, b) => (Number(b.views) || 0) - (Number(a.views) || 0))
+  .slice(0, 10);
+
+// Recent articles (last 7 days)
+const sevenDaysAgo = new Date();
+sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+const recentArticles = articles.filter(a => {
+  const publishedDate = new Date(String(a.published_at || a.created_at));
+  return publishedDate >= sevenDaysAgo;
+});
+
+// Category performance
+const categoryStats = categories.map((cat: any) => {
+  const catArticles = articles.filter(a => a.category_id === cat.id);
+  const catViews = catArticles.reduce((sum, a) => sum + (Number(a.views) || 0), 0);
+  return {
+    id: cat.id,
+    name: cat.name,
+    slug: cat.slug,
+    articleCount: catArticles.length,
+    totalViews: catViews,
+    avgViews: catArticles.length > 0 ? Math.round(catViews / catArticles.length) : 0
+  };
+}).sort((a, b) => b.totalViews - a.totalViews);
+
+// Monthly trend (last 6 months)
+const monthlyData = [];
+for (let i = 5; i >= 0; i--) {
+  const date = new Date();
+  date.setMonth(date.getMonth() - i);
+  const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+  const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  
+  const monthArticles = articles.filter(a => {
+    const publishedDate = new Date(String(a.published_at || a.created_at));
+    return publishedDate >= monthStart && publishedDate <= monthEnd;
+  });
+  
+  monthlyData.push({
+    month: date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }),
+    count: monthArticles.length,
+    views: monthArticles.reduce((sum, a) => sum + (Number(a.views) || 0), 0)
+  });
+}
+---
+
+<DashboardLayout title="Analytics" activePage="analytics">
+  <div class="p-4 md:p-8 lg:p-12">
+    <header class="mb-8 md:mb-12">
+      <h2 class="text-2xl md:text-4xl lg:text-5xl font-headline font-extrabold tracking-tighter text-on-surface mb-2">
+        Analytics Dashboard
+      </h2>
+      <p class="text-sm md:text-base text-on-surface-variant font-body">
+        Statistik dan performa konten blog Anda
+      </p>
+    </header>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+      <!-- Total Articles -->
+      <div class="bg-gradient-to-br from-violet-500 to-violet-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">article</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Total</span>
+        </div>
+        <div class="text-4xl font-black mb-1">{totalArticles}</div>
+        <div class="text-sm opacity-90">Artikel Published</div>
+      </div>
+
+      <!-- Total Views -->
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">visibility</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Views</span>
+        </div>
+        <div class="text-4xl font-black mb-1">{totalViews.toLocaleString('id-ID')}</div>
+        <div class="text-sm opacity-90">Total Pembaca</div>
+      </div>
+
+      <!-- Average Views -->
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">trending_up</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Rata-rata</span>
+        </div>
+        <div class="text-4xl font-black mb-1">{avgViews.toLocaleString('id-ID')}</div>
+        <div class="text-sm opacity-90">Views per Artikel</div>
+      </div>
+
+      <!-- Recent Articles -->
+      <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">schedule</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">7 Hari</span>
+        </div>
+        <div class="text-4xl font-black mb-1">{recentArticles.length}</div>
+        <div class="text-sm opacity-90">Artikel Baru</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Popular Articles -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-violet-600">local_fire_department</span>
+            Artikel Terpopuler
+          </h3>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Top 10</span>
+        </div>
+        <div class="space-y-3">
+          {popularArticles.map((article, index) => (
+            <a 
+              href={`/artikel/${article.slug}`}
+              target="_blank"
+              class="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+            >
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
+                <span class="text-sm font-bold text-violet-600 dark:text-violet-400">#{index + 1}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                  {article.title}
+                </h4>
+                <div class="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">visibility</span>
+                    {Number(article.views || 0).toLocaleString('id-ID')}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">schedule</span>
+                    {article.read_time} mnt
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Category Performance -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">category</span>
+            Performa Kategori
+          </h3>
+        </div>
+        <div class="space-y-4">
+          {categoryStats.map((cat) => (
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-900 dark:text-white">{String(cat.name)}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{cat.articleCount} artikel</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div 
+                    class="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-500"
+                    style={`width: ${Math.min(100, (cat.totalViews / totalViews) * 100)}%`}
+                  ></div>
+                </div>
+                <span class="text-xs font-bold text-gray-700 dark:text-gray-300 min-w-[60px] text-right">
+                  {cat.totalViews.toLocaleString('id-ID')} views
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Trend -->
+    <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <span class="material-symbols-outlined text-green-600">show_chart</span>
+          Trend 6 Bulan Terakhir
+        </h3>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {monthlyData.map((month) => (
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-center">
+            <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+              {month.month}
+            </div>
+            <div class="text-2xl font-black text-violet-600 dark:text-violet-400 mb-1">
+              {month.count}
+            </div>
+            <div class="text-xs text-gray-600 dark:text-gray-400">
+              artikel
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">
+              {month.views.toLocaleString('id-ID')} views
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</DashboardLayout>

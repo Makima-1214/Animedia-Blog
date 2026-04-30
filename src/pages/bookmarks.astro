@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+---
+
+<BaseLayout title="Artikel Tersimpan - Animedia" description="Artikel yang Anda simpan untuk dibaca nanti">
+  <Header />
+  
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 md:py-12">
+    <div class="max-w-7xl mx-auto px-4 md:px-6">
+      <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          📚 Artikel Tersimpan
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+          Artikel yang Anda simpan untuk dibaca nanti
+        </p>
+      </div>
+
+      <!-- Bookmarks Container -->
+      <div id="bookmarks-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Will be populated by JavaScript -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden text-center py-20">
+        <div class="w-32 h-32 mx-auto mb-6 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined text-6xl text-gray-400 dark:text-gray-600">bookmark_border</span>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          Belum Ada Artikel Tersimpan
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-8">
+          Klik ikon bookmark di artikel untuk menyimpannya
+        </p>
+        <a 
+          href="/artikel" 
+          class="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-bold px-6 py-3 rounded-xl transition-colors"
+        >
+          <span class="material-symbols-outlined">explore</span>
+          Jelajahi Artikel
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  // Load bookmarks from localStorage
+  const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+  const container = document.getElementById('bookmarks-container');
+  const emptyState = document.getElementById('empty-state');
+
+  if (bookmarks.length === 0) {
+    emptyState?.classList.remove('hidden');
+  } else {
+    // Fetch article data for each bookmark
+    bookmarks.forEach(async (articleId: string) => {
+      try {
+        // In a real implementation, you'd fetch from API
+        // For now, we'll use the data stored in localStorage
+        const bookmarkData = JSON.parse(localStorage.getItem(`bookmark_${articleId}`) || '{}');
+        
+        if (bookmarkData.title) {
+          const card = document.createElement('a');
+          card.href = `/artikel/${bookmarkData.slug}`;
+          card.className = 'group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-violet-300 dark:hover:border-violet-700 shadow-sm hover:shadow-md transition-all';
+          
+          card.innerHTML = `
+            <div class="relative aspect-[16/10] bg-gray-200 dark:bg-gray-800 overflow-hidden">
+              <img
+                src="${bookmarkData.image || 'https://via.placeholder.com/800x500'}"
+                alt="${bookmarkData.title}"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <button 
+                class="remove-bookmark absolute top-3 right-3 w-10 h-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-full flex items-center justify-center text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors shadow-lg"
+                data-id="${articleId}"
+                onclick="event.preventDefault(); removeBookmark('${articleId}');"
+                title="Hapus dari bookmark"
+              >
+                <span class="material-symbols-outlined text-xl">bookmark_remove</span>
+              </button>
+            </div>
+            <div class="p-5">
+              <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                ${bookmarkData.title}
+              </h2>
+              <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4">
+                ${bookmarkData.excerpt || ''}
+              </p>
+              <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">schedule</span>
+                  ${bookmarkData.readTime || 5} menit
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">bookmark</span>
+                  Tersimpan
+                </span>
+              </div>
+            </div>
+          `;
+          
+          container?.appendChild(card);
+        }
+      } catch (error) {
+        console.error('Error loading bookmark:', error);
+      }
+    });
+  }
+
+  // Remove bookmark function
+  (window as any).removeBookmark = function(articleId: string) {
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+    const newBookmarks = bookmarks.filter((id: string) => id !== articleId);
+    localStorage.setItem('bookmarks', JSON.stringify(newBookmarks));
+    localStorage.removeItem(`bookmark_${articleId}`);
+    
+    // Reload page
+    window.location.reload();
+  };
+</script>

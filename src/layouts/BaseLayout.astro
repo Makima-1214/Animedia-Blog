@@ -139,6 +139,9 @@ const ogImage = image ? new URL(image, Astro.site ?? site_url) : null;
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
       rel="stylesheet"
     />
+    
+    <!-- Bookmark functionality -->
+    <script src="/bookmark.js" is:inline></script>
     <style>
       /* Prevent FOUT for Material Symbols - hide until font ready */
       .material-symbols-outlined {
