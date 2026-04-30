@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
+import ArticleEnhancements from './_article-enhancements.astro';
 import { getArticleBySlug, getCategoryBySlug, getAllCategories, incrementArticleViews, getCommentsByArticle, getTagsByArticle, getAffiliatesByArticle, getAdminById, getRelatedArticles } from '../../lib/turso-helpers.js';
 import { getSession } from '../../lib/simple-auth';
 
@@ -142,8 +143,8 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
         <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none 
           prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:font-bold prose-headings:mb-6 prose-headings:mt-10
           prose-h1:text-3xl md:prose-h1:text-4xl prose-h1:leading-tight
-          prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:leading-snug
-          prose-h3:text-xl md:prose-h3:text-2xl
+          prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:leading-snug prose-h2:scroll-mt-20
+          prose-h3:text-xl md:prose-h3:text-2xl prose-h3:scroll-mt-20
           prose-p:text-gray-700 dark:prose-p:text-gray-300 
           prose-p:leading-[2] md:prose-p:leading-[2.2] 
           prose-p:text-[1.0625rem] md:prose-p:text-[1.1875rem]
@@ -155,7 +156,7 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
           prose-blockquote:text-gray-600 dark:prose-blockquote:text-gray-400 prose-blockquote:italic
           prose-code:text-violet-600 dark:prose-code:text-violet-400 prose-code:bg-violet-50 dark:prose-code:bg-violet-900/20 
           prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-          prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:text-gray-100 prose-pre:p-6 prose-pre:rounded-xl prose-pre:my-8
+          prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:text-gray-100 prose-pre:p-6 prose-pre:rounded-xl prose-pre:my-8 prose-pre:relative
           prose-ul:my-6 prose-ol:my-6
           prose-li:text-gray-700 dark:prose-li:text-gray-300 
           prose-li:leading-[2] md:prose-li:leading-[2.2]
@@ -167,7 +168,16 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
             {article.excerpt}
           </p>
           
-          <div set:html={article.content} />
+          <!-- Table of Contents -->
+          <div id="toc-container" class="hidden bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 my-8">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400">list</span>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white m-0">Daftar Isi</h3>
+            </div>
+            <nav id="toc-list" class="space-y-2 text-sm"></nav>
+          </div>
+          
+          <div id="article-content" set:html={article.content} />
         </div>
 
         <!-- Tags and Share -->
@@ -677,3 +687,8 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
     margin: 1rem 0;
   }
 </style>
+
+
+  <!-- Article Enhancements: TOC, Copy Code, Reading Progress -->
+  <ArticleEnhancements />
+</BaseLayout>
