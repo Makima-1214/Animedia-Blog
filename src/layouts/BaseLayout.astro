@@ -27,6 +27,7 @@ const {
 
 import { getSiteConfig } from '../lib/settings.js';
 import Footer from '../components/Footer.astro';
+import LoadingStates from '../components/LoadingStates.astro';
 const site = await getSiteConfig();
 
 const site_url = 'https://animedia.web.id';
@@ -117,6 +118,45 @@ const ogImage = image ? new URL(image, Astro.site ?? site_url) : null;
     <meta name="theme-color" content="#7c3aed" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="alternate" type="application/rss+xml" title={`${site.name} RSS Feed`} href="/rss.xml" />
+    
+    <!-- Performance Hints -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+    
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" as="style" />
+    
+    <!-- Resource Hints for Better Performance -->
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    
+    <!-- Structured Data - Organization -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": site.name,
+      "url": site_url,
+      "logo": `${site_url}/icon-512.png`,
+      "sameAs": [
+        "https://twitter.com/animedia_id",
+        "https://facebook.com/animedia.id",
+        "https://instagram.com/animedia.id"
+      ]
+    })} />
+    
+    <!-- Structured Data - WebSite -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": site.name,
+      "url": site_url,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${site_url}/artikel?q={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      }
+    })} />
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json" />
@@ -142,6 +182,16 @@ const ogImage = image ? new URL(image, Astro.site ?? site_url) : null;
     
     <!-- Bookmark functionality -->
     <script src="/bookmark.js" is:inline></script>
+    
+    <!-- Toast notifications -->
+    <script src="/toast.js" is:inline></script>
+    
+    <!-- Advanced Search -->
+    <script src="/advanced-search.js" is:inline></script>
+    
+    <!-- Enhanced Dark Mode -->
+    <script src="/dark-mode-enhanced.js" is:inline></script>
+    
     <style>
       /* Prevent FOUT for Material Symbols - hide until font ready */
       .material-symbols-outlined {
@@ -282,6 +332,9 @@ const ogImage = image ? new URL(image, Astro.site ?? site_url) : null;
 
     <!-- Global Footer -->
     {!noFooter && <Footer />}
+    
+    <!-- Loading States -->
+    <LoadingStates />
     
     <script>
       // Smooth page transitions

@@ -1,0 +1,158 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+  aspectRatio?: string;
+  sizes?: string;
+  quality?: number;
+}
+
+const {
+  src,
+  alt,
+  width = 800,
+  height = 600,
+  loading = 'lazy',
+  class: className = '',
+  aspectRatio = '16/9',
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+  quality = 80
+} = Astro.props;
+
+// Generate blur placeholder (tiny base64 SVG)
+const blurDataURL = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${width} ${height}'%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3CfeColorMatrix values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 100 -1' result='s'/%3E%3CfeFlood x='0' y='0' width='100%25' height='100%25'/%3E%3CfeComposite operator='out' in='s'/%3E%3CfeComposite in2='SourceGraphic'/%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Cimage width='100%25' height='100%25' x='0' y='0' preserveAspectRatio='none' style='filter: url(%23b);' href='${src}'/%3E%3C/svg%3E`;
+
+// Generate responsive image URLs (if using Cloudinary)
+const isCloudinary = src.includes('cloudinary.com');
+const generateSrcSet = () => {
+  if (!isCloudinary) return '';
+  
+  const widths = [320, 640, 768, 1024, 1280, 1536];
+  return widths
+    .map(w => {
+      const url = src.replace('/upload/', `/upload/w_${w},q_${quality},f_auto/`);
+      return `${url} ${w}w`;
+    })
+    .join(', ');
+};
+
+const optimizedSrc = isCloudinary 
+  ? src.replace('/upload/', `/upload/w_${width},q_${quality},f_auto/`)
+  : src;
+
+const srcSet = generateSrcSet();
+---
+
+<div 
+  class={`enhanced-image-wrapper relative overflow-hidden ${className}`}
+  style={`aspect-ratio: ${aspectRatio};`}
+>
+  <!-- Blur Placeholder -->
+  <img
+    src={blurDataURL}
+    alt=""
+    class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 transition-opacity duration-300"
+    data-placeholder
+    aria-hidden="true"
+  />
+  
+  <!-- Actual Image -->
+  <picture>
+    {isCloudinary && (
+      <>
+        <!-- WebP format for modern browsers -->
+        <source
+          type="image/webp"
+          srcset={srcSet.replace(/f_auto/g, 'f_webp')}
+          sizes={sizes}
+        />
+        <!-- Original format fallback -->
+        <source
+          srcset={srcSet}
+          sizes={sizes}
+        />
+      </>
+    )}
+    
+    <img
+      src={optimizedSrc}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      decoding="async"
+      class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500"
+      data-main-image
+      onload="this.style.opacity='1'; this.previousElementSibling?.style.opacity='0';"
+      onerror="this.style.opacity='1'; this.previousElementSibling?.style.opacity='0';"
+    />
+  </picture>
+  
+  <!-- Loading Spinner (optional) -->
+  <div 
+    class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-opacity duration-300"
+    data-loading
+  >
+    <div class="w-8 h-8 border-3 border-violet-600 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+</div>
+
+<style>
+  .enhanced-image-wrapper {
+    background: linear-gradient(
+      135deg,
+      rgba(124, 58, 237, 0.1) 0%,
+      rgba(59, 130, 246, 0.1) 100%
+    );
+  }
+
+  .dark .enhanced-image-wrapper {
+    background: linear-gradient(
+      135deg,
+      rgba(124, 58, 237, 0.2) 0%,
+      rgba(59, 130, 246, 0.2) 100%
+    );
+  }
+
+  [data-main-image] {
+    will-change: opacity;
+  }
+
+  /* Hide loading spinner when image loads */
+  [data-main-image][style*="opacity: 1"] ~ [data-loading] {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  // Intersection Observer for lazy loading enhancement
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const wrapper = entry.target as HTMLElement;
+          const img = wrapper.querySelector('[data-main-image]') as HTMLImageElement;
+          
+          if (img && !img.complete) {
+            // Image is loading, show loading state
+            const loading = wrapper.querySelector('[data-loading]') as HTMLElement;
+            if (loading) loading.style.opacity = '1';
+          }
+          
+          imageObserver.unobserve(wrapper);
+        }
+      });
+    }, {
+      rootMargin: '50px'
+    });
+
+    document.querySelectorAll('.enhanced-image-wrapper').forEach(wrapper => {
+      imageObserver.observe(wrapper);
+    });
+  }
+</script>

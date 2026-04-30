@@ -61,12 +61,23 @@ for (let i = 5; i >= 0; i--) {
 <DashboardLayout title="Analytics" activePage="analytics">
   <div class="p-4 md:p-8 lg:p-12">
     <header class="mb-8 md:mb-12">
-      <h2 class="text-2xl md:text-4xl lg:text-5xl font-headline font-extrabold tracking-tighter text-on-surface mb-2">
-        Analytics Dashboard
-      </h2>
-      <p class="text-sm md:text-base text-on-surface-variant font-body">
-        Statistik dan performa konten blog Anda
-      </p>
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl md:text-4xl lg:text-5xl font-headline font-extrabold tracking-tighter text-on-surface mb-2">
+            Analytics Dashboard
+          </h2>
+          <p class="text-sm md:text-base text-on-surface-variant font-body">
+            Statistik dan performa konten blog Anda
+          </p>
+        </div>
+        <button
+          id="export-report"
+          class="hidden md:flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors"
+        >
+          <span class="material-symbols-outlined text-lg">download</span>
+          Export CSV
+        </button>
+      </div>
     </header>
 
     <!-- Stats Overview -->
@@ -185,7 +196,7 @@ for (let i = 5; i >= 0; i--) {
     </div>
 
     <!-- Monthly Trend -->
-    <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 mb-8">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <span class="material-symbols-outlined text-green-600">show_chart</span>
@@ -194,7 +205,7 @@ for (let i = 5; i >= 0; i--) {
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {monthlyData.map((month) => (
-          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-center">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-center hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors cursor-pointer">
             <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
               {month.month}
             </div>
@@ -211,5 +222,90 @@ for (let i = 5; i >= 0; i--) {
         ))}
       </div>
     </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a
+        href="/dashboard/artikel/buat"
+        class="bg-gradient-to-br from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 rounded-xl p-6 text-white transition-all shadow-lg hover:shadow-xl flex items-center gap-4"
+      >
+        <span class="material-symbols-outlined text-4xl">add_circle</span>
+        <div>
+          <div class="font-bold text-lg">Buat Artikel Baru</div>
+          <div class="text-sm opacity-90">Mulai menulis konten</div>
+        </div>
+      </a>
+
+      <a
+        href="/dashboard/artikel"
+        class="bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl p-6 text-white transition-all shadow-lg hover:shadow-xl flex items-center gap-4"
+      >
+        <span class="material-symbols-outlined text-4xl">edit_note</span>
+        <div>
+          <div class="font-bold text-lg">Kelola Artikel</div>
+          <div class="text-sm opacity-90">{totalArticles} artikel total</div>
+        </div>
+      </a>
+
+      <a
+        href="/dashboard/kategori"
+        class="bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-xl p-6 text-white transition-all shadow-lg hover:shadow-xl flex items-center gap-4"
+      >
+        <span class="material-symbols-outlined text-4xl">category</span>
+        <div>
+          <div class="font-bold text-lg">Kelola Kategori</div>
+          <div class="text-sm opacity-90">{categories.length} kategori</div>
+        </div>
+      </a>
+    </div>
   </div>
+
+  <!-- Export CSV Script -->
+  <script define:vars={{ popularArticles, categoryStats, monthlyData }}>
+    document.getElementById('export-report')?.addEventListener('click', () => {
+      // Prepare CSV data
+      let csv = 'Laporan Analytics Animedia\n\n';
+      
+      // Popular Articles
+      csv += 'Artikel Terpopuler\n';
+      csv += 'Rank,Judul,Views,Reading Time\n';
+      popularArticles.forEach((article, index) => {
+        csv += `${index + 1},"${article.title}",${article.views || 0},${article.read_time}\n`;
+      });
+      
+      csv += '\n';
+      
+      // Category Performance
+      csv += 'Performa Kategori\n';
+      csv += 'Kategori,Jumlah Artikel,Total Views,Rata-rata Views\n';
+      categoryStats.forEach(cat => {
+        csv += `"${cat.name}",${cat.articleCount},${cat.totalViews},${cat.avgViews}\n`;
+      });
+      
+      csv += '\n';
+      
+      // Monthly Trend
+      csv += 'Trend Bulanan\n';
+      csv += 'Bulan,Jumlah Artikel,Total Views\n';
+      monthlyData.forEach(month => {
+        csv += `"${month.month}",${month.count},${month.views}\n`;
+      });
+      
+      // Download CSV
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `analytics-report-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Show toast
+      if (window.showToast) {
+        window.showToast('Laporan berhasil diexport!');
+      }
+    });
+  </script>
 </DashboardLayout>

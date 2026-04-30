@@ -1,2 +1,66 @@
-# This file is intentionally empty.
-# robots.txt is served dynamically from src/pages/robots.txt.astro
+# Animedia Blog - Robots.txt
+# https://animedia.web.id
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /admin/
+
+# Disallow auth pages (no SEO value)
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# Disallow search results with query params
+Disallow: /artikel?*
+Disallow: /*?q=*
+Disallow: /*?page=*
+
+# Allow specific important pages
+Allow: /artikel$
+Allow: /kategori/
+Allow: /tag/
+
+# Crawl delay (be nice to servers)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://animedia.web.id/sitemap.xml
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: DotBot
+Crawl-delay: 10
+
+# Block scrapers
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SeznamBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /

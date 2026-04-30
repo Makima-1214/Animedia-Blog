@@ -65,15 +65,15 @@ const site = await getSiteConfig();
           <span id="bookmark-count" class="hidden absolute -top-1 -right-1 bg-violet-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"></span>
         </a>
 
-        <!-- Dark Mode Toggle -->
+        <!-- Dark Mode Toggle (Enhanced) -->
         <button
           id="theme-toggle"
-          class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-center"
-          aria-label="Toggle dark mode"
-          title="Toggle Dark Mode"
+          class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center group"
+          aria-label="Toggle dark mode (Ctrl+Shift+D)"
+          title="Toggle Dark Mode (Ctrl+Shift+D)"
         >
-          <span id="theme-icon-light" class="material-symbols-outlined text-gray-700 dark:hidden text-xl">light_mode</span>
-          <span id="theme-icon-dark" class="material-symbols-outlined text-gray-300 hidden dark:block text-xl">dark_mode</span>
+          <span id="theme-icon-light" class="material-symbols-outlined text-gray-700 dark:hidden text-xl group-hover:rotate-180 transition-transform duration-500">light_mode</span>
+          <span id="theme-icon-dark" class="material-symbols-outlined text-gray-300 hidden dark:block text-xl group-hover:rotate-180 transition-transform duration-500">dark_mode</span>
         </button>
 
         <!-- PWA Install Button -->
@@ -207,19 +207,19 @@ const site = await getSiteConfig();
 <script>
   import Fuse from 'fuse.js';
 
-  // Dark Mode Toggle
+  // Enhanced Dark Mode Toggle with smooth transition
   const themeToggle = document.getElementById('theme-toggle');
   const html = document.documentElement;
   
-  const currentTheme = localStorage.getItem('theme') || 'light';
-  if (currentTheme === 'dark') {
-    html.classList.add('dark');
-  }
-
   themeToggle?.addEventListener('click', () => {
-    html.classList.toggle('dark');
-    const theme = html.classList.contains('dark') ? 'dark' : 'light';
-    localStorage.setItem('theme', theme);
+    if (window.darkMode) {
+      window.darkMode.toggle();
+    } else {
+      // Fallback if dark-mode-enhanced.js not loaded
+      html.classList.toggle('dark');
+      const theme = html.classList.contains('dark') ? 'dark' : 'light';
+      localStorage.setItem('theme', theme);
+    }
   });
 
   // ── Mobile Menu Toggle ────────────────────────────────────
@@ -333,54 +333,108 @@ const site = await getSiteConfig();
     }
   });
 
-  // ── Search (shared Fuse instance) ─────────────────────────
+  // ── Enhanced Search with History ─────────────────────────
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const searchResults = document.getElementById('search-results') as HTMLElement;
   const searchResultsMobile = document.getElementById('search-results-mobile') as HTMLElement;
   let fuse: any = null;
+  let allArticles: any[] = [];
 
   async function initSearch() {
     const res = await fetch('/api/articles/search');
-    const articles = await res.json();
-    fuse = new Fuse(articles, {
+    allArticles = await res.json();
+    fuse = new Fuse(allArticles, {
       keys: ['title', 'excerpt', 'category'],
-      threshold: 0.4
+      threshold: 0.4,
+      includeScore: true
     });
   }
 
   initSearch();
 
-  function buildSearchHTML(results: any[]) {
-    if (results.length === 0) {
-      return '<p class="p-4 text-sm text-gray-500 dark:text-gray-400">Tidak ada hasil</p>';
+  function buildSearchHTML(results: any[], showHistory = false) {
+    let html = '';
+    
+    // Show search history if no query
+    if (showHistory && window.advancedSearch) {
+      const history = window.advancedSearch.getHistory();
+      if (history.length > 0) {
+        html += '<div class="p-3 border-b border-gray-200 dark:border-gray-700">';
+        html += '<div class="flex items-center justify-between mb-2">';
+        html += '<span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Pencarian Terakhir</span>';
+        html += '<button onclick="window.advancedSearch.clearHistory(); this.closest(\'div\').parentElement.remove();" class="text-xs text-violet-600 hover:underline">Hapus</button>';
+        html += '</div>';
+        history.forEach((query: string) => {
+          html += `<button onclick="document.getElementById('search-input').value='${query}'; document.getElementById('search-input').dispatchEvent(new Event('input'));" class="block w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2">`;
+          html += '<span class="material-symbols-outlined text-sm text-gray-400">history</span>';
+          html += query;
+          html += '</button>';
+        });
+        html += '</div>';
+      }
     }
-    return results.map(({ item }: any) => `
-      <a href="/artikel/${item.slug}" class="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-        <img src="${item.cover_image || 'https://via.placeholder.com/60'}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
-        <div>
-          <p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1">${item.title}</p>
-          <p class="text-[10px] text-violet-600 dark:text-violet-400 font-bold uppercase">${item.category}</p>
-        </div>
-      </a>
-    `).join('');
+    
+    if (results.length === 0 && !showHistory) {
+      return html + '<p class="p-4 text-sm text-gray-500 dark:text-gray-400">Tidak ada hasil</p>';
+    }
+    
+    if (results.length > 0) {
+      html += results.map(({ item }: any) => `
+        <a href="/artikel/${item.slug}" onclick="window.advancedSearch?.saveToHistory('${item.title.replace(/'/g, "\\'")}');" class="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <img src="${item.cover_image || 'https://via.placeholder.com/60'}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1">${item.title}</p>
+            <p class="text-[10px] text-violet-600 dark:text-violet-400 font-bold uppercase">${item.category}</p>
+          </div>
+        </a>
+      `).join('');
+    }
+    
+    return html;
   }
 
   // Desktop search
   searchInput?.addEventListener('input', () => {
     const query = searchInput.value.trim();
-    if (!query || !fuse) { searchResults.classList.add('hidden'); return; }
+    if (!query) { 
+      searchResults.innerHTML = buildSearchHTML([], true);
+      searchResults.classList.remove('hidden');
+      return;
+    }
+    if (!fuse) { searchResults.classList.add('hidden'); return; }
     const results = fuse.search(query).slice(0, 5);
     searchResults.innerHTML = buildSearchHTML(results);
     searchResults.classList.remove('hidden');
   });
 
+  searchInput?.addEventListener('focus', () => {
+    if (!searchInput.value.trim()) {
+      searchResults.innerHTML = buildSearchHTML([], true);
+      searchResults.classList.remove('hidden');
+    }
+  });
+
   // Mobile search
   mobileSearchInput?.addEventListener('input', () => {
     const query = mobileSearchInput.value.trim();
-    if (!query || !fuse) { searchResultsMobile?.classList.add('hidden'); return; }
+    if (!query) {
+      if (searchResultsMobile) {
+        searchResultsMobile.innerHTML = buildSearchHTML([], true);
+        searchResultsMobile.classList.remove('hidden');
+      }
+      return;
+    }
+    if (!fuse) { searchResultsMobile?.classList.add('hidden'); return; }
     const results = fuse.search(query).slice(0, 5);
     if (searchResultsMobile) {
       searchResultsMobile.innerHTML = buildSearchHTML(results);
+      searchResultsMobile.classList.remove('hidden');
+    }
+  });
+
+  mobileSearchInput?.addEventListener('focus', () => {
+    if (!mobileSearchInput.value.trim() && searchResultsMobile) {
+      searchResultsMobile.innerHTML = buildSearchHTML([], true);
       searchResultsMobile.classList.remove('hidden');
     }
   });
@@ -391,6 +445,21 @@ const site = await getSiteConfig();
     }
     if (!mobileSearchInput?.contains(e.target as Node) && !searchResultsMobile?.contains(e.target as Node)) {
       searchResultsMobile?.classList.add('hidden');
+    }
+  });
+
+  // Search on Enter key
+  searchInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && searchInput.value.trim()) {
+      window.advancedSearch?.saveToHistory(searchInput.value.trim());
+      window.location.href = `/artikel?q=${encodeURIComponent(searchInput.value.trim())}`;
+    }
+  });
+
+  mobileSearchInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && mobileSearchInput.value.trim()) {
+      window.advancedSearch?.saveToHistory(mobileSearchInput.value.trim());
+      window.location.href = `/artikel?q=${encodeURIComponent(mobileSearchInput.value.trim())}`;
     }
   });
 </script>

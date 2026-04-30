@@ -1,0 +1,122 @@
+---
+// Loading skeleton components for better UX
+---
+
+<!-- Article Card Skeleton -->
+<template id="article-skeleton">
+  <div class="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 animate-pulse">
+    <div class="aspect-[16/10] bg-gray-200 dark:bg-gray-800"></div>
+    <div class="p-5">
+      <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4 mb-3"></div>
+      <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-full mb-2"></div>
+      <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-5/6"></div>
+      <div class="flex gap-3 mt-4">
+        <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-16"></div>
+        <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-16"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Comment Skeleton -->
+<template id="comment-skeleton">
+  <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 animate-pulse">
+    <div class="flex items-start gap-4">
+      <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800"></div>
+      <div class="flex-1">
+        <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-32 mb-2"></div>
+        <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-full mb-2"></div>
+        <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-4/5"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- List Item Skeleton -->
+<template id="list-skeleton">
+  <div class="flex gap-3 p-3 rounded-xl animate-pulse">
+    <div class="w-20 h-20 rounded-lg bg-gray-200 dark:bg-gray-800"></div>
+    <div class="flex-1">
+      <div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4 mb-2"></div>
+      <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-1/2"></div>
+    </div>
+  </div>
+</template>
+
+<!-- Full Page Loading -->
+<div id="page-loader" class="hidden fixed inset-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm z-[100] flex items-center justify-center">
+  <div class="text-center">
+    <div class="w-16 h-16 border-4 border-violet-200 dark:border-violet-900 border-t-violet-600 dark:border-t-violet-400 rounded-full animate-spin mx-auto mb-4"></div>
+    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Memuat...</p>
+  </div>
+</div>
+
+<!-- Inline Spinner -->
+<template id="inline-spinner">
+  <div class="flex items-center justify-center py-8">
+    <div class="w-8 h-8 border-3 border-violet-200 dark:border-violet-900 border-t-violet-600 dark:border-t-violet-400 rounded-full animate-spin"></div>
+  </div>
+</template>
+
+<!-- Button Loading State -->
+<template id="button-loading">
+  <span class="inline-flex items-center gap-2">
+    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <span>Memuat...</span>
+  </span>
+</template>
+
+<script>
+  // Global loading utilities
+  window.showPageLoader = function() {
+    document.getElementById('page-loader')?.classList.remove('hidden');
+  };
+
+  window.hidePageLoader = function() {
+    document.getElementById('page-loader')?.classList.add('hidden');
+  };
+
+  // Show skeleton while loading
+  window.showSkeleton = function(containerId: string, templateId: string, count: number = 3) {
+    const container = document.getElementById(containerId);
+    const template = document.getElementById(templateId) as HTMLTemplateElement;
+    if (!container || !template) return;
+
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const clone = template.content.cloneNode(true);
+      container.appendChild(clone);
+    }
+  };
+
+  // Auto-show page loader on navigation
+  document.addEventListener('astro:before-preparation', () => {
+    window.showPageLoader?.();
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    window.hidePageLoader?.();
+  });
+</script>
+
+<style>
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+</style>
