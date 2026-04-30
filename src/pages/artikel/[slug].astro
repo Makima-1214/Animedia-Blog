@@ -102,13 +102,13 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
       <!-- Main Content Area -->
       <article class="lg:col-span-8">
-        <header class="mb-10">
-          <h1 class="text-2xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6 leading-[1.1]">
+        <header class="mb-8">
+          <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-5 leading-[1.15]">
             {article.title}
           </h1>
           
-          <div class="flex items-center gap-4 border-l-4 border-violet-600 dark:border-violet-400 pl-4">
-            <div class="h-12 w-12 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0 ring-2 ring-violet-200 dark:ring-violet-800">
+          <div class="flex items-center gap-3 border-l-4 border-violet-600 dark:border-violet-400 pl-4">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0 ring-2 ring-violet-200 dark:ring-violet-800">
               <img class="h-full w-full object-cover" src={author.image || ''} alt={author.name} />
             </div>
             <div class="flex-1">
@@ -132,7 +132,7 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
         </header>
 
         {article.cover_image && (
-          <div class="rounded-2xl overflow-hidden mb-12 shadow-sm">
+          <div class="rounded-xl overflow-hidden mb-8 shadow-sm">
             <img
               class="w-full aspect-video object-cover"
               src={article.cover_image}
@@ -142,39 +142,39 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
         )}
 
         <!-- Article Content -->
-        <div class="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none 
-          prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:font-bold prose-headings:mb-6 prose-headings:mt-10
-          prose-h1:text-3xl md:prose-h1:text-4xl prose-h1:leading-tight
-          prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:leading-snug prose-h2:scroll-mt-20
-          prose-h3:text-xl md:prose-h3:text-2xl prose-h3:scroll-mt-20
+        <div class="prose prose-slate dark:prose-invert max-w-none 
+          prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-8
+          prose-h1:text-2xl md:prose-h1:text-3xl prose-h1:leading-tight
+          prose-h2:text-xl md:prose-h2:text-2xl prose-h2:leading-snug prose-h2:scroll-mt-20
+          prose-h3:text-lg md:prose-h3:text-xl prose-h3:scroll-mt-20
           prose-p:text-gray-700 dark:prose-p:text-gray-300 
-          prose-p:leading-[2] md:prose-p:leading-[2.2] 
-          prose-p:text-[1.0625rem] md:prose-p:text-[1.1875rem]
-          prose-p:mb-6 md:prose-p:mb-8
+          prose-p:leading-[1.75] md:prose-p:leading-[1.85] 
+          prose-p:text-[0.9375rem] md:prose-p:text-[1rem]
+          prose-p:mb-4 md:prose-p:mb-5
           prose-a:text-violet-600 dark:prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline
-          prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-bold
+          prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold
           prose-blockquote:border-l-4 prose-blockquote:border-violet-600 dark:prose-blockquote:border-violet-400 
-          prose-blockquote:pl-6 prose-blockquote:py-2 prose-blockquote:my-8
+          prose-blockquote:pl-4 prose-blockquote:py-2 prose-blockquote:my-6
           prose-blockquote:text-gray-600 dark:prose-blockquote:text-gray-400 prose-blockquote:italic
+          prose-blockquote:text-sm md:prose-blockquote:text-base
           prose-code:text-violet-600 dark:prose-code:text-violet-400 prose-code:bg-violet-50 dark:prose-code:bg-violet-900/20 
           prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-          prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:text-gray-100 prose-pre:p-6 prose-pre:rounded-xl prose-pre:my-8 prose-pre:relative
-          prose-ul:my-6 prose-ol:my-6
+          prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:text-gray-100 prose-pre:p-4 md:prose-pre:p-6 prose-pre:rounded-xl prose-pre:my-6 prose-pre:relative prose-pre:text-sm
+          prose-ul:my-4 prose-ol:my-4
           prose-li:text-gray-700 dark:prose-li:text-gray-300 
-          prose-li:leading-[2] md:prose-li:leading-[2.2]
-          prose-li:mb-3 prose-li:text-[1.0625rem] md:prose-li:text-[1.1875rem]
-          prose-img:rounded-xl prose-img:shadow-lg prose-img:my-10
-          leading-[2] md:leading-[2.2] 
-          px-1 md:text-justify md:hyphens-auto">
-          <p class="mb-8 text-lg md:text-xl leading-[1.8] text-gray-600 dark:text-gray-400 italic border-l-4 border-violet-400 dark:border-violet-600 pl-6 py-3 bg-violet-50/50 dark:bg-violet-900/10 rounded-r-lg">
+          prose-li:leading-[1.75] md:prose-li:leading-[1.85]
+          prose-li:mb-2 prose-li:text-[0.9375rem] md:prose-li:text-[1rem]
+          prose-img:rounded-xl prose-img:shadow-lg prose-img:my-6 md:prose-img:my-8
+          leading-[1.75] md:leading-[1.85]">
+          <p class="mb-6 text-base md:text-lg leading-[1.7] text-gray-600 dark:text-gray-400 italic border-l-4 border-violet-400 dark:border-violet-600 pl-4 py-2 bg-violet-50/50 dark:bg-violet-900/10 rounded-r-lg">
             {article.excerpt}
           </p>
           
           <!-- Table of Contents -->
-          <div id="toc-container" class="hidden bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 my-8">
-            <div class="flex items-center gap-2 mb-4">
-              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400">list</span>
-              <h3 class="text-lg font-bold text-gray-900 dark:text-white m-0">Daftar Isi</h3>
+          <div id="toc-container" class="hidden bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 md:p-6 my-6">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-lg">list</span>
+              <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white m-0">Daftar Isi</h3>
             </div>
             <nav id="toc-list" class="space-y-2 text-sm"></nav>
           </div>
@@ -248,26 +248,26 @@ const loggedInUser = session ? { name: session.name as string, email: session.em
         </div>
 
         <!-- Article Reactions -->
-        <div class="mt-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div class="mt-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 md:p-6">
           <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <span class="material-symbols-outlined text-violet-600">favorite</span>
+            <span class="material-symbols-outlined text-violet-600 text-lg">favorite</span>
             Bagaimana artikel ini?
           </h4>
-          <div class="flex items-center gap-3" id="reactions-container">
-            <button class="reaction-btn flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300 dark:hover:border-red-700 border border-gray-200 dark:border-gray-700 transition-all group" data-reaction="like">
-              <span class="text-2xl group-hover:scale-110 transition-transform">❤️</span>
-              <span class="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400">Suka</span>
-              <span class="reaction-count text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full min-w-[24px] text-center" data-count="like">0</span>
+          <div class="flex flex-wrap items-center gap-2 md:gap-3" id="reactions-container">
+            <button class="reaction-btn flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300 dark:hover:border-red-700 border border-gray-200 dark:border-gray-700 transition-all group flex-shrink-0" data-reaction="like">
+              <span class="text-xl md:text-2xl group-hover:scale-110 transition-transform leading-none">❤️</span>
+              <span class="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400">Suka</span>
+              <span class="reaction-count text-[10px] md:text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 md:px-2 py-0.5 rounded-full min-w-[20px] md:min-w-[24px] text-center" data-count="like">0</span>
             </button>
-            <button class="reaction-btn flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300 dark:hover:border-orange-700 border border-gray-200 dark:border-gray-700 transition-all group" data-reaction="love">
-              <span class="text-2xl group-hover:scale-110 transition-transform">😍</span>
-              <span class="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-400">Cinta</span>
-              <span class="reaction-count text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full min-w-[24px] text-center" data-count="love">0</span>
+            <button class="reaction-btn flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300 dark:hover:border-orange-700 border border-gray-200 dark:border-gray-700 transition-all group flex-shrink-0" data-reaction="love">
+              <span class="text-xl md:text-2xl group-hover:scale-110 transition-transform leading-none">😍</span>
+              <span class="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-400">Cinta</span>
+              <span class="reaction-count text-[10px] md:text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 md:px-2 py-0.5 rounded-full min-w-[20px] md:min-w-[24px] text-center" data-count="love">0</span>
             </button>
-            <button class="reaction-btn flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:border-yellow-300 dark:hover:border-yellow-700 border border-gray-200 dark:border-gray-700 transition-all group" data-reaction="fire">
-              <span class="text-2xl group-hover:scale-110 transition-transform">🔥</span>
-              <span class="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-yellow-600 dark:group-hover:text-yellow-400">Keren</span>
-              <span class="reaction-count text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full min-w-[24px] text-center" data-count="fire">0</span>
+            <button class="reaction-btn flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:border-yellow-300 dark:hover:border-yellow-700 border border-gray-200 dark:border-gray-700 transition-all group flex-shrink-0" data-reaction="fire">
+              <span class="text-xl md:text-2xl group-hover:scale-110 transition-transform leading-none">🔥</span>
+              <span class="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-yellow-600 dark:group-hover:text-yellow-400">Keren</span>
+              <span class="reaction-count text-[10px] md:text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 md:px-2 py-0.5 rounded-full min-w-[20px] md:min-w-[24px] text-center" data-count="fire">0</span>
             </button>
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">Klik untuk memberikan reaksi pada artikel ini</p>
