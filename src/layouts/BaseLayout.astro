@@ -118,6 +118,16 @@ const ogImage = image ? new URL(image, Astro.site ?? site_url) : null;
     <meta name="format-detection" content="telephone=no" />
     <link rel="alternate" type="application/rss+xml" title={`${site.name} RSS Feed`} href="/rss.xml" />
 
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Animedia" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+
     <!-- Preload critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -293,6 +303,52 @@ const ogImage = image ? new URL(image, Astro.site ?? site_url) : null;
         }
         return _originalFetch.call(this, input, init);
       };
+
+      // PWA Service Worker Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('✅ Service Worker registered:', registration.scope);
+              
+              // Check for updates every hour
+              setInterval(() => {
+                registration.update();
+              }, 3600000);
+            })
+            .catch(error => {
+              console.log('❌ Service Worker registration failed:', error);
+            });
+        });
+      }
+
+      // PWA Install Prompt
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install button if not already installed
+        const installBtn = document.getElementById('pwa-install-btn');
+        if (installBtn) {
+          installBtn.style.display = 'flex';
+          installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              console.log(`User response to install prompt: ${outcome}`);
+              deferredPrompt = null;
+              installBtn.style.display = 'none';
+            }
+          });
+        }
+      });
+
+      // Track PWA installation
+      window.addEventListener('appinstalled', () => {
+        console.log('✅ PWA installed successfully');
+        deferredPrompt = null;
+      });
     </script>
   </body>
 </html>

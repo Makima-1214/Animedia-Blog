@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Offline - Animedia" description="Anda sedang offline">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+    <div class="text-center max-w-md">
+      <div class="mb-8">
+        <div class="w-32 h-32 mx-auto bg-gradient-to-br from-violet-600 to-blue-600 rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-6xl">cloud_off</span>
+        </div>
+      </div>
+      
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        Anda Sedang Offline
+      </h1>
+      
+      <p class="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+        Sepertinya koneksi internet Anda terputus. Beberapa konten mungkin tidak tersedia saat offline.
+      </p>
+
+      <div class="space-y-4">
+        <button 
+          onclick="window.location.reload()" 
+          class="w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          <span class="material-symbols-outlined">refresh</span>
+          Coba Lagi
+        </button>
+        
+        <a 
+          href="/" 
+          class="block w-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold py-3 px-6 rounded-xl transition-colors"
+        >
+          Kembali ke Beranda
+        </a>
+      </div>
+
+      <div class="mt-12 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+        <p class="text-sm text-blue-800 dark:text-blue-300 flex items-start gap-2">
+          <span class="material-symbols-outlined text-lg flex-shrink-0">info</span>
+          <span>Artikel yang sudah pernah Anda buka mungkin masih bisa diakses secara offline.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .material-symbols-outlined {
+    animation: pulse 2s ease-in-out infinite;
+  }
+</style>
