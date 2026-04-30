@@ -7,22 +7,9 @@ const MIN_ARTICLES_FOR_INDEX = 5;
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
     // Check admin authentication
-    const sessionToken = cookies.get('admin_session')?.value;
-    if (!sessionToken) {
+    const adminSession = cookies.get('admin_session');
+    if (!adminSession) {
       return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Verify admin session
-    const sessionResult = await turso.execute({
-      sql: 'SELECT * FROM admin_sessions WHERE token = ? AND expires_at > datetime(\'now\')',
-      args: [sessionToken]
-    });
-
-    if (sessionResult.rows.length === 0) {
-      return new Response(JSON.stringify({ success: false, message: 'Invalid session' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' }
       });
