@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     // Verify admin session
     const sessionResult = await turso.execute({
-      sql: 'SELECT * FROM admin_sessions WHERE token = ? AND expires_at > datetime("now")',
+      sql: 'SELECT * FROM admin_sessions WHERE token = ? AND expires_at > datetime(\'now\')',
       args: [sessionToken]
     });
 
