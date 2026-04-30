@@ -10,10 +10,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     const contentType = request.headers.get('content-type') || '';
-    let title, slug, excerpt, content, coverImage, categoryId, status, tags;
+    let title, slug, excerpt, content, coverImage, categoryId, status, tags, scheduledAt;
     if (contentType.includes('application/json')) {
       const body = await request.json();
-      ({ title, slug, excerpt, content, coverImage, categoryId, status, tags } = body);
+      ({ title, slug, excerpt, content, coverImage, categoryId, status, tags, scheduledAt } = body);
       tags = tags || '';
       status = status || 'draft';
     } else {
@@ -26,6 +26,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       categoryId = formData.get('categoryId')?.toString();
       status = formData.get('status')?.toString() || 'draft';
       tags = formData.get('tags')?.toString() || '';
+      scheduledAt = formData.get('scheduledAt')?.toString() || null;
     }
     const readTime = calculateReadTime(content);
 
@@ -33,12 +34,17 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, message: 'Semua field wajib diisi' }), { status: 400 });
     }
 
+    // Validate scheduled date
+    if (status === 'scheduled' && !scheduledAt) {
+      return new Response(JSON.stringify({ success: false, message: 'Tanggal publish wajib diisi untuk artikel terjadwal' }), { status: 400 });
+    }
+
     const id = Date.now().toString();
     const publishedAt = status === 'published' ? new Date().toISOString() : null;
 
     await db.execute({
-      sql: `INSERT INTO articles (id, title, slug, excerpt, content, cover_image, category_id, status, read_time, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [id, title, slug, excerpt, content, coverImage || null, categoryId, status, readTime, publishedAt]
+      sql: `INSERT INTO articles (id, title, slug, excerpt, content, cover_image, category_id, status, read_time, published_at, scheduled_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [id, title, slug, excerpt, content, coverImage || null, categoryId, status, readTime, publishedAt, scheduledAt]
     });
 
     if (tags.trim()) {

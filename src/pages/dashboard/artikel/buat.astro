@@ -207,12 +207,25 @@ const categories = await getAllCategories() as Category[];
           </div>
           <div class="space-y-2">
             <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Status *</label>
-            <select name="status" required
+            <select name="status" id="statusSelect" required
               class="w-full border border-outline-variant bg-transparent rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary">
               <option value="draft">Draft</option>
               <option value="published">Published</option>
+              <option value="scheduled">Scheduled (Terjadwal)</option>
             </select>
           </div>
+        </div>
+
+        <!-- Scheduled Date/Time (hidden by default) -->
+        <div id="scheduledSection" class="hidden space-y-2">
+          <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Tanggal & Waktu Publish *</label>
+          <input type="datetime-local" name="scheduledAt" id="scheduledAt"
+            class="w-full border border-outline-variant bg-transparent rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary"
+            min={new Date().toISOString().slice(0, 16)} />
+          <p class="text-xs text-violet-600 bg-violet-50 px-3 py-2 rounded-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">schedule</span>
+            Artikel akan otomatis dipublish pada waktu yang ditentukan
+          </p>
         </div>
 
         <!-- Affiliate -->
@@ -415,6 +428,19 @@ const categories = await getAllCategories() as Category[];
       document.getElementById('affiliateSection').classList.toggle('hidden', !this.checked);
     });
 
+    // Toggle scheduled section
+    document.getElementById('statusSelect').addEventListener('change', function() {
+      var scheduledSection = document.getElementById('scheduledSection');
+      var scheduledInput = document.getElementById('scheduledAt');
+      if (this.value === 'scheduled') {
+        scheduledSection.classList.remove('hidden');
+        scheduledInput.required = true;
+      } else {
+        scheduledSection.classList.add('hidden');
+        scheduledInput.required = false;
+      }
+    });
+
     document.getElementById('title').addEventListener('input', function() {
       document.getElementById('slug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     });
@@ -433,7 +459,8 @@ const categories = await getAllCategories() as Category[];
         coverImage: formData.get('coverImage'),
         categoryId: formData.get('categoryId'),
         status: formData.get('status'),
-        tags: formData.get('tags')
+        tags: formData.get('tags'),
+        scheduledAt: formData.get('scheduledAt') || null
       };
       try {
         var response = await fetch('/api/articles/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
