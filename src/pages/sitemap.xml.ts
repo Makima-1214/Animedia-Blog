@@ -12,29 +12,43 @@ export const GET: APIRoute = async () => {
     getAllTags(),
   ]);
 
+  const now = new Date().toISOString().split('T')[0];
+
+  // Halaman statis dengan prioritas dan frekuensi update
   const staticPages = [
-    { url: `${site}/`, priority: '1.0', changefreq: 'daily' },
-    { url: `${site}/artikel/`, priority: '0.9', changefreq: 'daily' },
+    { url: `${site}/`, priority: '1.0', changefreq: 'daily', lastmod: now },
+    { url: `${site}/artikel`, priority: '0.9', changefreq: 'daily', lastmod: now },
+    { url: `${site}/tentang`, priority: '0.8', changefreq: 'monthly', lastmod: now },
+    { url: `${site}/kontak`, priority: '0.8', changefreq: 'monthly', lastmod: now },
+    { url: `${site}/privasi`, priority: '0.6', changefreq: 'yearly', lastmod: now },
+    { url: `${site}/disclaimer`, priority: '0.6', changefreq: 'yearly', lastmod: now },
+    { url: `${site}/berlangganan`, priority: '0.7', changefreq: 'monthly', lastmod: now },
+    { url: `${site}/toko`, priority: '0.8', changefreq: 'weekly', lastmod: now },
+    { url: `${site}/login`, priority: '0.4', changefreq: 'yearly', lastmod: now },
+    { url: `${site}/register`, priority: '0.4', changefreq: 'yearly', lastmod: now },
   ];
 
   const urls = [
     ...staticPages.map(p => `
   <url>
     <loc>${p.url}</loc>
+    <lastmod>${p.lastmod}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
   </url>`),
 
     ...categories.map((cat: any) => `
   <url>
-    <loc>${site}/kategori/${cat.slug}/</loc>
+    <loc>${site}/kategori/${cat.slug}</loc>
+    <lastmod>${now}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`),
 
     ...tags.map((tag: any) => `
   <url>
-    <loc>${site}/tag/${tag.slug}/</loc>
+    <loc>${site}/tag/${tag.slug}</loc>
+    <lastmod>${now}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>`),
@@ -45,7 +59,7 @@ export const GET: APIRoute = async () => {
         : new Date(String(article.published_at)).toISOString().split('T')[0];
       return `
   <url>
-    <loc>${site}/artikel/${article.slug}/</loc>
+    <loc>${site}/artikel/${article.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

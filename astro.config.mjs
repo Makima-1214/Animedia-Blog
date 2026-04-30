@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import vercel from '@astrojs/vercel';
-import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://animedia.web.id',
@@ -12,9 +11,10 @@ export default defineConfig({
   },
   integrations: [
     tailwind(),
-    sitemap({
-      filter: (page) => !/(\/dashboard|admin|api|profil)/.test(page)
-    })
+    // Sitemap dinonaktifkan karena menggunakan sitemap dinamis custom di src/pages/sitemap.xml.ts
+    // sitemap({
+    //   filter: (page) => !/(\/dashboard|admin|api|profil)/.test(page)
+    // })
   ],
   vite: {
     ssr: {
