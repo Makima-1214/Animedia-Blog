@@ -1,0 +1,53 @@
+---
+interface Props {
+  items: Array<{
+    label: string;
+    href?: string;
+  }>;
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="flex items-center gap-2 mb-6 md:mb-8 text-xs font-medium uppercase tracking-widest text-gray-600 dark:text-gray-400 overflow-x-auto no-scrollbar pb-2" aria-label="Breadcrumb">
+  <a class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0" href="/">
+    <span class="material-symbols-outlined text-base">home</span>
+  </a>
+  {items.map((item, index) => (
+    <>
+      <span class="material-symbols-outlined text-xs shrink-0">chevron_right</span>
+      {item.href ? (
+        <a 
+          class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0 whitespace-nowrap" 
+          href={item.href}
+        >
+          {item.label}
+        </a>
+      ) : (
+        <span class="text-gray-900 dark:text-white font-semibold truncate max-w-[200px] md:max-w-none">
+          {item.label}
+        </span>
+      )}
+    </>
+  ))}
+</nav>
+
+<!-- Schema.org Breadcrumb -->
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://animedia.web.id"
+    },
+    ...items.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 2,
+      "name": item.label,
+      "item": item.href ? `https://animedia.web.id${item.href}` : undefined
+    }))
+  ]
+})} />
