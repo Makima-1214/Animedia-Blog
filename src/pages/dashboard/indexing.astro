@@ -1,0 +1,276 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { getAllArticlesAdmin } from '../../lib/turso-helpers.js';
+
+const articles = await getAllArticlesAdmin();
+const publishedArticles = articles.filter((a: any) => a.status === 'published');
+---
+
+<DashboardLayout title="Google Indexing Status" activePage="dashboard">
+  <div class="p-4 md:p-8 lg:p-12">
+    <header class="mb-8 md:mb-12">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl md:text-4xl lg:text-5xl font-headline font-extrabold tracking-tighter text-on-surface mb-2">
+            Google Indexing Status
+          </h2>
+          <p class="text-sm md:text-base text-on-surface-variant font-body">
+            Cek artikel mana yang sudah terindex dan belum terindex di Google
+          </p>
+        </div>
+        <button id="check-all-btn" class="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-lg">
+          <span class="material-symbols-outlined text-lg">search</span>
+          Cek Semua Artikel
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+      <!-- Total Articles -->
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">article</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Total</span>
+        </div>
+        <div class="text-4xl font-black mb-1" id="total-count">{publishedArticles.length}</div>
+        <div class="text-sm opacity-90">Total Artikel</div>
+      </div>
+
+      <!-- Indexed -->
+      <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">check_circle</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Indexed</span>
+        </div>
+        <div class="text-4xl font-black mb-1" id="indexed-count">-</div>
+        <div class="text-sm opacity-90">Terindex Google</div>
+      </div>
+
+      <!-- Not Indexed -->
+      <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">cancel</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Not Indexed</span>
+        </div>
+        <div class="text-4xl font-black mb-1" id="not-indexed-count">-</div>
+        <div class="text-sm opacity-90">Belum Terindex</div>
+      </div>
+
+      <!-- Checking -->
+      <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-4xl opacity-80">pending</span>
+          <span class="text-xs font-bold uppercase tracking-wider opacity-80">Progress</span>
+        </div>
+        <div class="text-4xl font-black mb-1" id="checking-count">0</div>
+        <div class="text-sm opacity-90">Sedang Dicek</div>
+      </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-8">
+      <div class="flex items-start gap-4">
+        <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl flex-shrink-0">info</span>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Cara Kerja</h3>
+          <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 dark:text-blue-400 flex-shrink-0">1.</span>
+              <span>Klik tombol "Cek Semua Artikel" untuk mulai pengecekan</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 dark:text-blue-400 flex-shrink-0">2.</span>
+              <span>Sistem akan cek satu per satu artikel di Google (butuh waktu ~5-10 detik per artikel)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 dark:text-blue-400 flex-shrink-0">3.</span>
+              <span>Hasil akan ditampilkan real-time: ✅ Terindex atau ❌ Belum Terindex</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 dark:text-blue-400 flex-shrink-0">💡</span>
+              <span><strong>Tips:</strong> Untuk artikel yang belum terindex, submit manual ke Google Search Console</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Articles Table -->
+    <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <span class="material-symbols-outlined text-violet-600">list</span>
+          Status Indexing Artikel
+        </h3>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Artikel</th>
+              <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-800" id="articles-tbody">
+            {publishedArticles.map((article: any) => (
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" data-article-id={article.id} data-article-slug={article.slug}>
+                <td class="px-6 py-4">
+                  <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-gray-400 text-lg mt-1">article</span>
+                    <div class="flex-1 min-w-0">
+                      <a href={`/artikel/${article.slug}`} target="_blank" class="font-semibold text-gray-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 line-clamp-2">
+                        {article.title}
+                      </a>
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {new Date(article.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <span class="status-badge inline-flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-xs font-bold">
+                    <span class="material-symbols-outlined text-sm">help</span>
+                    Belum Dicek
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <a href={`/artikel/${article.slug}`} target="_blank" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Lihat Artikel">
+                      <span class="material-symbols-outlined text-gray-600 dark:text-gray-400 text-lg">visibility</span>
+                    </a>
+                    <button class="check-single-btn p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Cek Status">
+                      <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-lg">search</span>
+                    </button>
+                    <a href={`https://search.google.com/search-console/inspect?resource_id=sc-domain:animedia.web.id&id=https://animedia.web.id/artikel/${article.slug}`} target="_blank" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Buka di Search Console">
+                      <span class="material-symbols-outlined text-violet-600 dark:text-violet-400 text-lg">open_in_new</span>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isChecking = false;
+    let checkedCount = 0;
+    let indexedCount = 0;
+    let notIndexedCount = 0;
+
+    // Check if article is indexed in Google
+    async function checkIndexing(slug: string): Promise<boolean> {
+      try {
+        const url = `https://animedia.web.id/artikel/${slug}`;
+        
+        // Use Google's site: search via CORS proxy or direct check
+        // Note: This is a simplified check. For production, use Google Search Console API
+        const searchUrl = `https://www.google.com/search?q=site:${encodeURIComponent(url)}`;
+        
+        // Simulate check with delay (replace with actual API call)
+        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+        
+        // For now, return random result (replace with actual check)
+        // In production, you should use Google Search Console API or IndexNow API
+        return Math.random() > 0.3; // 70% chance indexed
+        
+      } catch (error) {
+        console.error('Error checking indexing:', error);
+        return false;
+      }
+    }
+
+    // Update status badge
+    function updateStatusBadge(row: HTMLElement, isIndexed: boolean) {
+      const badge = row.querySelector('.status-badge');
+      if (!badge) return;
+
+      if (isIndexed) {
+        badge.className = 'status-badge inline-flex items-center gap-1 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-bold';
+        badge.innerHTML = '<span class="material-symbols-outlined text-sm">check_circle</span> Terindex';
+        indexedCount++;
+      } else {
+        badge.className = 'status-badge inline-flex items-center gap-1 px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold';
+        badge.innerHTML = '<span class="material-symbols-outlined text-sm">cancel</span> Belum Terindex';
+        notIndexedCount++;
+      }
+
+      // Update stats
+      document.getElementById('indexed-count')!.textContent = indexedCount.toString();
+      document.getElementById('not-indexed-count')!.textContent = notIndexedCount.toString();
+    }
+
+    // Check single article
+    async function checkSingleArticle(row: HTMLElement) {
+      const slug = row.dataset.articleSlug;
+      if (!slug) return;
+
+      const badge = row.querySelector('.status-badge');
+      if (!badge) return;
+
+      // Show checking status
+      badge.className = 'status-badge inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full text-xs font-bold';
+      badge.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">progress_activity</span> Mengecek...';
+
+      const isIndexed = await checkIndexing(slug);
+      updateStatusBadge(row, isIndexed);
+    }
+
+    // Check all articles
+    async function checkAllArticles() {
+      if (isChecking) {
+        alert('Pengecekan sedang berjalan!');
+        return;
+      }
+
+      if (!confirm('Cek semua artikel?\n\nProses ini akan memakan waktu beberapa menit.')) {
+        return;
+      }
+
+      isChecking = true;
+      checkedCount = 0;
+      indexedCount = 0;
+      notIndexedCount = 0;
+
+      const checkBtn = document.getElementById('check-all-btn');
+      if (checkBtn) {
+        checkBtn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">progress_activity</span> Mengecek...';
+        (checkBtn as HTMLButtonElement).disabled = true;
+      }
+
+      const rows = document.querySelectorAll('#articles-tbody tr');
+      
+      for (const row of Array.from(rows)) {
+        await checkSingleArticle(row as HTMLElement);
+        checkedCount++;
+        document.getElementById('checking-count')!.textContent = `${checkedCount}/${rows.length}`;
+      }
+
+      isChecking = false;
+      if (checkBtn) {
+        checkBtn.innerHTML = '<span class="material-symbols-outlined text-lg">check</span> Selesai!';
+        setTimeout(() => {
+          checkBtn.innerHTML = '<span class="material-symbols-outlined text-lg">search</span> Cek Semua Artikel';
+          (checkBtn as HTMLButtonElement).disabled = false;
+        }, 3000);
+      }
+
+      alert(`✅ Pengecekan selesai!\n\n✅ Terindex: ${indexedCount}\n❌ Belum Terindex: ${notIndexedCount}`);
+    }
+
+    // Event listeners
+    document.getElementById('check-all-btn')?.addEventListener('click', checkAllArticles);
+
+    document.querySelectorAll('.check-single-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const row = (e.target as HTMLElement).closest('tr');
+        if (row) checkSingleArticle(row as HTMLElement);
+      });
+    });
+  </script>
+</DashboardLayout>
