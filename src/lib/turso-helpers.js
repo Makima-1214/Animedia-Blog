@@ -57,6 +57,19 @@ export async function incrementArticleViews(articleId) {
 }
 
 export async function getAllArticlesAdmin() {
+  // Auto-publish scheduled articles first
+  try {
+    await db.execute(`
+      UPDATE articles 
+      SET status = 'published', published_at = scheduled_at 
+      WHERE status = 'scheduled' 
+        AND scheduled_at IS NOT NULL 
+        AND scheduled_at <= datetime('now')
+    `);
+  } catch (error) {
+    console.warn('Auto-publish scheduled articles failed:', error);
+  }
+  
   const result = await db.execute(`SELECT * FROM articles ORDER BY created_at DESC`);
   return result.rows;
 }
