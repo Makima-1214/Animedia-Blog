@@ -18,10 +18,16 @@ const publishedArticles = articles.filter((a: any) => a.status === 'published');
             Cek artikel mana yang sudah terindex dan belum terindex di Google
           </p>
         </div>
-        <button id="check-all-btn" class="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-lg">
-          <span class="material-symbols-outlined text-lg">search</span>
-          Cek Semua Artikel
-        </button>
+        <div class="flex flex-wrap gap-2">
+          <button id="check-all-btn" class="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-lg">
+            <span class="material-symbols-outlined text-lg">search</span>
+            Cek Semua Artikel
+          </button>
+          <button id="submit-indexnow-btn" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm transition-colors flex items-center gap-2 shadow-lg">
+            <span class="material-symbols-outlined text-lg">send</span>
+            Submit ke IndexNow
+          </button>
+        </div>
       </div>
     </header>
 
@@ -265,6 +271,81 @@ const publishedArticles = articles.filter((a: any) => a.status === 'published');
 
     // Event listeners
     document.getElementById('check-all-btn')?.addEventListener('click', checkAllArticles);
+
+    // Submit to IndexNow
+    document.getElementById('submit-indexnow-btn')?.addEventListener('click', async () => {
+      if (!confirm('Submit semua artikel ke IndexNow?\n\nProses ini akan:\n✅ Submit ke Bing, Yandex, dll\n✅ Mempercepat indexing\n✅ Gratis dan aman\n\nLanjutkan?')) {
+        return;
+      }
+
+      const submitBtn = document.getElementById('submit-indexnow-btn');
+      if (submitBtn) {
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">progress_activity</span> Submitting...';
+        (submitBtn as HTMLButtonElement).disabled = true;
+      }
+
+      try {
+        // Get all article URLs
+        const rows = document.querySelectorAll('#articles-tbody tr');
+        const urls: string[] = [];
+        
+        rows.forEach(row => {
+          const slug = (row as HTMLElement).dataset.articleSlug;
+          if (slug) {
+            urls.push(`https://animedia.web.id/artikel/${slug}`);
+          }
+        });
+
+        // Submit in batches of 50 (with 2 second delay between batches)
+        const batchSize = 50;
+        let totalSubmitted = 0;
+
+        for (let i = 0; i < urls.length; i += batchSize) {
+          const batch = urls.slice(i, i + batchSize);
+          
+          const response = await fetch('/api/submit-indexnow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urls: batch })
+          });
+
+          const result = await response.json();
+          
+          if (result.success) {
+            totalSubmitted += result.submitted || batch.length;
+          }
+
+          // Update progress
+          if (submitBtn) {
+            submitBtn.innerHTML = `<span class="material-symbols-outlined text-lg animate-spin">progress_activity</span> ${totalSubmitted}/${urls.length}`;
+          }
+
+          // Delay 2 seconds between batches
+          if (i + batchSize < urls.length) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        }
+
+        if (submitBtn) {
+          submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">check</span> Selesai!';
+          setTimeout(() => {
+            submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">send</span> Submit ke IndexNow';
+            (submitBtn as HTMLButtonElement).disabled = false;
+          }, 3000);
+        }
+
+        alert(`✅ Berhasil submit ${totalSubmitted} artikel ke IndexNow!\n\n🚀 Artikel akan di-crawl oleh Bing, Yandex, dll dalam 1-2 hari.\n\n💡 Untuk Google, submit manual via Google Search Console.`);
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Gagal submit ke IndexNow. Coba lagi nanti.');
+        
+        if (submitBtn) {
+          submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">send</span> Submit ke IndexNow';
+          (submitBtn as HTMLButtonElement).disabled = false;
+        }
+      }
+    });
 
     document.querySelectorAll('.check-single-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
